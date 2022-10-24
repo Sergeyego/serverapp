@@ -524,6 +524,412 @@ module.exports = function (app) {
             ],
         });
 
+        const table3 = new Table({
+            columnWidths: [5103, 850, 870, 1024, 1016, 1020, 860, 860, 862, 867, 859, 864],
+            rows: [
+                new TableRow({ //1
+                    children: [
+                        new TableCell({
+                            width: {
+                                size: 5953,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "Материальные ценности", style: "tablePara"})],
+                            columnSpan: 2,
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 1894,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "Единица измерения", style: "tablePara"})],
+                            columnSpan: 2,
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 2036,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "Количество", style: "tablePara"})],
+                            columnSpan: 2,
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 860,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "Цена, руб. коп.", style: "tablePara"})],
+                            rowSpan: 2,
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 860,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "Сумма без учета НДС, руб. коп.", style: "tablePara"})],
+                            rowSpan: 2,
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 862,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "Сумма НДС, руб. коп.", style: "tablePara"})],
+                            rowSpan: 2,
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 867,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "Всего с учетом НДС, руб. коп.", style: "tablePara"})],
+                            rowSpan: 2,
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 859,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "Номер паспорта", style: "tablePara"})],
+                            rowSpan: 2,
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 864,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "Порядковый номер по складской картотеке", style: "tablePara"})],
+                            rowSpan: 2,
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                    ],
+                }),
+                new TableRow({ //2
+                    children: [
+                        new TableCell({
+                            width: {
+                                size: 5103,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "наименование, сорт, размер, марка", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 850,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "номенклатурный номер", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 870,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "код", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 1024,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "наименование", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 1016,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "по документу", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 1020,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "принято", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        
+                    ],
+                }),
+                new TableRow({ //3
+                    children: [
+                        new TableCell({
+                            width: {
+                                size: 5103,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "1", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 850,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "2", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 870,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "3", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 1024,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "4", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 1016,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "5", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 1020,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "6", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 860,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "7", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 860,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "8", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 862,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "9", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 867,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "10", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 859,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "11", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                        new TableCell({
+                            width: {
+                                size: 864,
+                                type: WidthType.DXA,
+                            },
+                            children: [new Paragraph({text: "12", style: "tablePara"})],
+                            verticalAlign: AlignmentType.CENTER,
+                            margins: {
+                                top: 57,
+                                bottom: 57,
+                                left: 57,
+                                right: 57,
+                            },
+                        }),
+                    ],
+                }),
+            ],
+        });
+
         const doc = new Document({
             styles: {
                 default: {
@@ -645,7 +1051,7 @@ module.exports = function (app) {
                         new Paragraph({text: "", style: "normalPara"}),
                         table2,
                         new Paragraph({text: "", style: "normalPara"}),
-                        //table4,
+                        table3,
                     ],
                 },
             ],
