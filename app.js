@@ -26,6 +26,7 @@ app.post('/api/user', (req, res) => {
 
 require('./routes/test.js')(app);
 require('./routes/invoices/elrtr/workshop.js')(app);
+require('./routes/invoices/elrtr/warehouseday.js')(app);
 
 app.use((req, res, next) => {
   res.status(404).type('text/plain')
