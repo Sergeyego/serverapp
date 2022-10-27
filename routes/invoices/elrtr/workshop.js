@@ -40,19 +40,19 @@ module.exports = function (app) {
                         })
                         .catch((error) => {
                             console.log('ERROR:', error);
-                            res.status(404);
+                            res.status(500);
                             res.json(error);
                         })
                     })
                     .catch((error) => {
                         console.log('ERROR:', error);
-                        res.status(404);
+                        res.status(500);
                         res.json(error);
                     })
             })
             .catch((error) => {
                 console.log('ERROR:', error);
-                res.status(404);
+                res.status(500);
                 res.json(error);
             })       
     })

@@ -1,27 +1,26 @@
 module.exports = function (app) {
     const db = require('../../../postgres.js');
     const doc = require('../../../invoice.js');
-    app.get("/invoices/elrtr/warehouseday/:typeId/:dayId", async (req, res) => {
+    app.get("/invoices/wire/warehouseday/:typeId/:dayId", async (req, res) => {
         db.one("select date_part('doy', $1 ::date) as num, $2 ::date as dat, t.fnam as tnam, d.nam as dnam, ef.nam as efnam, et.nam as etnam "+
-            "from prod_nakl_tip as t "+
+            "from wire_way_bill_type t "+
             "inner join nakl_doc as d on t.id_doc=d.id "+
             "inner join nakl_emp as ef on t.id_from=ef.id "+
             "inner join nakl_emp as et on t.id_to=et.id "+
             "where t.id = $3", [ String(req.params["dayId"]), String(req.params["dayId"]), Number(req.params["typeId"]) ] )
             .then((dataTitle) => {
                 //console.log('DATA:', dataTitle);
-                let query = "select (e.marka||' '||'ф'||p.diam || "+
-                    "CASE WHEN p.id_var<>1 THEN ' /'||ev.nam ||'/' ELSE '' end "+
-                    "||' ('||ep.pack_ed||')') as nam, p.n_s as npart, sum(w.kvo) as kvo "+
-                    "from prod as w "+
-                    "inner join parti as p on p.id=w.id_part "+
-                    "inner join elrtr as e on e.id=p.id_el "+
-                    "inner join el_pack as ep on ep.id=p.id_pack "+
-                    "inner join prod_nakl pn on pn.id = w.id_nakl "+
-                    "inner join elrtr_vars ev on ev.id = p.id_var "+
-                    "where pn.id_ist = $1 and pn.dat = $2 "+
-                    "group by e.marka, p.diam, p.id_var, ev.nam, ep.pack_ed, p.n_s "+
-                    "order by e.marka, p.diam, p.id_var, ev.nam, ep.pack_ed, p.n_s";
+                let query = "select ('проволока '||pr.nam||' '||'ф'||d.sdim||' '||k.short) as nam, m.n_s as npart, sum(w.m_netto) as kvo "+
+                    "from wire_warehouse as w "+
+                    "inner join wire_whs_waybill www on www.id = w.id_waybill "+
+                    "inner join wire_parti as p on p.id=w.id_wparti "+
+                    "inner join wire_parti_m as m on m.id=p.id_m "+
+                    "inner join provol as pr on pr.id=m.id_provol "+
+                    "inner join diam as d on d.id=m.id_diam "+
+                    "inner join wire_pack_kind as k on k.id=p.id_pack "+
+                    "where www.id_type = $1 and www.dat = $2 "+
+                    "group by pr.nam, d.sdim, k.short, m.n_s "+
+                    "order by pr.nam, d.sdim, k.short, m.n_s";
                 db.any(query, [ Number(req.params["typeId"]), String(req.params["dayId"]) ] )
                     .then((dataItems) =>{
                         //console.log('DATA:', dataItems);
