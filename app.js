@@ -1,7 +1,6 @@
 const docx = require('docx');
 const app = require('express')()
 
-const host = '127.0.0.1'
 const port = 7000
 
 app.get('/', (req, res) => {
@@ -21,6 +20,6 @@ app.use((req, res, next) => {
   res.send('Not found')
 })
 
-app.listen(port, host, function () {
-  console.log(`Server listens http://${host}:${port}`)
+app.listen(port, () => {
+  console.log(`Server app listening on port ${port}`)
 })
