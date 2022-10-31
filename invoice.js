@@ -928,23 +928,32 @@ let createDoc = async function (dataTitle, dataItems) {
     let sum = 0.0;
 
     for (i = 0; i < dataItems.length; i++) {
+
+        let nams = dataItems[i].nam.split('\n');
+        let cellNam = new TableCell ({
+                width: {
+                    size: 5103,
+                    type: WidthType.DXA,
+                },
+                children: [],
+                verticalAlign: AlignmentType.CENTER,
+                margins: {
+                    top: 57,
+                    bottom: 57,
+                    left: 57,
+                    right: 57,
+                }
+            }
+        );
+        for (j=0; j<nams.length; j++){
+            let str = j!=0 ? nams[j] : String(i+1)+". "+nams[j];
+            cellNam.addChildElement(new Paragraph({text: str, style: "normalPara"}))
+        }
+
         sum+=dataItems[i].kvo;
         table3.addChildElement(new TableRow({ 
             children: [
-                new TableCell({
-                    width: {
-                        size: 5103,
-                        type: WidthType.DXA,
-                    },
-                    children: [new Paragraph({text: String(i+1)+". "+dataItems[i].nam, style: "normalPara"})],
-                    verticalAlign: AlignmentType.CENTER,
-                    margins: {
-                        top: 57,
-                        bottom: 57,
-                        left: 57,
-                        right: 57,
-                    },
-                }),
+                cellNam,
                 new TableCell({
                     width: {
                         size: 850,
