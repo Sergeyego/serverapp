@@ -1,4 +1,3 @@
-const docx = require('docx');
 const app = require('express')()
 
 const port = 7000
@@ -7,6 +6,8 @@ app.get('/', (req, res) => {
   res.status(200).type('text/plain')
   res.send('Welcome to the server')
 })
+
+require('./routes/certificates/elrtr/qr.js')(app);
 
 require('./routes/invoices/elrtr/workshop.js')(app);
 require('./routes/invoices/elrtr/warehouse.js')(app);

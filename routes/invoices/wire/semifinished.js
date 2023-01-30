@@ -2,13 +2,16 @@ module.exports = function (app) {
     const db = require('../../../postgres.js');
     const doc = require('../../../invoice.js');
     app.get("/invoices/wire/semifinished/:vidId/:typeId/:dayId", async (req, res) => {
-        db.one("select date_part('doy', $1 ::date) as num, $2 ::date as dat, t.snam ||': '||(select wpt.snam from wire_podt_type wpt where wpt.id = $3 ) as tnam, "+
-            " d.nam as dnam, ef.nam as efnam, et.nam as etnam "+
+        db.one("select (select count(distinct wpc2.dat) from wire_podt_cex wpc2 "+
+            "inner join wire_podt as wp2 on wp2.id=wpc2.id_podt "+
+            "where date_part('year',wpc2.dat) = date_part('year',$1::date) and wpc2.dat<=$1::date and wpc2.id_op = $3 and wp2.id_type = $2 ) as num, "+
+            "$1 ::date as dat, t.snam ||': '||(select wpt.snam from wire_podt_type wpt where wpt.id = $2 ) as tnam, "+
+            "d.nam as dnam, ef.nam as efnam, et.nam as etnam "+
             "from wire_podt_op as t "+
             "inner join nakl_doc as d on t.id_doc=d.id "+
             "inner join nakl_emp as ef on t.id_from=ef.id "+
             "inner join nakl_emp as et on t.id_to=et.id "+
-            "where t.id = $4 ", [ String(req.params["dayId"]), String(req.params["dayId"]), Number(req.params["vidId"]), Number(req.params["typeId"]) ] )
+            "where t.id = $3", [ String(req.params["dayId"]), Number(req.params["vidId"]), Number(req.params["typeId"]) ] )
             .then((dataTitle) => {
                 //console.log('DATA:', dataTitle);
                 let query = "select coalesce(p2.nam, p.nam)||' ф '|| d.sdim as nam, wp.n_s as npart, wpc.kvo as kvo "+
