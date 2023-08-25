@@ -19,6 +19,8 @@ require('./routes/invoices/wire/warehouseday.js')(app);
 require('./routes/invoices/wire/semifinished.js')(app);
 require('./routes/invoices/wire/perepack.js')(app);
 
+require('./routes/acceptances/elrtr/api.js')(app);
+
 app.use((req, res, next) => {
   res.status(404).type('text/plain')
   res.send('Not found')
