@@ -31,20 +31,20 @@ module.exports = function (app) {
                         })
                         .catch((error) => {
                             console.log('ERROR:', error);
-                            res.status(500);
-                            res.json(error);
+                            res.status(500).type('text/plain');
+                            res.send(error.message);
                         })
                     })
                     .catch((error) => {
                         console.log('ERROR:', error);
-                        res.status(500);
-                        res.json(error);
+                        res.status(500).type('text/plain');
+                        res.send(error.message);
                     })
             })
             .catch((error) => {
                 console.log('ERROR:', error);
-                res.status(500);
-                res.json(error);
+                res.status(500).type('text/plain');
+                res.send(error.message);
             })       
     })
 }
