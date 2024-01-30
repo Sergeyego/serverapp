@@ -365,7 +365,7 @@ let createDoc = async function (dataTitle, dataItems) {
                         size: 1670,
                         type: WidthType.DXA,
                     },
-                        children: [new Paragraph({text: dataTitle.dat.toLocaleDateString('ru-RU',{year: 'numeric', month: 'long', day: 'numeric' }), style: "normalPara4"})],
+                        children: [new Paragraph({text: dataTitle.period!=null ? dataTitle.period  : dataTitle.dat.toLocaleDateString('ru-RU',{year: 'numeric', month: 'long', day: 'numeric' }), style: "normalPara4"})],
                         verticalAlign: AlignmentType.CENTER,
                         margins: {
                             top: 57,

@@ -16,6 +16,7 @@ require('./routes/certificates/elrtr/qr.js')(app);
 require('./routes/certificates/elrtr/create.js')(app);
 
 require('./routes/invoices/elrtr/workshop.js')(app);
+require('./routes/invoices/elrtr/workshopper.js')(app);
 require('./routes/invoices/elrtr/warehouse.js')(app);
 require('./routes/invoices/elrtr/warehouseday.js')(app);
 
