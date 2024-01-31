@@ -926,6 +926,7 @@ let createDoc = async function (dataTitle, dataItems) {
     });
 
     let sum = 0.0;
+    let sumbreak = 0.0;
 
     for (i = 0; i < dataItems.length; i++) {
 
@@ -951,6 +952,9 @@ let createDoc = async function (dataTitle, dataItems) {
         }
 
         sum+=dataItems[i].kvo;
+        if (dataItems[i].break!=null){
+            sumbreak+=dataItems[i].break;
+        }
         table3.addChildElement(new TableRow({ 
             children: [
                 cellNam,
@@ -1203,7 +1207,7 @@ let createDoc = async function (dataTitle, dataItems) {
                     size: 860,
                     type: WidthType.DXA,
                 },
-                children: [new Paragraph({text: "", style: "normalPara3"})],
+                children: [new Paragraph({text: sumbreak>0 ? new Intl.NumberFormat("ru", {style: "decimal", minimumFractionDigits: 2}).format(sumbreak) : "", style: "normalPara3"})],
                 verticalAlign: AlignmentType.CENTER,
                 margins: {
                     top: 57,
