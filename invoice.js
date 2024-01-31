@@ -574,7 +574,7 @@ let createDoc = async function (dataTitle, dataItems) {
                             size: 860,
                             type: WidthType.DXA,
                         },
-                        children: [new Paragraph({text: "Цена, руб. коп.", style: "tablePara"})],
+                        children: [new Paragraph({text: dataTitle.tnam!="Переупаковка" ? "Цена, руб. коп." : "В т.ч. брак", style: "tablePara"})],
                         rowSpan: 2,
                         verticalAlign: AlignmentType.CENTER,
                         margins: {
@@ -1029,7 +1029,7 @@ let createDoc = async function (dataTitle, dataItems) {
                         size: 860,
                         type: WidthType.DXA,
                     },
-                    children: [new Paragraph({text: "", style: "normalPara3"})],
+                    children: [new Paragraph({text: dataItems[i].break!=null ? new Intl.NumberFormat("ru", {style: "decimal", minimumFractionDigits: 2}).format(dataItems[i].break) : "", style: "normalPara3"})],
                     verticalAlign: AlignmentType.CENTER,
                     margins: {
                         top: 57,

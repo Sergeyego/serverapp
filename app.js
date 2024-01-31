@@ -19,6 +19,9 @@ require('./routes/invoices/elrtr/workshop.js')(app);
 require('./routes/invoices/elrtr/workshopper.js')(app);
 require('./routes/invoices/elrtr/warehouse.js')(app);
 require('./routes/invoices/elrtr/warehouseday.js')(app);
+require('./routes/invoices/elrtr/perepack.js')(app);
+require('./routes/invoices/elrtr/self.js')(app);
+require('./routes/invoices/elrtr/selfper.js')(app);
 
 require('./routes/invoices/wire/workshop.js')(app);
 require('./routes/invoices/wire/warehouse.js')(app);
