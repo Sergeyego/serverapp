@@ -32,6 +32,8 @@ require('./routes/invoices/wire/perepack.js')(app);
 require('./routes/acceptances/elrtr/api.js')(app);
 require('./routes/acceptances/wire/api.js')(app);
 
+require('./routes/dosage/api.js')(app);
+
 app.use(express.static("public"));
 
 app.use((req, res, next) => {
