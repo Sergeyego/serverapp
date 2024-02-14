@@ -1,6 +1,8 @@
 module.exports = function (app) {
     const db = require('../../postgres.js');
     const {XMLBuilder} = require('fast-xml-parser');
+    const bodyParser = require('body-parser');
+    require('body-parser-xml')(bodyParser);
 
     app.get("/dosage/recipes", async (req, res) => {
         db.any("select id as id, nam as nam from rcp_nam where lev=1 order by nam") 
@@ -46,8 +48,9 @@ module.exports = function (app) {
     })
 
     app.get("/dosage/recipes/:id/:mas", async (req, res) => {
+        date = new Date();
         db.any("select num as num, parti as parti, kvo as kvo, tiny as tiny, nbunk as nbunk, id_bunk as id_bunk, nam as nam, id_matr as id_matr from "+
-                "calc_doz($1,'2024-01-13 00:00:00',$2)", [ Number(req.params["mas"]), Number(req.params["id"]) ]) 
+                "calc_doz($1,$2,$3)", [ Number(req.params["mas"]),date, Number(req.params["id"]) ]) 
             .then((data) => {
                     const options = {
                         format: false,
@@ -58,6 +61,37 @@ module.exports = function (app) {
                     xmlDataStr = '<?xml version=\"1.0\" encoding=\"UTF-8\" ?>'+'<root>'+xmlDataStr+'</root>';
                     res.type('text/xml');
                     res.send(xmlDataStr);
+                    //console.log('DATE:', date);
+                })
+            .catch((error) => {
+                console.log('ERROR:', error);
+                res.status(500).type('text/plain');
+                res.send(error.message);
+            })
+    })
+
+    app.post("/dosage/recipes/:id/:mas",bodyParser.xml(),async (req, res) => {
+        date = new Date();
+        db.one("insert into dosage (id_rcp, dat, tm, kvo_tot) values ( $1, $2 , $3 , $4) returning id", [ Number(req.params["id"]),date,date.toLocaleTimeString(), Number(req.params["mas"]) ]) 
+            .then((data) => {
+                  
+                    //console.log('DATA:', req.body.root.item);
+
+                    var query = "insert into dosage_spnd (id_dos, id_comp, kvo_comp, id_bunk, parti) values ";
+
+                    var vals = req.body.root.item;
+                    for (i = 0; i < vals.length; i++) {
+                        if (i!=0){
+                            query+=", ";
+                        }
+                        query+="("+data.id+", "+vals[i].idmatr+", "+vals[i].kvo+", "+vals[i].idbunk+", "+vals[i].parti+")";
+
+                    }
+
+                    console.log('DATA:', query);
+
+                    res.type('text/plain');
+                    res.send(data);
                 })
             .catch((error) => {
                 console.log('ERROR:', error);
