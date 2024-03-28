@@ -50,7 +50,7 @@ module.exports = function (app) {
     app.get("/dosage/recipes/:id/:mas", async (req, res) => {
         date = new Date();
         db.any("select num as num, parti as parti, kvo as kvo, tiny as tiny, nbunk as nbunk, id_bunk as id_bunk, nam as nam, id_matr as id_matr from "+
-                "calc_doz($1,$2,$3)", [ Number(req.params["mas"]),date, Number(req.params["id"]) ]) 
+                "calc_doz_new($1,$2,$3,1)", [ Number(req.params["mas"]),date, Number(req.params["id"]) ]) 
             .then((data) => {
                     const options = {
                         format: false,
