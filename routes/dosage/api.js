@@ -25,7 +25,7 @@ module.exports = function (app) {
     })
 
     app.get("/dosage/recipes/:id", async (req, res) => {
-        db.any("select rc.id_matr as id_matr, 'Компонент '||floor(random()*(1000-1)+1) as nam, rc.kvo as kvo from rcp_cont rc "+
+        db.any("select rc.id_matr as id_matr, 'Компонент '||floor(random()*(1000-1)+1) as nam, m.nam as fnam, rc.kvo as kvo from rcp_cont rc "+
                 "inner join matr m on rc.id_matr=m.id "+
                 "where rc.id_rcp = $1 and rc.hidden=0 "+
                 "and m.cod <> 'g' order by nam", [ Number(req.params["id"]) ]) 
@@ -47,10 +47,10 @@ module.exports = function (app) {
             })
     })
 
-    app.get("/dosage/recipes/:id/:mas", async (req, res) => {
+    app.get("/dosage/recipes/:cex/:id/:mas", async (req, res) => {
         date = new Date();
         db.any("select num as num, parti as parti, kvo as kvo, tiny as tiny, nbunk as nbunk, id_bunk as id_bunk, nam as nam, id_matr as id_matr from "+
-                "calc_doz_new($1,$2,$3,1)", [ Number(req.params["mas"]),date, Number(req.params["id"]) ]) 
+                "calc_doz_new($1,$2,$3,$4)", [ Number(req.params["mas"]),date, Number(req.params["id"]), Number(req.params["cex"]) ]) 
             .then((data) => {
                     const options = {
                         format: false,
@@ -70,9 +70,9 @@ module.exports = function (app) {
             })
     })
 
-    app.post("/dosage/recipes/:id/:mas",bodyParser.xml(),async (req, res) => {
+    app.post("/dosage/recipes/:cex/:id/:mas",bodyParser.xml(),async (req, res) => {
         date = new Date();
-        db.one("insert into dosage (id_rcp, dat, tm, kvo_tot) values ( $1, $2 , $3 , $4) returning id", [ Number(req.params["id"]),date,date.toLocaleTimeString(), Number(req.params["mas"]) ]) 
+        db.one("insert into dosage (id_rcp, dat, tm, kvo_tot, id_cex) values ( $1, $2 , $3 , $4, $5) returning id", [ Number(req.params["id"]),date,date.toLocaleTimeString(), Number(req.params["mas"]), Number(req.params["cex"]) ]) 
             .then((data) => {
                     var query = "insert into dosage_spnd (id_dos, id_comp, kvo_comp, id_bunk, parti) values ";
                     var vals = req.body.root.item;
