@@ -28,7 +28,7 @@ module.exports = function (app) {
         db.any("select rc.id_matr as id_matr, 'Компонент '||floor(random()*(1000-1)+1) as nam, m.nam as fnam, rc.kvo as kvo from rcp_cont rc "+
                 "inner join matr m on rc.id_matr=m.id "+
                 "where rc.id_rcp = $1 and rc.hidden=0 "+
-                "and m.cod <> 'g' order by nam", [ Number(req.params["id"]) ]) 
+                "and m.cod <> 'g' order by fnam", [ Number(req.params["id"]) ]) 
             .then((data) => {
                     const options = {
                         format: false,
@@ -49,6 +49,11 @@ module.exports = function (app) {
 
     app.get("/dosage/recipes/:cex/:id/:mas", async (req, res) => {
         date = new Date();
+        dtm=req.query.dtm;        
+        if (typeof dtm != "undefined"){
+            date.setTime(Date.parse(dtm));
+        }
+        //console.log('Date:', date);
         db.any("select num as num, parti as parti, kvo as kvo, tiny as tiny, nbunk as nbunk, id_bunk as id_bunk, nam as nam, id_matr as id_matr from "+
                 "calc_doz_new($1,$2,$3,$4)", [ Number(req.params["mas"]),date, Number(req.params["id"]), Number(req.params["cex"]) ]) 
             .then((data) => {
@@ -72,6 +77,11 @@ module.exports = function (app) {
 
     app.post("/dosage/recipes/:cex/:id/:mas",bodyParser.xml(),async (req, res) => {
         date = new Date();
+        dtm=req.query.dtm;        
+        if (typeof dtm != "undefined"){
+            date.setTime(Date.parse(dtm));
+        }
+        //console.log('Date:', date);
         db.one("insert into dosage (id_rcp, dat, tm, kvo_tot, id_cex) values ( $1, $2 , $3 , $4, $5) returning id", [ Number(req.params["id"]),date,date.toLocaleTimeString(), Number(req.params["mas"]), Number(req.params["cex"]) ]) 
             .then((data) => {
                     var query = "insert into dosage_spnd (id_dos, id_comp, kvo_comp, id_bunk, parti) values ";
