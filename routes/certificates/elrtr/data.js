@@ -43,5 +43,47 @@ let getTuData = async function (id) {
     return data;
 }
 
+let getChemData = async function (id) {
+    let query="select c.sig as sig, s.value as val from sert_chem as s "+
+        "inner join chem_tbl as c on s.id_chem=c.id "+
+        "where s.id_part = $1 order by c.sig";
+    const data = await db.any(query, [ Number(id)] );
+    return data;
+}
+
+let getMechData = async function (id) {
+    let query="select um.id_cat as id_cat, um.nam_html as nam, um.sig_html as sig, um.prefix as prefix, um.value as val, "+
+        "um.nam_html_en as nam_en, um.sig_html_en as sig_en, um.prefix_en as prefix_en, mc.nam as catnam, mc.nam_en as catnam_en "+
+        "from ( "+
+        "select m.id_cat, m.nam_html, m.sig_html, m.prefix, s.value, m.nam_html_en, m.sig_html_en, m.prefix_en "+
+        "from sert_mech as s "+
+        "inner join mech_tbl as m on s.id_mech=m.id "+
+        "where s.id_part = $1 "+
+        "union "+
+        "select t.id_cat, t.nam, null, n.nam, null, t.nam_en, null, n.nam_en from sert_mechx as x "+
+        "inner join mechx_tbl as t on x.id_mechx=t.id "+
+        "inner join mechx_nams as n on x.id_value=n.id "+
+        "where x.id_part = $1 "+
+        ") as um "+
+        "inner join mech_category mc on mc.id=um.id_cat "+
+        "order by um.id_cat, um.nam_html";
+    const data = await db.any(query, [ Number(id)] );
+    return data;
+}
+
+let getSertData = async function (id) {
+    let query="select z.id_ved, z.doc_nam, z.ved_nam, z.nom_doc, z.dat_doc, z.id_doc_t, z.ved_short, "+
+        "z.grade_nam, z.ved_short_en, z.doc_nam_en, z.ved_nam_en, z.id_doc, z.en "+
+        "from zvd_get_sert_var((select dat_part from parti where id = $1 ), "+
+        "(select id_el from parti where id = $1 ), "+
+        "(select d.id from diam as d where d.diam = (select diam from parti where id = $1 )), "+
+        "(select id_var from parti where id = $1 ) ) as z";
+    const data = await db.any(query, [ Number(id)] );
+    return data;
+}
+
 module.exports.getHeaderData = getHeaderData;
 module.exports.getTuData = getTuData;
+module.exports.getChemData = getChemData;
+module.exports.getMechData = getMechData;
+module.exports.getSertData = getSertData;

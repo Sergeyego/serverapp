@@ -50,100 +50,23 @@
         <title>{{header}}</title>
     </head>
     <body class="globalstyle">
-        <div class="logostyle"><img src="../../logo2.png" alt="logo" height="70"></div>
+        <div class="logostyle"><img src="../../../logo2.png" alt="logo" height="70"></div>
         <div class="addrtext">{{{adr}}}</div>
         <div class="addrtext">{{tel}}</div>
         <div>
-            <img src="../../depimages/3.png" alt="ved3" height="45">
-            <img src="../../depimages/6.png" alt="ved6" height="45">
-            <img src="../../depimages/7.png" alt="ved7" height="45">
+            <img src="../../../depimages/3.png" alt="ved3" height="45">
+            <img src="../../../depimages/6.png" alt="ved6" height="45">
+            <img src="../../../depimages/7.png" alt="ved7" height="45">
         </div>
         <div class="headertext">{{header}}</div>
         <div class="leftalign"><span class="boldtext">{{tutitle}}</span>{{tustr}}</div>
-        <table class="tablestyle" border="1" cellspacing="1" cellpadding="3">
-            <tr class="boldtext">
-                <td width="300" class="centeralign">Условное обозначение электрода</td>
-                <td class="centeralign">Проволока<br>по ГОСТ 2246-70</td>
-                <td class="centeralign">Номер партии</td>
-                <td class="centeralign">Дата<br>производства</td>
-                <td class="centeralign">Объем<br>отгрузки, кг</td>
-            </tr>
-            <tr>
-                <td class="centeralign">Э46-МР-3С-∅4-УД<br>Е 431(3)-РЦ26</td>
-                <td class="centeralign">Св-08А</td>
-                <td class="centeralign">2519</td>
-                <td class="centeralign">04.09.2023</td>
-                <td class="centeralign">2 865,5</td>
-            </tr>
-        </table>
+        {{{maintbl}}}
         <br>
-        <table class="tablestyle" border="1" cellspacing="1" cellpadding="3">
-            <tr class="boldtext">
-                <td colspan="5" class="centeralign">Испытания: согласно EN 10204 - 3.1. Химический состав наплавленного металла, %</td>
-            </tr>
-            <tr>
-                <td class="centeralign">C</td>
-                <td class="centeralign">Mn</td>
-                <td class="centeralign">P</td>
-                <td class="centeralign">S</td>
-                <td class="centeralign">Si</td>
-            </tr>
-            <tr>
-                <td class="centeralign">0,106</td>
-                <td class="centeralign">0,610</td>
-                <td class="centeralign">0,016</td>
-                <td class="centeralign">0,015</td>
-                <td class="centeralign">0,219</td>
-            </tr>
-        </table>
+        {{{chemtbl}}}
         <br>
-        <table class="tablestyle" border="1" cellspacing="1" cellpadding="3">
-            <tr class="boldtext">
-                <td colspan="3" class="centeralign">Испытания: согласно EN 10204 - 3.1. Механические свойства металла шва</td>
-            </tr>
-            <tr>
-                <td width="80%" class="leftalign">Временное сопротивление разрыву, МПа</td>
-                <td class="centeralign">&sigma;<sub>в</sub></td>
-                <td class="rightalign">488,00</td>
-            </tr>
-            <tr>
-                <td class="leftalign">Относительное удлинение, %</td>
-                <td class="centeralign">&delta;<sub>5</sub></td>
-                <td class="rightalign">26,00</td>
-            </tr>
-            <tr>
-                <td class="leftalign">Ударная вязкость +20°C, Дж/см<sup>2</sup></td>
-                <td class="centeralign">KCU<sup>+20</sup></td>
-                <td class="rightalign">126,00</td>
-            </tr>
-        </table>
-        <div class="headertext">Аттестация и сертификация</div>
-        <table class="tablestyle" border="1" cellspacing="1" cellpadding="3">
-            <tr class="boldtext">
-                <td class="centeralign">Вид документа</td>
-                <td class="centeralign">Сертифицирующий орган</td>
-                <td class="centeralign">Номер документа</td>
-                <td class="centeralign">Дата выдачи</td>
-            </tr>
-            <tr>
-                <td class="centeralign">Сертификат соответствия</td>
-                <td class="centeralign">Система сертификации ГОСТ Р Госстандарт России</td>
-                <td class="centeralign">РОСС RU.НЕ06.Н08556</td>
-                <td class="centeralign">26.07.2023</td>
-            </tr>
-            <tr>
-                <td class="centeralign">Свидетельство (Область применения на объектах под наблюдением Ростехнадзора)</td>
-                <td class="centeralign">Национальное Агентство Контроля Сварки (НАКС)></td>
-                <td class="centeralign">АЦСМ-49-01090</td>
-                <td class="centeralign">27.04.2022</td>
-            </tr>
-            <tr>
-                <td class="centeralign">Свидетельство об одобрении сварочных материалов</td>
-                <td class="centeralign">Федеральное автономное учреждение &quot;Российский Речной Регистр&quot;</td>
-                <td class="centeralign">02-11.3-10.5.1-0511</td>
-                <td class="centeralign">23.09.2021</td>
-            </tr>
-        </table>
+        {{{mechtbl}}}
+        <div class="headertext">{{srtheader}}</div>
+        {{{serttbl}}}
         <div class="leftalign">Одобрено РРР по категории 2.</div>
         <div class="boldtext">Грузополучатель:</div>
         <div class="leftalign">ООО &quot;Компания Экотех&quot;</div>
@@ -151,6 +74,6 @@
         <div class="boldtext">Заключение:</div>
         <div class="leftalign">соответствует ГОСТ 9466-75, ГОСТ 9467-75, ТУ 1272-001-50133500-2015</div>
         <div class="centeralign"><span class="boldtext">Дата выдачи сертификата: </span>07.09.2023</div>
-        <div class="signstyle"><img src="ship/12654/qr.png" alt="qrcode" height="150">                                                       Начальник ОТК ______________ А.В.Чистякова</div>
+        <div class="signstyle"><img src="../ship/12654/qr.png" alt="qrcode" height="150">                                                       Начальник ОТК ______________ А.В.Чистякова</div>
     </body>
 </html>
