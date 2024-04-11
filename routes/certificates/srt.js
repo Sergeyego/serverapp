@@ -139,16 +139,101 @@ let getSertTbl = function(lang, sertdata){
                 '<td class="centeralign">'+insText(lang,"Дата выдачи","Date of issue",true)+'</td>'+
             '</tr>';
         for (let i=0; i<sertdata.length; i++){
-            tbl+='<tr>'+
-                '<td class="centeralign">'+insText(lang,sertdata[i].doc_nam,sertdata[i].doc_nam_en,true)+'</td>'+
-                '<td class="centeralign">'+insText(lang,sertdata[i].ved_nam,sertdata[i].ved_nam_en,true)+'</td>'+
-                '<td class="centeralign">'+sertdata[i].nom_doc+'</td>'+
-                '<td class="centeralign">'+insDate(lang,sertdata[i].dat_doc,true)+'</td>'+
-            '</tr>';
+            if (sertdata[i].en){
+                tbl+='<tr>'+
+                    '<td class="centeralign">'+insText(lang,sertdata[i].doc_nam,sertdata[i].doc_nam_en,true)+'</td>'+
+                    '<td class="centeralign">'+insText(lang,sertdata[i].ved_nam,sertdata[i].ved_nam_en,true)+'</td>'+
+                    '<td class="centeralign">'+sertdata[i].nom_doc+'</td>'+
+                    '<td class="centeralign">'+insDate(lang,sertdata[i].dat_doc,true)+'</td>'+
+                '</tr>';
+            }
         }
         tbl+='</table>';
     }
     return tbl;
+}
+
+let getSertPic = function(sertdata){
+    let im="";
+    let set = new Set();
+    for (let i=0; i<sertdata.length; i++){
+        if (sertdata[i].en && sertdata[i].is_simb && !set.has(sertdata[i].id_ved)){
+            set.add(sertdata[i].id_ved);
+            im+='<img src="../../../depimages/'+sertdata[i].id_ved+'.png" alt="ved'+sertdata[i].id_ved+'" height="45"></img>';
+        }
+    }
+    return im;
+}
+
+let getSertApp = function (lang, sertdata){
+    let app="";
+    let set = new Set();
+    for (let i=0; i<sertdata.length; i++){
+        if (sertdata[i].en && sertdata[i].id_doc_t==3){
+            let dopru = ".";
+            let dopen = ".";
+            if (sertdata[i].grade_nam!=null){
+                dopru=" по категории "+sertdata[i].grade_nam+dopru;;
+                dopen=" in category "+sertdata[i].grade_nam+dopen;
+            }
+            let str = insText(lang,"Одобрено "+sertdata[i].ved_short+dopru,"Approved by "+sertdata[i].ved_short_en+dopen,false);
+            set.add(str);
+        }
+    }
+    for (let value of set) {
+        if (app!=""){
+            app+="<br>";
+        }
+        app+=value;
+    }
+    return app;
+}
+
+let getSign = function(lang, id_type, gendata){
+    let sign="";
+    if (id_type==1){
+        sign+= insText(lang,gendata.otk_title,gendata.otk_title_en,false)+"______________";
+        sign+= insText(lang,"[МЕСТО ДЛЯ ПЕЧАТИ, ПОДПИСЬ]","[LOCUS SIGILLI, SIGNATURE]",false);
+    } else if (id_type==3){
+        let sep = (lang=="ru" || lang=="en") ? "                    " : "   ";
+        sign+= insText(lang,gendata.otk_title,gendata.otk_title_en,false);
+        sign+="                                      ";
+        sign+= insText(lang,"Представитель ООО \"Транснефть Надзор\"","Representative of Transneft Nadzor LLC",false);
+        sign+="<br><br>";
+        sign+="______________";
+        sign+=insText(lang,gendata.otk,gendata.otk_en,false);
+        sign+=sep;
+        sign+="<u>"+insText(lang,"Ведущий инженер","Lead Lower",false)+"</u>";
+        sign+="   __________________   __________________";
+        //sign+="<br>";
+        sign+='<p style="font-size: 10px;">';
+        sign+="("+insText(lang,"должность","job title",false)+")"+sep;
+        sign+="("+insText(lang,"подпись","signature",false)+")"+sep;
+        sign+="("+insText(lang,"ФИО","full name",false)+")"+sep;
+        sign+='</p>';
+    } else if (id_type==4){
+        let sep = (lang=="ru" || lang=="en") ? "                    " : "   ";
+        sign+= insText(lang,gendata.otk_title,gendata.otk_title_en,false);
+        sign+="                                      ";
+        sign+= insText(lang,"Представитель АО \"РТ-Техприемка\"","Representative of JSC \"RT-Techpriemka\"",false);
+        sign+="<br><br>";
+        sign+="______________";
+        sign+=insText(lang,gendata.otk,gendata.otk_en,false);
+        sign+="                        ";
+        sign+="   __________________   __________________   __________________";
+        //sign+="<br>";
+        sign+='<p style="font-size: 10px;">';
+        sign+="("+insText(lang,"должность","job title",false)+")"+sep;
+        sign+="("+insText(lang,"подпись","signature",false)+")"+sep;
+        sign+="("+insText(lang,"ФИО","full name",false)+")"+sep;
+        sign+='</p>';
+    }   else {
+        sign+='<p align="center">';
+        sign+= insText(lang,gendata.otk_title,gendata.otk_title_en,false)+"______________";
+        sign+= insText(lang,gendata.otk,gendata.otk_en,false);
+        sign+='</p>';        
+    }
+    return sign;
 }
 
 module.exports.getGeneralData = getGeneralData;
@@ -158,3 +243,6 @@ module.exports.insDate = insDate;
 module.exports.getChemTbl = getChemTbl;
 module.exports.getMechTbl = getMechTbl;
 module.exports.getSertTbl = getSertTbl;
+module.exports.getSertPic = getSertPic;
+module.exports.getSertApp = getSertApp;
+module.exports.getSign = getSign;

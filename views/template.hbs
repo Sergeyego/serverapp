@@ -36,6 +36,7 @@
             }
             .signstyle{
                 white-space: pre-wrap;
+                text-align: right;
             }
             .centeralign{
                 text-align: center;
@@ -54,9 +55,7 @@
         <div class="addrtext">{{{adr}}}</div>
         <div class="addrtext">{{tel}}</div>
         <div>
-            <img src="../../../depimages/3.png" alt="ved3" height="45">
-            <img src="../../../depimages/6.png" alt="ved6" height="45">
-            <img src="../../../depimages/7.png" alt="ved7" height="45">
+            {{{sertpic}}}
         </div>
         <div class="headertext">{{header}}</div>
         <div class="leftalign"><span class="boldtext">{{tutitle}}</span>{{tustr}}</div>
@@ -67,13 +66,14 @@
         {{{mechtbl}}}
         <div class="headertext">{{srtheader}}</div>
         {{{serttbl}}}
-        <div class="leftalign">Одобрено РРР по категории 2.</div>
-        <div class="boldtext">Грузополучатель:</div>
-        <div class="leftalign">ООО &quot;Компания Экотех&quot;</div>
-        <div class="centeralign">При переписке по вопросам качества просьба ссылаться на номер партии</div>
-        <div class="boldtext">Заключение:</div>
-        <div class="leftalign">соответствует ГОСТ 9466-75, ГОСТ 9467-75, ТУ 1272-001-50133500-2015</div>
-        <div class="centeralign"><span class="boldtext">Дата выдачи сертификата: </span>07.09.2023</div>
-        <div class="signstyle"><img src="../ship/12654/qr.png" alt="qrcode" height="150">                                                       Начальник ОТК ______________ А.В.Чистякова</div>
+        <div class="leftalign">{{{sertapp}}}</div>
+        <div class="boldtext">{{poltitle}}</div>
+        <div class="leftalign">{{{pol}}}</div>
+        <div class="centeralign">{{{note}}}</div>
+        <div class="boldtext">{{constitle}}</div>
+        <div class="leftalign">{{{cons}}}</div>
+        <div class="centeralign"><span class="boldtext">{{dattitle}}</span>{{dat}}</div>
+        <div class="leftalign"><img src="{{qrsrc}}" alt="qrcode" height="150"></div>
+        <div class="signstyle">{{{sign}}}</div>
     </body>
 </html>

@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 })
 
 require('./routes/depimages/depimages.js')(app);
-require('./routes/certificates/elrtr/qr.js')(app);
+require('./routes/qrcode/qr.js')(app);
 require('./routes/certificates/elrtr/create.js')(app);
 
 require('./routes/invoices/elrtr/workshop.js')(app);

@@ -4,7 +4,7 @@ let getHeaderData = async function (id, is_ship=true) {
     let query = is_ship ? 
         "select p.id as id, p.n_s as n_s, p.yea as year, p.dat_part as dat, e.marka_sert as marka, p.diam as diam, "+
         "gt.nam as gt, pu.nam as pu, coalesce (p.ibco, ev.znam) as znam, coalesce(pp.nam, pe.nam) as provol, pol.naim as pol, "+
-        "s.nom_s as nomer, coalesce(s.dat_vid, $2 ) as datvid, o.massa as massa, pol.naim_en as pol_en "+
+        "s.nom_s as nomer, coalesce(s.dat_vid, $2 ) as datvid, o.massa as massa, pol.naim_en as pol_en, (o.id::int8+((p.id::int8)<<32)::int8)::varchar as code "+
         "from otpusk as o "+
         "inner join sertifikat as s on o.id_sert=s.id "+
         "inner join parti as p on o.id_part=p.id "+
@@ -19,7 +19,7 @@ let getHeaderData = async function (id, is_ship=true) {
         :
         "select p.id as id, p.n_s as n_s, p.yea as year, p.dat_part as dat, e.marka_sert as marka, p.diam as diam, "+
         "gt.nam as gt, pu.nam as pu, coalesce (p.ibco, ev.znam) as znam, coalesce(pp.nam, pe.nam) as provol, NULL as pol, "+
-        "NULL as nomer, ($2)::date as datvid, j.sum as massa, NULL as pol_en "+
+        "NULL as nomer, ($2)::date as datvid, j.sum as massa, NULL as pol_en, (0::int8+((p.id::int8)<<32)::int8)::varchar as code "+
         "from parti as p "+
         "inner join elrtr as e on e.id=p.id_el "+
         "inner join provol as pe on pe.id=e.id_gost "+
@@ -73,7 +73,7 @@ let getMechData = async function (id) {
 
 let getSertData = async function (id) {
     let query="select z.id_ved, z.doc_nam, z.ved_nam, z.nom_doc, z.dat_doc, z.id_doc_t, z.ved_short, "+
-        "z.grade_nam, z.ved_short_en, z.doc_nam_en, z.ved_nam_en, z.id_doc, z.en "+
+        "z.grade_nam, z.ved_short_en, z.doc_nam_en, z.ved_nam_en, z.id_doc, z.en, z.is_simb "+
         "from zvd_get_sert_var((select dat_part from parti where id = $1 ), "+
         "(select id_el from parti where id = $1 ), "+
         "(select d.id from diam as d where d.diam = (select diam from parti where id = $1 )), "+
