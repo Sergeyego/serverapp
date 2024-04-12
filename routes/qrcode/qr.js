@@ -28,8 +28,8 @@ module.exports = function (app) {
                 qrcode.toFileStream(qrStream, qrdata,
                 {
                     type: 'image/png',
-                    width: 400,
-                    errorCorrectionLevel: 'Q',
+                    width: 300,
+                    errorCorrectionLevel: 'M',
                     margin: 1
                 });
                 qrStream.pipe(res);

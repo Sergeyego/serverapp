@@ -1,6 +1,6 @@
 let getGeneralData = async function (dat) {
     const db = require('../../postgres.js');
-    let query = "select adr as adr, telboss||', '||telfax||', '||teldop||' '||site||' '||email as tel, "+
+    let query = "select dat as dat, adr as adr, telboss||', '||telfax||', '||teldop||' '||site||' '||email as tel, "+
         "otk as otk, adr_en as adr_en, otk_en as otk_en, otk_title as otk_title, otk_title_en as otk_title_en "+
         "from general_data where dat = (select max(mgd.dat) from general_data mgd where mgd.dat <= $1 )";
     const data = await db.one(query, [dat] );
@@ -34,29 +34,29 @@ let insText = function(lang, rus, eng, newpar=false) {
 }
 
 let insNumber = function (lang, val, dec){
-    let lg = (typeof lang == "undefined" || lang=="ru") ? "ru" : "en";
+    let lg = (typeof lang == "undefined" || lang=="ru") ? "ru-RU" : "en-US";
     return val!=null ? new Intl.NumberFormat(lg, {style: "decimal", minimumFractionDigits : dec}).format(val) : "";
 }
 
 let insDate = function (lang, date, newpar=false){
     let str;
     if (typeof lang == "undefined" || lang=="ru"){
-        let formatter = new Intl.DateTimeFormat("ru");
+        let formatter = new Intl.DateTimeFormat("ru-RU");
         str=formatter.format(date);  
     } else if (lang=="en") {
-        let formatter = new Intl.DateTimeFormat("en",{
+        let formatter = new Intl.DateTimeFormat("en-US",{
             year: "numeric",
             month: "short",
             day: "numeric"
         });
         str=formatter.format(date);
     } else {
-        let formatter1 = new Intl.DateTimeFormat("ru",{
+        let formatter1 = new Intl.DateTimeFormat("ru-RU",{
             year: "numeric",
             month: "short",
             day: "numeric"
         });
-        let formatter2 = new Intl.DateTimeFormat("en",{
+        let formatter2 = new Intl.DateTimeFormat("en-US",{
             year: "numeric",
             month: "short",
             day: "numeric"
@@ -159,7 +159,7 @@ let getSertPic = function(sertdata){
     for (let i=0; i<sertdata.length; i++){
         if (sertdata[i].en && sertdata[i].is_simb && !set.has(sertdata[i].id_ved)){
             set.add(sertdata[i].id_ved);
-            im+='<img src="../../../depimages/'+sertdata[i].id_ved+'.png" alt="ved'+sertdata[i].id_ved+'" height="45"></img>';
+            im+='<img src="/depimages/'+sertdata[i].id_ved+'.png" alt="ved'+sertdata[i].id_ved+'" height="45"></img>';
         }
     }
     return im;
@@ -192,12 +192,21 @@ let getSertApp = function (lang, sertdata){
 let getSign = function(lang, id_type, gendata){
     let sign="";
     if (id_type==1){
+        sign+='<p style="text-align: right;">';
         sign+= insText(lang,gendata.otk_title,gendata.otk_title_en,false)+"______________";
         sign+= insText(lang,"[МЕСТО ДЛЯ ПЕЧАТИ, ПОДПИСЬ]","[LOCUS SIGILLI, SIGNATURE]",false);
+        sign+='</p>';
+    } else if (id_type==2){
+        let datSrc = gendata.dat.toLocaleString('ru-RU', { year: 'numeric', month: 'numeric', day: 'numeric' });
+        let datDst = datSrc.split(".").reverse().join("-");
+        let lg = (lang=="ru" || lang=="en") ? lang : "mix";
+        sign+=(lang=="ru" || lang=="en") ? "                        " : "   ";
+        sign+='<img src="/signatures/'+lg+'/'+datDst+'.png" alt="sign" height="150"></img>';
     } else if (id_type==3){
         let sep = (lang=="ru" || lang=="en") ? "                    " : "   ";
+        sign+='<p style="text-align: right;">';
         sign+= insText(lang,gendata.otk_title,gendata.otk_title_en,false);
-        sign+="                                      ";
+        sign+="                                          ";
         sign+= insText(lang,"Представитель ООО \"Транснефть Надзор\"","Representative of Transneft Nadzor LLC",false);
         sign+="<br><br>";
         sign+="______________";
@@ -205,35 +214,45 @@ let getSign = function(lang, id_type, gendata){
         sign+=sep;
         sign+="<u>"+insText(lang,"Ведущий инженер","Lead Lower",false)+"</u>";
         sign+="   __________________   __________________";
-        //sign+="<br>";
-        sign+='<p style="font-size: 10px;">';
+        sign+='<p style="font-size: 10px; text-align: right;">';
         sign+="("+insText(lang,"должность","job title",false)+")"+sep;
         sign+="("+insText(lang,"подпись","signature",false)+")"+sep;
         sign+="("+insText(lang,"ФИО","full name",false)+")"+sep;
         sign+='</p>';
+        sign+='</p>';
     } else if (id_type==4){
         let sep = (lang=="ru" || lang=="en") ? "                    " : "   ";
+        sign+='<p style="text-align: right;">';
         sign+= insText(lang,gendata.otk_title,gendata.otk_title_en,false);
-        sign+="                                      ";
+        sign+="                                          ";
         sign+= insText(lang,"Представитель АО \"РТ-Техприемка\"","Representative of JSC \"RT-Techpriemka\"",false);
         sign+="<br><br>";
         sign+="______________";
         sign+=insText(lang,gendata.otk,gendata.otk_en,false);
         sign+="                        ";
         sign+="   __________________   __________________   __________________";
-        //sign+="<br>";
-        sign+='<p style="font-size: 10px;">';
+        sign+='<p style="font-size: 10px; text-align: right;">';
         sign+="("+insText(lang,"должность","job title",false)+")"+sep;
         sign+="("+insText(lang,"подпись","signature",false)+")"+sep;
         sign+="("+insText(lang,"ФИО","full name",false)+")"+sep;
         sign+='</p>';
-    }   else {
-        sign+='<p align="center">';
+        sign+='</p>';
+    } else {
+        sign+='<p style="text-align: center;">';
         sign+= insText(lang,gendata.otk_title,gendata.otk_title_en,false)+"______________";
         sign+= insText(lang,gendata.otk,gendata.otk_en,false);
         sign+='</p>';        
     }
     return sign;
+}
+
+let getBackground = function (lang, id_type){
+    let back="";
+    if (id_type==1){
+        let lg = (lang=="ru" || lang=="en") ? lang : "mix";
+        back='background-image: url("/bg_'+lg+'.png");';
+    }
+    return back;
 }
 
 module.exports.getGeneralData = getGeneralData;
@@ -246,3 +265,4 @@ module.exports.getSertTbl = getSertTbl;
 module.exports.getSertPic = getSertPic;
 module.exports.getSertApp = getSertApp;
 module.exports.getSign = getSign;
+module.exports.getBackground = getBackground;

@@ -12,6 +12,7 @@
                 text-indent:0px;
                 white-space: normal;
                 vertical-align: middle;
+                {{{back}}}
             }
             .logostyle{
                 text-align:center;
@@ -36,7 +37,7 @@
             }
             .signstyle{
                 white-space: pre-wrap;
-                text-align: right;
+                text-align: left;
             }
             .centeralign{
                 text-align: center;
@@ -51,7 +52,7 @@
         <title>{{header}}</title>
     </head>
     <body class="globalstyle">
-        <div class="logostyle"><img src="../../../logo2.png" alt="logo" height="70"></div>
+        <div class="logostyle"><img src="/logo2.png" alt="logo" height="70"></div>
         <div class="addrtext">{{{adr}}}</div>
         <div class="addrtext">{{tel}}</div>
         <div>
@@ -73,7 +74,6 @@
         <div class="boldtext">{{constitle}}</div>
         <div class="leftalign">{{{cons}}}</div>
         <div class="centeralign"><span class="boldtext">{{dattitle}}</span>{{dat}}</div>
-        <div class="leftalign"><img src="{{qrsrc}}" alt="qrcode" height="150"></div>
-        <div class="signstyle">{{{sign}}}</div>
+        <div class="signstyle"><img src="{{qrsrc}}" alt="qrcode" height="150">{{{sign}}}</div>
     </body>
 </html>

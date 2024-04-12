@@ -53,7 +53,7 @@ let getQrCode = function (headerdata, id_type, is_ship){
     }
     code+="Дата "+srt.insDate("ru",date,false)+"\n";
     code+="Код подлинности "+headerdata.code;   
-    return "../../../qrcode/qr.png?data="+qr.encodeBase64Url(Buffer.from(code));
+    return "/qrcode/qr.png?data="+qr.encodeBase64Url(Buffer.from(code));
 }
 
 module.exports = function (app) {
@@ -122,8 +122,9 @@ module.exports = function (app) {
                                     dattitle: srt.insText(lang,"Дата выдачи сертификата","Date of issue of the certificate",false)+": ",
                                     dat: srt.insDate(lang,datvid,false),
                                     qrsrc: getQrCode(headerdata,id_type,is_ship),
-                                    sign: srt.getSign(lang,id_type,gendata)
-                                });
+                                    sign: srt.getSign(lang,id_type,gendata),
+                                    back: srt.getBackground(lang,id_type)
+                                })
                             })
                             .catch((error) => {
                                 console.log("ERROR:", error);
@@ -160,5 +161,18 @@ module.exports = function (app) {
             res.status(500).type("text/plain");
             res.send(error.message);
         })       
-    } )
+    })
+
+    app.get("/elrtr/sertdata/:id", async (req, res) => {
+        data.getSertData(Number(req.params["id"]))
+            .then((sertdata)=>{
+                res.json(sertdata);
+            })
+            .catch((error) => {
+                console.log("ERROR:", error);
+                res.status(500).type("text/plain");
+                res.send(error.message);
+            })
+    })
+
 }
