@@ -6,7 +6,6 @@ const port = 7000;
 
 app.set('view engine', 'hbs');
 app.set('views', './views');
-app.use(express.static(__dirname + '../public'));
 
 app.get('/', (req, res) => {
   res.status(200).type('text/plain');
