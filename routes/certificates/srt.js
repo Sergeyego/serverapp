@@ -112,7 +112,7 @@ let getMechTbl = function(lang, titleru, titleen, mechdata, footer=null){
                 val=prefix+" "+val;
             }
             tbl+='<tr>'+
-                '<td width="80%" class="leftalign">'+insText(lang,mechdata[i].nam,mechdata[i].nam_en,true)+'</td>'+
+                '<td width="75%" class="leftalign">'+insText(lang,mechdata[i].nam,mechdata[i].nam_en,true)+'</td>'+
                 '<td class="centeralign">'+insText(lang,mechdata[i].sig,mechdata[i].sig_en,true)+'</td>'+
                 '<td class="rightalign">'+val+'</td>'+
                 '</tr>';
@@ -128,9 +128,9 @@ let getMechTbl = function(lang, titleru, titleen, mechdata, footer=null){
     return tbl;
 }
 
-let getSertTbl = function(lang, sertdata){
+let getSertTbl = function(lang, sertdata, setSert){
     let tbl='';
-    if (sertdata.length){
+    if (setSert.size){
         tbl+='<table class="tablestyle" border="1" cellspacing="1" cellpadding="3">'+
             '<tr class="boldtext">'+
                 '<td class="centeralign">'+insText(lang,"Вид документа","Type of document",true)+'</td>'+
@@ -139,7 +139,7 @@ let getSertTbl = function(lang, sertdata){
                 '<td class="centeralign">'+insText(lang,"Дата выдачи","Date of issue",true)+'</td>'+
             '</tr>';
         for (let i=0; i<sertdata.length; i++){
-            if (sertdata[i].en){
+            if (setSert.has(sertdata[i].id_doc)){
                 tbl+='<tr>'+
                     '<td class="centeralign">'+insText(lang,sertdata[i].doc_nam,sertdata[i].doc_nam_en,true)+'</td>'+
                     '<td class="centeralign">'+insText(lang,sertdata[i].ved_nam,sertdata[i].ved_nam_en,true)+'</td>'+
@@ -153,11 +153,11 @@ let getSertTbl = function(lang, sertdata){
     return tbl;
 }
 
-let getSertPic = function(sertdata){
+let getSertPic = function(sertdata, setSert){
     let im="";
     let set = new Set();
     for (let i=0; i<sertdata.length; i++){
-        if (sertdata[i].en && sertdata[i].is_simb && !set.has(sertdata[i].id_ved)){
+        if (setSert.has(sertdata[i].id_doc) && sertdata[i].is_simb && !set.has(sertdata[i].id_ved)){
             set.add(sertdata[i].id_ved);
             im+='<img src="/depimages/'+sertdata[i].id_ved+'.png" alt="ved'+sertdata[i].id_ved+'" height="45"></img>';
         }
@@ -165,11 +165,11 @@ let getSertPic = function(sertdata){
     return im;
 }
 
-let getSertApp = function (lang, sertdata){
+let getSertApp = function (lang, sertdata, setSert){
     let app="";
     let set = new Set();
     for (let i=0; i<sertdata.length; i++){
-        if (sertdata[i].en && sertdata[i].id_doc_t==3){
+        if (setSert.has(sertdata[i].id_doc) && sertdata[i].id_doc_t==3){
             let dopru = ".";
             let dopen = ".";
             if (sertdata[i].grade_nam!=null){

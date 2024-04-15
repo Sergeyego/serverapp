@@ -16,7 +16,7 @@ module.exports = function (app) {
     const qrcode = require('qrcode');
     const stream = require('stream');
     const { PassThrough }  = stream;
-    app.get("/qrcode/qr.png", async (req, res) => {
+    app.get("/qrcode/:width.png", async (req, res) => {
         let data = req.query.data;
         if (typeof data == "undefined"){
             res.status(500).type("text/plain");
@@ -28,7 +28,7 @@ module.exports = function (app) {
                 qrcode.toFileStream(qrStream, qrdata,
                 {
                     type: 'image/png',
-                    width: 300,
+                    width: Number(req.params["width"]),
                     errorCorrectionLevel: 'M',
                     margin: 1
                 });
