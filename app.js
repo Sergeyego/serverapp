@@ -5,6 +5,7 @@ var app = express();
 const port = 7000;
 
 app.set('view engine', 'hbs');
+app.set('views', './views');
 
 app.get('/', (req, res) => {
   res.status(200).type('text/plain');
