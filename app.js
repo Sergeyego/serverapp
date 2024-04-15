@@ -36,7 +36,7 @@ require('./routes/acceptances/wire/api.js')(app);
 
 require('./routes/dosage/api.js')(app);
 
-app.use(express.static("public"));
+app.use(express.static(__dirname + '/public'));
 
 app.use((req, res, next) => {
   res.status(404).type('text/plain');
