@@ -111,10 +111,13 @@ let getMechTbl = function(lang, titleru, titleen, mechdata, footer=null){
             if (prefix.length){
                 val=prefix+" "+val;
             }
+            if (typeof mechdata[i].val_max!="undefined" && mechdata[i].val_max!=null){
+                val+=" - "+insNumber(lang,mechdata[i].val_max,2);
+            }
             tbl+='<tr>'+
-                '<td width="75%" class="leftalign">'+insText(lang,mechdata[i].nam,mechdata[i].nam_en,true)+'</td>'+
-                '<td class="centeralign">'+insText(lang,mechdata[i].sig,mechdata[i].sig_en,true)+'</td>'+
-                '<td class="rightalign">'+val+'</td>'+
+                '<td width="60%" class="leftalign">'+insText(lang,mechdata[i].nam,mechdata[i].nam_en,true)+'</td>'+
+                '<td width="20%" class="centeralign">'+insText(lang,mechdata[i].sig,mechdata[i].sig_en,true)+'</td>'+
+                '<td width="20%" class="rightalign">'+val+'</td>'+
                 '</tr>';
             id_cat_old=id_cat;
         }

@@ -16,6 +16,7 @@ require('./routes/depimages/depimages.js')(app);
 require('./routes/signatures/signatures.js')(app);
 require('./routes/qrcode/qr.js')(app);
 require('./routes/certificates/elrtr/create.js')(app);
+require('./routes/certificates/wire/create.js')(app);
 
 require('./routes/invoices/elrtr/workshop.js')(app);
 require('./routes/invoices/elrtr/workshopper.js')(app);

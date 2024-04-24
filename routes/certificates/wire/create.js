@@ -2,28 +2,25 @@ const srt = require("../srt");
 const qr = require("../../qrcode/qr");
 
 let getMainTbl = function(lang, headerdata, id_type) {
-    let symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
-            headerdata.marka+"-∅"+srt.insNumber(lang,headerdata.diam,0)
-        : 
-            headerdata.gt+"-"+headerdata.marka+"-∅"+srt.insNumber(lang,headerdata.diam,0)+"-"+headerdata.pu;
-    if (headerdata.znam!=null && headerdata.znam!="" && headerdata.znam!="-"){
-        symb+="<br>"+headerdata.znam;
-    }
     let tbl;
     let dat = (id_type!=1) ? headerdata.dat : new Date(1111,10,11);
     let n_s = (id_type!=1) ? headerdata.n_s : "1111";
     let massa = (id_type!=1) ? headerdata.massa : 1111.0;
     tbl='<table class="tablestyle" border="1" cellspacing="1" cellpadding="3">'+
             '<tr class="boldtext">'+
-                '<td width="300" class="centeralign">'+srt.insText(lang,"Условное обозначение электрода","Electrode symbol",true)+'</td>'+
-                '<td class="centeralign">'+srt.insText(lang,"Проволока по ГОСТ&nbsp;2246-70","Wire <br>according to ГОСТ&nbsp;2246-70",true)+'</td>'+
+                '<td width="130" class="centeralign">'+srt.insText(lang,"Марка проволоки","Wire mark",true)+'</td>'+
+                '<td width="140" class="centeralign">'+srt.insText(lang,"Условное обозначение проволоки","Wire symbol",true)+'</td>'+
+                '<td class="centeralign">'+srt.insText(lang,"Тип носителя проволоки","Type of wire winding",true)+'</td>'+
+                '<td class="centeralign">'+srt.insText(lang,"Номер плавки","Heat number",true)+'</td>'+
                 '<td class="centeralign">'+srt.insText(lang,"Номер партии","Batch number",true)+'</td>'+
                 '<td class="centeralign">'+srt.insText(lang,"Дата производства","Date of manufacture",true)+'</td>'+
-                '<td class="centeralign">'+srt.insText(lang,"Масса электродов нетто, кг","Net weight, kg",true)+'</td>'+
+                '<td class="centeralign">'+srt.insText(lang,"Масса проволоки нетто, кг","Net weight, kg",true)+'</td>'+
             '</tr>'+
             '<tr>'+
-                '<td class="centeralign">'+symb+'</td>'+
-                '<td class="centeralign">'+headerdata.provol+'</td>'+
+                '<td class="centeralign">'+headerdata.bprov+'</td>'+
+                '<td class="centeralign">'+srt.insNumber(lang,headerdata.diam,1)+" "+headerdata.prov+'</td>'+
+                '<td class="centeralign">'+srt.insText(lang,headerdata.spool,headerdata.spool_en,true)+'</td>'+
+                '<td class="centeralign">'+headerdata.nplav+'</td>'+
                 '<td class="centeralign">'+n_s+'</td>'+
                 '<td class="centeralign">'+srt.insDate(lang,dat,true)+'</td>'+
                 '<td class="centeralign">'+srt.insNumber(lang,massa,1)+'</td>'+
@@ -43,8 +40,10 @@ let getQrCode = function (headerdata, id_type, is_ship){
         code+="/"+headerdata.nomer;
     }
     code+="\n";
-    code+="Марка "+headerdata.marka+"\n";
-    code+="Диаметр, мм "+srt.insNumber("ru",headerdata.diam,0)+"\n";
+    code+="Марка проволоки "+headerdata.bprov+"\n";
+    code+="Условное обозначение проволоки "+srt.insNumber("ru",headerdata.diam,1)+" "+headerdata.prov+"\n";
+    code+="Тип носителя проволоки "+headerdata.spool+"\n";
+    code+="Номер плавки "+headerdata.nplav+"\n";
     code+="Номер партии "+n_s+"\n";
     code+="Дата производства "+srt.insDate("ru",date_pr,false)+"\n";
     code+="Масса нетто, кг "+srt.insNumber("ru",massa,0)+"\n";
@@ -58,7 +57,7 @@ let getQrCode = function (headerdata, id_type, is_ship){
 
 module.exports = function (app) {
     const data = require("./data.js");
-    app.use("/certificates/elrtr/:id_type/:id", async (req, res) => {
+    app.use("/certificates/wire/:id_type/:id", async (req, res) => {
         let id = Number(req.params["id"]);
         let lang = req.query.lang;
         let setSert = new Set();
@@ -118,7 +117,15 @@ module.exports = function (app) {
                                     }
                                 }
 
-                                let chemtitle = srt.insText(lang,enru+" Химический состав наплавленного металла, %",enen+" Chemical composition of weld metal, %",true);
+                                let footer = srt.insText(lang,"Состояние поверхности проволоки: поверхность проволоки чистая, "+
+                                    "гладкая, без трещин, расслоений, плен, закатов, раковин, забоин "+
+                                    "окалины, ржавчины, масла, технологической смазки и других загрязнений.<br>"+
+                                    "Гарантийный срок хранения сварочной проволоки в упаковке производителя - 12 месяцев с момента изготовления.",
+                                    "The condition of the surface of the wire: the surface of the wire is clean, smooth, without cracks, delaminations, "+
+                                    "slivers, laps, shells, nicks, scale, rust, oil, grease and other contaminants.<br>"+
+                                    "The guaranteed shelf life of the welding wire in the manufacturer's packaging is 12 months from the date of manufacture.",true);
+
+                                let chemtitle = srt.insText(lang,enru+" Химический состав проволоки, %",enen+" The chemical composition of the wire, %",true);
                                                                 
                                 res.render(__dirname+"/../../../views/template.hbs",{
                                     header: head, 
@@ -128,7 +135,7 @@ module.exports = function (app) {
                                     tustr: tustr,
                                     maintbl: getMainTbl(lang,headerdata,id_type),
                                     chemtbl: srt.getChemTbl(lang,chemtitle,chemdata),
-                                    mechtbl: srt.getMechTbl(lang,enru,enen,mechdata),
+                                    mechtbl: srt.getMechTbl(lang,enru,enen,mechdata,footer),
                                     srtheader: setSert.size ? srt.insText(lang,"Аттестация и сертификация","Certification",false) : "",
                                     serttbl: srt.getSertTbl(lang,sertdata,setSert),
                                     sertpic: srt.getSertPic(sertdata,setSert),
@@ -182,7 +189,7 @@ module.exports = function (app) {
         })       
     })
 
-    app.get("/elrtr/sertdata/:id", async (req, res) => {
+    app.get("/wire/sertdata/:id", async (req, res) => {
         data.getSertData(Number(req.params["id"]))
             .then((sertdata)=>{
                 res.json(sertdata);
