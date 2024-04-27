@@ -18,6 +18,8 @@ require('./routes/qrcode/qr.js')(app);
 require('./routes/certificates/elrtr/create.js')(app);
 require('./routes/certificates/wire/create.js')(app);
 
+require('./routes/packlists/elrtr/create.js')(app);
+
 require('./routes/invoices/elrtr/workshop.js')(app);
 require('./routes/invoices/elrtr/workshopper.js')(app);
 require('./routes/invoices/elrtr/warehouse.js')(app);

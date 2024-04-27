@@ -40,6 +40,44 @@ module.exports = function (app) {
             }
         }
     })
+
+    app.get("/barcode/:format/:width.png", async (req, res) => {        
+        let data = req.query.data;
+        let width=Number(req.params["width"])*0.264583;
+        let height=10;
+        let format=req.params["format"];
+        if (format=="qrcode" || format=="datamatrix"|| format=="azteccode"|| format=="microqrcode" || format=="maxicode"){
+            height=width;
+        } else if ((typeof (req.query.height))!="undefined"){
+            height=Number(req.query.height)*0.264583;
+        }
+        if (typeof data == "undefined"){
+            res.status(500).type("text/plain");
+            res.send("no data");
+        } else {            
+            const bwipjs = require('bwip-js');
+            bwipjs.toBuffer({
+                    bcid:        format,
+                    text:        data,
+                    scale:       3,
+                    height:      height,
+                    width:       width,
+                    includetext: true,
+                    textxalign:  'center',
+                    textyoffset: 4,
+                    textsize: 11,
+                    textgaps: 0,    
+                }).then(png => {
+                    res.type('image/png');
+                    res.send(png);
+                })
+                .catch(err => {
+                    console.log("ERROR:", err);
+                    res.status(500).type("text/plain");
+                    res.send(err.message);
+                });
+        }
+    })
 }
 
 module.exports.encodeBase64Url = encodeBase64Url;
