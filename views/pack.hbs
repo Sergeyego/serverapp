@@ -57,66 +57,60 @@
         <title>УПАКОВОЧНЫЙ ЛИСТ</title>
     </head>
     <body class="globalstyle">
-        <div class="imgstyle"><img src="/barcode/code128/350.png?data=E000046950&height=80" alt="barcode" height="80"></div>
+        <div class="imgstyle"><img src="/barcode/code128/350.png?data={{pallet}}&height=80" alt="barcode" height="80"></div>
         <div class="headertext"><b>УПАКОВОЧНЫЙ ЛИСТ</b></div>
         <div class="headertext">ЭЛЕКТРОДЫ ПОКРЫТЫЕ МЕТАЛЛИЧЕСКИЕ<br>ДЛЯ РУЧНОЙ ДУГОВОЙ СВАРКИ</div>
         <table class="tablestyle">
             <tr>
                 <td>
-                    <div class="leftalign2">Марка <b class=boldtext>УОНИ/13/55</b> Ø <b class=boldtext>4,0</b>мм</div>
-                    <div class="leftalign2">Партия <b class=boldtext>1187</b></div>
-                    <div class="leftalign2">Дата выпуска <b class=boldtext>26.04.2024</b> г.</div>
+                    <div class="leftalign2">Марка <b class=boldtext>{{marka}}</b> Ø <b class=boldtext>{{diam}}</b> мм</div>
+                    <div class="leftalign2">Партия <b class=boldtext>{{n_s}}</b></div>
+                    <div class="leftalign2">Дата выпуска <b class=boldtext>{{dat_part}}</b> г.</div>
                 </td>
-                <td class="imgstyle"><img src="/qrcode/150.png?data=NDYyNzEyMDQyMzQ0OWU1OTUyNF9fMTE4Ny0yMDI0MDAwMDAwMDAwMEUwMDAwNDY5NTA" alt="qrcode" height="150"></td>
+                <td class="imgstyle"><img src="/qrcode/150.png?data={{qrdata}}" alt="qrcode" height="150"></td>
             </tr>
         </table>
         <ul class="leftalign">
             <li>
-                <div>Дата сортировки <b class=boldtext>23.04.2024</b></div>
-                <div>Количество мест <b class=boldtext>224</b> Масса нетто <b class=boldtext>1232</b> кг</div>
+                <div>Дата сортировки {{{dat_sort}}} г.</div>
+                <div>Количество мест {{{pack_kvo_sort}}} Масса нетто {{{kvo_sort}}} кг</div>
                 <table class="tablestyle" align="left">
-                    <tr class="leftalign2">
-                        <td>Сортировщик</td><td>______________</td><td>Запанкова Н.В.</td>
+                    <tr class="leftalign">
+                        <td>Сортировщик</td><td>______________</td><td>{{rab_sort}}</td>
                     </tr>
-                    <tr class="leftalign2">
-                        <td>Мастер</td><td>______________</td><td>Колодкина Н.А.</td>
+                    {{{sign_rab_sort}}}
+                    <tr class="leftalign">
+                        <td>Мастер</td><td>______________</td><td>{{master_sort}}</td>
                     </tr>
+                    {{{sign_master_sort}}}
                 </table>
             </li>
             <li>
-                <div>Дата сортировки ________________</div>
-                <div>Количество мест __________ Масса нетто __________ кг</div>
+                <div>Дата сортировки {{{dat_dosort}}} г.</div>
+                <div>Количество мест {{{pack_kvo_dosort}}} Масса нетто {{{kvo_dosort}}} кг</div>
                 <table class="tablestyle" align="left">
                     <tr class="leftalign">
-                        <td>Сортировщик</td><td>______________</td><td>________________</td>
+                        <td>Сортировщик</td><td>______________</td><td>{{rab_dosort}}</td>
                     </tr>
-                    <tr class="spantext">
-                        <td></td><td class="centeralign">подпись</td><td class="centeralign">фио</td>
-                    </tr>
+                    {{{sign_rab_dosort}}}
                     <tr class="leftalign">
-                        <td>Мастер</td><td>______________</td><td>________________</td>
+                        <td>Мастер</td><td>______________</td><td>{{master_dosort}}</td>
                     </tr>
-                    <tr class="spantext">
-                        <td></td><td class="centeralign">подпись</td><td class="centeralign">фио</td>
-                    </tr>
+                    {{{sign_master_dosort}}}
                 </table>
             </li>
             <li>
-                <div>Дата упаковки в т/у плёнку ________________</div>
-                <div>Количество мест __________ Масса нетто __________ кг</div>
+                <div>Дата упаковки в т/у плёнку {{{dat_tpack}}} г.</div>
+                <div>Количество мест {{{pack_kvo_tpack}}} Масса нетто {{{kvo_tpack}}} кг</div>
                 <table class="tablestyle" align="left">
                     <tr class="leftalign">
-                        <td>Упаковщик</td><td>______________</td><td>________________</td>
+                        <td>Упаковщик</td><td>______________</td><td>{{rab_tpack}}</td>
                     </tr>
-                    <tr class="spantext">
-                        <td></td><td class="centeralign">подпись</td><td class="centeralign">фио</td>
-                    </tr>
+                    {{{sign_rab_tpack}}}
                     <tr class="leftalign">
-                        <td>Мастер</td><td>______________</td><td>________________</td>
+                        <td>Мастер</td><td>______________</td><td>{{master_tpack}}</td>
                     </tr>
-                    <tr class="spantext">
-                        <td></td><td class="centeralign">подпись</td><td class="centeralign">фио</td>
-                    </tr>
+                    {{{sign_master_tpack}}}
                 </table>
             </li>
         </ul>
