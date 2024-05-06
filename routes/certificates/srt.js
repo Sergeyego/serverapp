@@ -35,7 +35,11 @@ let insText = function(lang, rus, eng, newpar=false) {
 
 let insNumber = function (lang, val, dec){
     let lg = (typeof lang == "undefined" || lang=="ru") ? "ru-RU" : "en-US";
-    return val!=null ? new Intl.NumberFormat(lg, {style: "decimal", minimumFractionDigits : dec, maximumFractionDigits : dec}).format(val) : "";
+    if (dec!=0){
+        return val!=null ? new Intl.NumberFormat(lg, {style: "decimal", minimumFractionDigits : dec, maximumFractionDigits : dec}).format(val) : "";
+    } else {
+        return val!=null ? new Intl.NumberFormat(lg, {style: "decimal", minimumFractionDigits : dec}).format(val) : "";
+    }
 }
 
 let insDate = function (lang, date, newpar=false){

@@ -2,7 +2,11 @@ const qr = require("../../qrcode/qr");
 const db = require('../../../postgres.js');
 
 let insNumber = function (val, dec){
-    return val!=null ? new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits : dec, maximumFractionDigits : dec}).format(val) : "";
+    if (dec!=0){
+        return val!=null ? new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits : dec, maximumFractionDigits : dec}).format(val) : "";
+    } else {
+        return val!=null ? new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits : dec }).format(val) : "";
+    }
 }
 
 let getQrCode = function (headerdata){    
