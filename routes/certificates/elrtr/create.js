@@ -1,34 +1,83 @@
 const srt = require("../srt");
 const qr = require("../../qrcode/qr");
 
-let getMainTbl = function(lang, headerdata, id_type) {
-    let symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
+let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
+    let symb="";
+    if (id_type==5){
+        symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
+            headerdata.marka+"-∅"+srt.insNumber(lang,headerdata.diam,0)
+        : 
+            headerdata.gt+"-"+headerdata.pu;
+    } else {
+        symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
             headerdata.marka+"-∅"+srt.insNumber(lang,headerdata.diam,0)
         : 
             headerdata.gt+"-"+headerdata.marka+"-∅"+srt.insNumber(lang,headerdata.diam,0)+"-"+headerdata.pu;
+    }
     if (headerdata.znam!=null && headerdata.znam!="" && headerdata.znam!="-"){
         symb+="<br>"+headerdata.znam;
     }
+
+    let goststr="";
+    for (let i = 0; i < tudata.length; i++) {
+        if (tudata[i].nam.indexOf("ГОСТ")==0){
+            if (goststr!=""){
+                goststr+="<br>";
+            }
+            goststr+=tudata[i].nam;
+        }
+    }
+
     let tbl;
     let dat = (id_type!=1) ? headerdata.dat : new Date(1111,10,11);
     let n_s = (id_type!=1) ? headerdata.n_s : "1111";
     let massa = (id_type!=1) ? headerdata.massa : 1111.0;
-    tbl='<table class="tablestyle" border="1" cellspacing="1" cellpadding="3">'+
-            '<tr class="boldtext">'+
-                '<td width="300" class="centeralign">'+srt.insText(lang,"Условное обозначение электрода","Electrode symbol",true)+'</td>'+
-                '<td class="centeralign">'+srt.insText(lang,"Проволока по ГОСТ&nbsp;2246-70","Wire <br>according to ГОСТ&nbsp;2246-70",true)+'</td>'+
-                '<td class="centeralign">'+srt.insText(lang,"Номер партии","Batch number",true)+'</td>'+
-                '<td class="centeralign">'+srt.insText(lang,"Дата производства","Date of manufacture",true)+'</td>'+
-                '<td class="centeralign">'+srt.insText(lang,"Масса электродов нетто, кг","Net weight, kg",true)+'</td>'+
-            '</tr>'+
-            '<tr>'+
-                '<td class="centeralign">'+symb+'</td>'+
-                '<td class="centeralign">'+headerdata.provol+'</td>'+
-                '<td class="centeralign">'+n_s+'</td>'+
-                '<td class="centeralign">'+srt.insDate(lang,dat,true)+'</td>'+
-                '<td class="centeralign">'+srt.insNumber(lang,massa,1)+'</td>'+
-            '</tr>'+
-        '</table>';
+    if (id_type==5){
+        tbl='<table class="tablestyle" border="1" cellspacing="1" cellpadding="3">'+
+                '<tr class="boldtext">'+
+                    '<td class="centeralign" rowspan="2" width="120">'+srt.insText(lang,"Наименование продукции","Product designation",true)+'</td>'+
+                    '<td class="centeralign" colspan="'+String(1+intdata.length)+'">'+srt.insText(lang,"Классификация","Classification",true)+'</td>'+
+                    '<td class="centeralign" rowspan="2">'+srt.insText(lang,"Проволока по ГОСТ&nbsp;2246-70","Wire <br>according to ГОСТ&nbsp;2246-70",true)+'</td>'+
+                    '<td class="centeralign" rowspan="2">'+srt.insText(lang,"Номер партии","Batch number",true)+'</td>'+
+                    '<td class="centeralign" rowspan="2">'+srt.insText(lang,"Дата производства","Date of manufacture",true)+'</td>'+
+                    '<td class="centeralign" rowspan="2">'+srt.insText(lang,"Масса электродов нетто, кг","Net weight, kg",true)+'</td>'+
+                '</tr>'+
+                '<tr>'+
+                    '<td class="centeralign" width="150">'+goststr+'</td>';
+                for (let i=0; i<intdata.length; i++){
+                    tbl+='<td class="centeralign" width="100">'+intdata[i].nam+'</td>';
+                }
+        tbl+='</tr>'+
+                '<tr>'+
+                    '<td class="centeralign">'+headerdata.marka+"-∅"+srt.insNumber(lang,headerdata.diam,0)+'</td>'+
+                    '<td class="centeralign">'+symb+'</td>';
+                    for (let i=0; i<intdata.length; i++){
+                        tbl+='<td class="centeralign">'+intdata[i].val+'</td>';
+                    }
+                    tbl+='<td class="centeralign">'+headerdata.provol+'</td>'+
+                    '<td class="centeralign">'+n_s+'</td>'+
+                    '<td class="centeralign">'+srt.insDate(lang,dat,true)+'</td>'+
+                    '<td class="centeralign">'+srt.insNumber(lang,massa,1)+'</td>'+
+                '</tr>'+
+            '</table>';
+    } else {
+        tbl='<table class="tablestyle" border="1" cellspacing="1" cellpadding="3">'+
+                '<tr class="boldtext">'+
+                    '<td width="300" class="centeralign">'+srt.insText(lang,"Условное обозначение электрода","Electrode symbol",true)+'</td>'+
+                    '<td class="centeralign">'+srt.insText(lang,"Проволока по ГОСТ&nbsp;2246-70","Wire <br>according to ГОСТ&nbsp;2246-70",true)+'</td>'+
+                    '<td class="centeralign">'+srt.insText(lang,"Номер партии","Batch number",true)+'</td>'+
+                    '<td class="centeralign">'+srt.insText(lang,"Дата производства","Date of manufacture",true)+'</td>'+
+                    '<td class="centeralign">'+srt.insText(lang,"Масса электродов нетто, кг","Net weight, kg",true)+'</td>'+
+                '</tr>'+
+                '<tr>'+
+                    '<td class="centeralign">'+symb+'</td>'+
+                    '<td class="centeralign">'+headerdata.provol+'</td>'+
+                    '<td class="centeralign">'+n_s+'</td>'+
+                    '<td class="centeralign">'+srt.insDate(lang,dat,true)+'</td>'+
+                    '<td class="centeralign">'+srt.insNumber(lang,massa,1)+'</td>'+
+                '</tr>'+
+            '</table>';
+    }
     return tbl;
 }
 
@@ -80,69 +129,78 @@ module.exports = function (app) {
                         .then((mechdata)=>{
                             data.getSertData(id_part)
                             .then((sertdata)=>{
-                                if (typeof req.query.docs!="undefined"){
-                                    if (req.query.docs!=""){
-                                        const arr = String(req.query.docs).split("|");
-                                        for (let i=0; i<arr.length; i++){
-                                            setSert.add(Number(arr[i]));
+                                data.getIntData(id_part)
+                                .then((intdata)=>{
+                                    if (typeof req.query.docs!="undefined"){
+                                        if (req.query.docs!=""){
+                                            const arr = String(req.query.docs).split("|");
+                                            for (let i=0; i<arr.length; i++){
+                                                setSert.add(Number(arr[i]));
+                                            }
+                                        }
+                                    } else {
+                                        for (let i=0; i<sertdata.length; i++){
+                                            if (sertdata[i].en==true){
+                                                setSert.add(sertdata[i].id_doc);
+                                            }
                                         }
                                     }
-                                } else {
-                                    for (let i=0; i<sertdata.length; i++){
-                                        if (sertdata[i].en==true){
-                                            setSert.add(sertdata[i].id_doc);
+
+                                    let tustr="";
+                                    for (let i = 0; i < tudata.length; i++) {
+                                        if (tustr!=""){
+                                            tustr+=", ";
+                                        }
+                                        tustr+=tudata[i].nam;
+                                    }
+
+                                    let poltitle = "";
+                                    let pol = "";
+                                    let n_s = (id_type!=1) ? headerdata.n_s : "1111";
+                                    let datvid = (id_type!=1) ? headerdata.datvid : new Date(1111,10,11);
+
+                                    let head = srt.insText(lang,"СЕРТИФИКАТ КАЧЕСТВА","QUALITY CERTIFICATE",false);
+                                    head+=" №"+n_s+"-"+headerdata.year;
+                                    if (is_ship){
+                                        head+="/"+headerdata.nomer;
+                                        poltitle=srt.insText(lang,"Грузополучатель","Consignee",false)+":";
+                                        if (id_type!=1){
+                                            pol=srt.insText(lang,headerdata.pol,headerdata.pol_en);
                                         }
                                     }
-                                }
 
-                                let tustr="";
-                                for (let i = 0; i < tudata.length; i++) {
-                                    if (tustr!=""){
-                                        tustr+=", ";
-                                    }
-                                    tustr+=tudata[i].nam;
-                                }
-
-                                let poltitle = "";
-                                let pol = "";
-                                let n_s = (id_type!=1) ? headerdata.n_s : "1111";
-                                let datvid = (id_type!=1) ? headerdata.datvid : new Date(1111,10,11);
-
-                                let head = srt.insText(lang,"СЕРТИФИКАТ КАЧЕСТВА","QUALITY CERTIFICATE",false);
-                                head+=" №"+n_s+"-"+headerdata.year;
-                                if (is_ship){
-                                    head+="/"+headerdata.nomer;
-                                    poltitle=srt.insText(lang,"Грузополучатель","Consignee",false)+":";
-                                    if (id_type!=1){
-                                        pol=srt.insText(lang,headerdata.pol,headerdata.pol_en);
-                                    }
-                                }
-
-                                let chemtitle = srt.insText(lang,enru+" Химический состав наплавленного металла, %",enen+" Chemical composition of weld metal, %",true);
-                                                                
-                                res.render(__dirname+"/../../../views/template.hbs",{
-                                    header: head, 
-                                    adr: srt.insText(lang,gendata.adr,gendata.adr_en,true), 
-                                    tel: gendata.tel,
-                                    tutitle: srt.insText(lang,"Нормативная документация","Normative documents",false)+": ",
-                                    tustr: tustr,
-                                    maintbl: getMainTbl(lang,headerdata,id_type),
-                                    chemtbl: srt.getChemTbl(lang,chemtitle,chemdata),
-                                    mechtbl: srt.getMechTbl(lang,enru,enen,mechdata),
-                                    srtheader: setSert.size ? srt.insText(lang,"Аттестация и сертификация","Certification",false) : "",
-                                    serttbl: srt.getSertTbl(lang,sertdata,setSert),
-                                    sertpic: srt.getSertPic(sertdata,setSert),
-                                    sertapp: srt.getSertApp(lang,sertdata,setSert),
-                                    poltitle: poltitle,
-                                    pol: pol,
-                                    note: srt.insText(lang,"При переписке по вопросам качества просьба ссылаться на номер партии","When correspondence on quality issues, please refer to the batch number",true),
-                                    constitle: srt.insText(lang,"Заключение","Conclusion",false)+":",
-                                    cons: srt.insText(lang,"соответствует требованиям "+tustr,"meets the requirements of "+tustr,true),
-                                    dattitle: srt.insText(lang,"Дата выдачи сертификата","Date of issue of the certificate",false)+": ",
-                                    dat: srt.insDate(lang,datvid,false),
-                                    qrsrc: getQrCode(headerdata,id_type,is_ship),
-                                    sign: srt.getSign(lang,id_type,gendata),
-                                    back: srt.getBackground(lang,id_type)
+                                    let chemtitle = srt.insText(lang,enru+" Химический состав наплавленного металла, %",enen+" Chemical composition of weld metal, %",true);
+                                                                    
+                                    res.render(__dirname+"/../../../views/template.hbs",{
+                                        header: head, 
+                                        adr: srt.insText(lang,gendata.adr,gendata.adr_en,true), 
+                                        tel: gendata.tel,
+                                        tutitle: srt.insText(lang,"Нормативная документация","Normative documents",false)+": ",
+                                        tustr: tustr,
+                                        maintbl: getMainTbl(lang,headerdata,id_type,tudata,intdata),
+                                        chemtbl: srt.getChemTbl(lang,chemtitle,chemdata),
+                                        mechtbl: srt.getMechTbl(lang,enru,enen,mechdata),
+                                        srtheader: setSert.size ? srt.insText(lang,"Аттестация и сертификация","Certification",false) : "",
+                                        serttbl: srt.getSertTbl(lang,sertdata,setSert),
+                                        sertpic: srt.getSertPic(sertdata,setSert),
+                                        sertapp: srt.getSertApp(lang,sertdata,setSert),
+                                        poltitle: poltitle,
+                                        pol: pol,
+                                        note: srt.insText(lang,"При переписке по вопросам качества просьба ссылаться на номер партии","When correspondence on quality issues, please refer to the batch number",true),
+                                        constitle: srt.insText(lang,"Заключение","Conclusion",false)+":",
+                                        cons: srt.insText(lang,"соответствует требованиям "+tustr,"meets the requirements of "+tustr,true),
+                                        dattitle: srt.insText(lang,"Дата выдачи сертификата","Date of issue of the certificate",false)+": ",
+                                        dat: srt.insDate(lang,datvid,false),
+                                        qrsrc: getQrCode(headerdata,id_type,is_ship),
+                                        sign: srt.getSign(lang,id_type,gendata),
+                                        back: srt.getBackground(lang,id_type)
+                                
+                                    })
+                                })
+                                .catch((error) => {
+                                    console.log("ERROR:", error);
+                                    res.status(500).type("text/plain");
+                                    res.send(error.message);
                                 })
                             })
                             .catch((error) => {

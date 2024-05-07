@@ -43,6 +43,17 @@ let getTuData = async function (id) {
     return data;
 }
 
+let getIntData = async function (id) {
+    let query="select ic.nam as nam, eic.val as val "+
+        "from el_int_class eic "+
+        "inner join int_class ic on ic.id = eic.id_class "+
+        "where eic.id_el = (select id_el from parti where id = $1) and "+
+        "eic.id_var = (select id_var from parti where id = $1) "+
+        "order by ic.nam";
+    const data = await db.any(query, [ Number(id)] );
+    return data;
+}
+
 let getChemData = async function (id) {
     let query="select c.sig as sig, s.value as val from sert_chem as s "+
         "inner join chem_tbl as c on s.id_chem=c.id "+
@@ -87,3 +98,4 @@ module.exports.getTuData = getTuData;
 module.exports.getChemData = getChemData;
 module.exports.getMechData = getMechData;
 module.exports.getSertData = getSertData;
+module.exports.getIntData = getIntData;
