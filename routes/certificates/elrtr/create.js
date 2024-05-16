@@ -171,7 +171,7 @@ module.exports = function (app) {
 
                                     let chemtitle = srt.insText(lang,enru+" Химический состав наплавленного металла, %",enen+" Chemical composition of weld metal, %",true);
                                                                     
-                                    res.render(__dirname+"/../../../views/template.hbs",{
+                                    res.render(__dirname+"/../../../views/cert.hbs",{
                                         header: head, 
                                         adr: srt.insText(lang,gendata.adr,gendata.adr_en,true), 
                                         tel: gendata.tel,

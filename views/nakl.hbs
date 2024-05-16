@@ -5,26 +5,20 @@
         <style>
             .globalstyle {
                 width:450px;
-                font-family:'Arial';
-                font-size:12pt;
+                font-family:'Droid Sans';
+                font-size:10pt;
                 font-weight:400;
                 font-style:normal;
                 text-indent:0;
                 white-space: normal;
                 vertical-align: middle;
-                line-height: 1.6;
+                line-height: 1.5;
             }
             .imgstyle{
                 text-align:center;
                 line-height: 1;
             }
-            .headertext {
-                font-size:13pt;
-                text-align: center;
-                line-height: 1;
-            }
             .boldtext {
-                font-size:16pt;
                 font-weight:600;
                 margin-left:10px;
                 margin-right:10px;
@@ -40,23 +34,51 @@
             .leftalign{
                 text-align: left;
             }
-            .leftalign2{
-                text-align: left;
-                line-height: 1.6;
-            }
             .rightalign{
                 text-align: right;
             }
-            .tablestyle{
+            .signtablestyle{
                 width:100%;
                 text-align:center;
                 line-height: 1;
                 padding: 0px;
             }
+            .tablestyle{
+                width:100%;
+                border-color:gray;
+                text-align:center;
+                line-height: 1;
+                margin-left:0px;
+                margin-right:0px;
+            }
         </style>
-        <title>НАКЛАДНАЯ</title>
+        <title>{{title}}</title>
     </head>
     <body class="globalstyle">
-        <div class="centeralign">Накладная <span></span></div>
+        <div class="rightalign">{{barcode}}</div>
+        <div class="centeralign">{{title}}</div>
+        <div class="centeralign"><b>{{oper}}</b></div>
+        <div class="leftalign"><b>Кому: </b>{{to}}</div>
+        <div class="leftalign"><b>От кого: </b>{{from}}</div>
+        {{{table}}}
+        <br>
+        <table class="signtablestyle" align="left">
+            <tr class="leftalign">
+                <td><b>Сдал</b></td>
+                <td>____________</td>
+                <td width=27%>{{passed}}</td>
+                <td><b>Принял</b></td>
+                <td>____________</td>
+                <td>{{accepted}}</td>
+            </tr>
+            <tr class="spantext">
+                <td></td>
+                <td class="centeralign">подпись</td>
+                <td></td>
+                <td></td>
+                <td class="centeralign">подпись</td>
+                <td></td>
+            </tr>
+        </table>
     </body>
 </html>

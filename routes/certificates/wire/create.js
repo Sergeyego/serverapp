@@ -127,7 +127,7 @@ module.exports = function (app) {
 
                                 let chemtitle = srt.insText(lang,enru+" Химический состав проволоки, %",enen+" The chemical composition of the wire, %",true);
                                                                 
-                                res.render(__dirname+"/../../../views/template.hbs",{
+                                res.render(__dirname+"/../../../views/cert.hbs",{
                                     header: head, 
                                     adr: srt.insText(lang,gendata.adr,gendata.adr_en,true), 
                                     tel: gendata.tel,
