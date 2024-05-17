@@ -20,6 +20,7 @@ require('./routes/certificates/wire/create.js')(app);
 
 require('./routes/packlists/elrtr/create.js')(app);
 require('./routes/packlists/elrtr/packnakl.js')(app);
+require('./routes/packlists/nakl.js')(app);
 
 require('./routes/invoices/elrtr/workshop.js')(app);
 require('./routes/invoices/elrtr/workshopper.js')(app);
