@@ -1,12 +1,5 @@
 const db = require('../../../postgres.js');
-
-let insNumber = function (val, dec){
-    if (dec!=0){
-        return val!=null ? new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits : dec, maximumFractionDigits : dec}).format(val) : "";
-    } else {
-        return val!=null ? new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits : dec }).format(val) : "";
-    }
-}
+const locale = require('../../../locale.js');
 
 let getTable = function(data){
     let sum = 0.0;
@@ -26,13 +19,13 @@ let getTable = function(data){
             '<td class="leftalign">'+data[i].part+'</td>'+
             '<td class="leftalign">'+data[i].rab+'</td>'+
             '<td class="leftalign">'+data[i].pal+'</td>'+
-            '<td class="rightalign">'+insNumber(data[i].kvo,1)+'</td>'+
+            '<td class="rightalign">'+locale.insNumber(data[i].kvo,1)+'</td>'+
         '</tr>';
         sum+=data[i].kvo;
     }
     tbl+='<tr>'+
         '<td class="leftalign" colspan="5"><b>Итого</b></td>'+
-        '<td class="rightalign">'+insNumber(sum,1)+'</td>'+
+        '<td class="rightalign">'+locale.insNumber(sum,1)+'</td>'+
     '</tr>';
     tbl+='</table>';
     return tbl;

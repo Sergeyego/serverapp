@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+    <head>
+        <meta charset="utf-8">
+        <style>
+            .globalstyle {
+                width:530px;
+                font-family:'Droid Sans';
+                font-size:12pt;
+                font-weight:400;
+                font-style:normal;
+                text-indent:0;
+                white-space: normal;
+                vertical-align: middle;
+                line-height: 1.6;
+            }
+            .imgstyle{
+                text-align:center;
+                line-height: 1;
+            }
+            .headertext {
+                font-size:13pt;
+                text-align: center;
+                line-height: 1;
+            }
+            .boldtext {
+                font-size:16pt;
+                font-weight:600;
+                margin-left:10px;
+                margin-right:10px;
+            }
+            .spantext {
+                font-size:6pt;
+                line-height: 1;
+                text-align:center;
+            }
+            .centeralign{
+                text-align: center;
+            }
+            .leftalign{
+                text-align: left;
+            }
+            .leftalign2{
+                text-align: left;
+                line-height: 1.6;
+            }
+            .rightalign{
+                text-align: right;
+            }
+            .tablestyle{
+                width:100%;
+                text-align:center;
+                line-height: 1;
+                padding: 0px;
+            }
+        </style>
+        <title>УПАКОВОЧНЫЙ ЛИСТ</title>
+    </head>
+    <body class="globalstyle">
+        <div class="imgstyle"><img src="/barcode/code128/350.png?data={{pallet}}&height=80" alt="barcode" height="80"></div>
+        <div class="headertext"><b>УПАКОВОЧНЫЙ ЛИСТ</b></div>
+        <div class="headertext">ЭЛЕКТРОДЫ ПОКРЫТЫЕ МЕТАЛЛИЧЕСКИЕ<br>ДЛЯ РУЧНОЙ ДУГОВОЙ СВАРКИ</div>
+        <br>
+        <div class="leftalign2">Марка <b class=boldtext>{{marka}}</b> Ø <b class=boldtext>{{diam}}</b> мм</div>
+        <div class="leftalign2">Партия <b class=boldtext>{{n_s}}</b> Дата выпуска <b class=boldtext>{{dat_part}}</b></div>
+        <div class="leftalign2">Количество мест <b class=boldtext>{{kvo_m}}</b> Масса нетто кг <b class=boldtext>{{kvo}}</b></div>
+        <div class="leftalign2">Дата упаковки <b class=boldtext>{{date}}</b></div>
+        <div class="leftalign2">Упаковщик {{packer}}</div>
+        <br>
+    <div class="imgstyle"><img src="/qrcode/150.png?data={{qrdata}}" alt="qrcode" height="150"></div>
+    </body>
+</html>

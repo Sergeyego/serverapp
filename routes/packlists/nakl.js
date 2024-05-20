@@ -1,18 +1,11 @@
 const warehouse = require("../../odata/warehouse");
-
-let insNumber = function (val, dec){
-    if (dec!=0){
-        return val!=null ? new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits : dec, maximumFractionDigits : dec}).format(val) : "";
-    } else {
-        return val!=null ? new Intl.NumberFormat("ru-RU", {style: "decimal", minimumFractionDigits : dec }).format(val) : "";
-    }
-}
+const locale = require('../../locale.js');
 
 let getTable = function(data){
     let sum = 0.0;
     let tbl='<table class="tablestyle" border="1" cellspacing="0" cellpadding="2">';
         tbl+='<tr class="boldtext">'+
-            '<td class="centeralign" width=4%>№</td>'+
+            '<td class="centeralign" width=5%>№</td>'+
             '<td class="centeralign" width=30% >Наименование товара</td>'+
             '<td class="centeralign">Партия</td>'+
             '<td class="centeralign">Рецептура/плавка</td>'+
@@ -26,13 +19,13 @@ let getTable = function(data){
             '<td class="leftalign">'+data[i]["ПартияНоменклатуры"]["Description"]+'</td>'+
             '<td class="leftalign">'+data[i]["ПартияНоменклатуры"]["РецептураПлавка"]+'</td>'+
             '<td class="leftalign">'+data[i]["НомерКонтейнера"]+'</td>'+
-            '<td class="rightalign">'+insNumber(Number(data[i]["Количество"]),2)+'</td>'+
+            '<td class="rightalign">'+locale.insNumber(Number(data[i]["Количество"]),2)+'</td>'+
         '</tr>';
         sum+=Number(data[i]["Количество"]);
     }
     tbl+='<tr>'+
         '<td class="leftalign" colspan="5"><b>Итого</b></td>'+
-        '<td class="rightalign">'+insNumber(sum,2)+'</td>'+
+        '<td class="rightalign">'+locale.insNumber(sum,2)+'</td>'+
     '</tr>';
     tbl+='</table>';
     return tbl;
