@@ -48,10 +48,9 @@ module.exports = function (app) {
                 const data = await warehouse.sendReq(datareq,"GET");
                 if (data.ok){
 
-                    //res.json(headObj);
                     let date = new Date();
                     date.setTime(Date.parse(headObj["Date"]));
-                    const sdate=date.toLocaleDateString('ru-RU',{year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric' });
+                    const sdate=locale.insDateTime(date);
 
                     res.render(__dirname+"/../../views/nakl.hbs",{
                         barcode: '<img src="/barcode/code128/350.png?data='+headObj["НомерКИС"]+'&height=80" alt="barcode" height="80"></img>',
@@ -66,8 +65,6 @@ module.exports = function (app) {
                         dec: "(расшифровка подписи)",
                         drv: true
                     })
-
-                    //res.json(data.object);
                 } else {
                     res.status(500).type("text/plain");
                     res.send(data.error);

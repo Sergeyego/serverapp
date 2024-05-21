@@ -56,14 +56,15 @@
         <div class="imgstyle"><img src="/barcode/code128/350.png?data={{pallet}}&height=80" alt="barcode" height="80"></div>
         <br>
         <div class="headertext"><b>УПАКОВОЧНЫЙ ЛИСТ</b></div>
-        <div class="headertext">ЭЛЕКТРОДЫ ПОКРЫТЫЕ МЕТАЛЛИЧЕСКИЕ<br>ДЛЯ РУЧНОЙ ДУГОВОЙ СВАРКИ</div>
         <br>
         <div class="leftalign">Марка <b class=boldtext>{{marka}}</b> Ø <b class=boldtext>{{diam}}</b> мм</div>
-        <div class="leftalign">Партия <b class=boldtext>{{n_s}}</b>  Дата выпуска <b class=boldtext>{{dat_part}}</b></div>
-        <div class="leftalign">Количество мест <b class=boldtext>{{pack_kvo}}</b> Масса нетто кг <b class=boldtext>{{kvo}}</b></div>
+        <div class="leftalign">Плавка <b class=boldtext>{{plav}}</b></div>
+        <div class="leftalign">Партия <b class=boldtext>{{n_s}}</b> {{spool_nam}} <b class=boldtext>{{spool}}</b></div>
+        <div class="leftalign">{{pack_nam}} <b class=boldtext>{{pack_kvo}}</b> Масса нетто <b class=boldtext>{{kvo}}</b> кг</div>
+        <div class="leftalign">{{packer_nam}} <b class=boldtext>{{packer}}</b></div>
         <div class="leftalign">Дата упаковки <b class=boldtext>{{dat_pack}}</b></div>
-        <div class="leftalign">Упаковщик ______________ <b class=boldtext>{{packer}}</b></div>
-        <br>
         <div class="imgstyle"><img src="/qrcode/180.png?data={{qrdata}}" alt="qrcode" height="180"></div>
+        <br>
+        <div class="headertext"><b>НЕ БРОСАТЬ!</b></div>
     </body>
 </html>

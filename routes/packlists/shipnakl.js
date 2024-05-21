@@ -72,7 +72,7 @@ module.exports = function (app) {
                     "order by spw.id"
                 ,[ Number(req.params["id_ship"])])
                 .then((dataWire) => {
-                    const sdate=dataTitle.date.toLocaleDateString('ru-RU',{year: 'numeric', month: 'numeric', day: 'numeric'});
+                    const sdate=locale.insDate(dataTitle.date);
                     res.render(__dirname+"/../../views/nakl.hbs",{
                         barcode: '<img src="/barcode/code128/350.png?data='+dataTitle.nomer+'&height=80" alt="barcode" height="80"></img>',
                         title: "Накладная № "+dataTitle.nomer+" От "+sdate,

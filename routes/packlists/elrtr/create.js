@@ -51,41 +51,34 @@ module.exports = function (app) {
             "where epo.id = $1 "
         , [ Number(req.params["id"]) ] )
         .then((dataTitle) => {
-
             let sign = '<tr class="spantext">'+
             '<td></td><td class="centeralign">подпись</td><td class="centeralign">фио</td>'+
             '</tr>';
             let emptysign = '<tr class="spantext">'+
             '<td></td><td class="centeralign"></td><td class="centeralign"></td>'+
             '</tr>';
-            let dateoptions = {
-                year: "numeric",
-                month: "numeric",
-                day: "numeric",
-                hour: "numeric",
-                minute: "numeric",
-              };
+            
             res.render(__dirname+"/../../../views/pack.hbs",{
                 pallet: dataTitle.pallet,
                 marka: dataTitle.marka,
                 diam: locale.insNumber(dataTitle.diam,1),
                 n_s: dataTitle.n_s,
-                dat_part: new Intl.DateTimeFormat("ru-RU").format(dataTitle.dat_part),
-                dat_sort:  dataTitle.dat_sort!=null ? '<b class=boldtext>'+new Intl.DateTimeFormat("ru-RU",dateoptions).format(dataTitle.dat_sort)+'</b>' : "________________",
+                dat_part: locale.insDate(dataTitle.dat_part),
+                dat_sort:  dataTitle.dat_sort!=null ? '<b class=boldtext>'+locale.insDateTime(dataTitle.dat_sort)+'</b>' : "________________",
                 pack_kvo_sort: dataTitle.pack_kvo_sort!=null ? '<b class=boldtext>'+locale.insNumber(dataTitle.pack_kvo_sort,0)+'</b>' : "__________",
                 kvo_sort: dataTitle.kvo_sort!=null ? '<b class=boldtext>'+locale.insNumber(dataTitle.kvo_sort,1)+'</b>' : "__________",
                 rab_sort: dataTitle.rab_sort!=null ?  dataTitle.rab_sort : "________________",
                 master_sort: dataTitle.master_sort!=null ? dataTitle.master_sort : "________________",
                 sign_rab_sort: dataTitle.rab_sort!=null ? emptysign : sign,
                 sign_master_sort: dataTitle.master_sort!=null ? emptysign : sign,
-                dat_dosort: dataTitle.dat_dosort!=null ? '<b class=boldtext>'+new Intl.DateTimeFormat("ru-RU",dateoptions).format(dataTitle.dat_dosort)+'</b>' : "________________",
+                dat_dosort: dataTitle.dat_dosort!=null ? '<b class=boldtext>'+locale.insDateTime(dataTitle.dat_dosort)+'</b>' : "________________",
                 pack_kvo_dosort: dataTitle.pack_kvo_dosort!=null ? '<b class=boldtext>'+locale.insNumber(dataTitle.pack_kvo_dosort,0)+'</b>' : "__________",
                 kvo_dosort: dataTitle.kvo_dosort!=null ? '<b class=boldtext>'+locale.insNumber(dataTitle.kvo_dosort,1)+'</b>' : "__________",
                 rab_dosort: dataTitle.rab_dosort!=null ? dataTitle.rab_dosort : "________________",
                 master_dosort: dataTitle.master_dosort!=null ? dataTitle.master_dosort : "________________",
                 sign_rab_dosort: dataTitle.rab_dosort!=null ? emptysign : sign,
                 sign_master_dosort: dataTitle.master_dosort!=null ? emptysign : sign,
-                dat_tpack: dataTitle.dat_tpack!=null ? '<b class=boldtext>'+new Intl.DateTimeFormat("ru-RU",dateoptions).format(dataTitle.dat_tpack)+'</b>' : "________________",
+                dat_tpack: dataTitle.dat_tpack!=null ? '<b class=boldtext>'+locale.insDateTime(dataTitle.dat_tpack)+'</b>' : "________________",
                 pack_kvo_tpack: dataTitle.pack_kvo_tpack!=null ? '<b class=boldtext>'+locale.insNumber(dataTitle.pack_kvo_tpack,0)+'</b>' : "__________",
                 kvo_tpack: dataTitle.kvo_tpack!=null ? '<b class=boldtext>'+locale.insNumber(dataTitle.kvo_tpack,1)+'</b>' : "__________",
                 rab_tpack: dataTitle.rab_tpack!=null ? dataTitle.rab_tpack : "________________",
@@ -102,3 +95,5 @@ module.exports = function (app) {
         })            
     });     
  }
+
+ module.exports.getQrCode = getQrCode;

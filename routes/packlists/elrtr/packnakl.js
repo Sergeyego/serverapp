@@ -53,8 +53,8 @@ module.exports = function (app) {
                         let date = new Date();
                         date.setTime(Date.parse(req.params["dat"]));
                         res.render(__dirname+"/../../../views/nakl.hbs",{
-                            title: "НАКЛАДНАЯ от "+date.toLocaleDateString('ru-RU',{year: 'numeric', month: 'long', day: 'numeric' }),
-                            head: "НАКЛАДНАЯ от "+date.toLocaleDateString('ru-RU',{year: 'numeric', month: 'long', day: 'numeric' }),
+                            title: "НАКЛАДНАЯ от "+locale.insDateLong(date),
+                            head: "НАКЛАДНАЯ от "+locale.insDateLong(date),
                             oper: dataTitle.oper,
                             to: dataTitle.to,
                             from: dataTitle.from,
