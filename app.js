@@ -18,6 +18,8 @@ require('./routes/qrcode/qr.js')(app);
 require('./routes/certificates/elrtr/create.js')(app);
 require('./routes/certificates/wire/create.js')(app);
 
+require('./routes/pack/elrtr/api.js')(app);
+
 require('./routes/packlists/elrtr/create.js')(app);
 require('./routes/packlists/elrtr/packnakl.js')(app);
 require('./routes/packlists/elrtr/old.js')(app);
