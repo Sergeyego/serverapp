@@ -24,7 +24,7 @@ let getQrCode = function (headerdata){
 module.exports = function (app) {
     app.use("/packlists/old/w/:pallet/:id_part/:kvo/", async (req, res) => {
         let pack_kvo = (typeof req.query.pack_kvo!="undefined")? Number(req.query.pack_kvo) : null;
-        db.one("select wp.id as id_part, p.nam as marka, d.diam as diam, wpm.n_s as n_s, wpm.dat as dat_part, wp2.mas_ed as mas_ed, "+
+        db.one("select wp.id as id_part, p.nam as marka, d.diam as diam, wpm.n_s as n_s, wpm.dat as dat_part, date_part('year',wpm.dat) as year, wp2.mas_ed as mas_ed, "+
             "coalesce(we.ean_group, we.ean_ed) as ean, wpk.short as spool, pb.n_plav as plav, $2 as pallet, $3 as kvo, coalesce($4,$3/wp2.mas_ed) as pack_kvo "+
             "from wire_parti wp "+
             "inner join wire_parti_m wpm on wpm.id = wp.id_m "+

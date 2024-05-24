@@ -6,8 +6,8 @@ module.exports = function (app) {
     app.get("/pack/e/cex", async (req, res) => {
         db.any("select id, nam from cex where is_el = true")
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -19,8 +19,8 @@ module.exports = function (app) {
         db.any("select i.id as id, i.nakl_nam as nam from istoch i where i.cl_op = $1"
         ,[ Number(req.params["cl_op"])])
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -32,8 +32,8 @@ module.exports = function (app) {
         db.any("select id, snam from rab_rab where id = $1"
         ,[ Number(req.params["id"])])
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -48,8 +48,8 @@ module.exports = function (app) {
             "WHERE q.dat = (select max(dat) from rab_qual where dat <= '2999-04-01' "+
             "and id_rab=q.id_rab) and p.id=26 ) order by rr.snam ")
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -57,9 +57,14 @@ module.exports = function (app) {
             })
     })
 
-    app.get("/pack/e/parti/:id_part", async (req, res) => {
+    app.get("/pack/e/parti/:cl_op/:id_part", async (req, res) => {
+        let quMasPal="ep.mass_pallet"
+        if (typeof req.query.pallet!="undefined" && Number(req.params["cl_op"]==2)){
+            quMasPal="coalesce((select sum(kvo) from el_pallet_op where id_src<>0 and id_pallet = (select id from pallets where nam = '"+req.query.pallet+"') limit 1),0)"
+        }
         db.any("select p.n_s as n_s, to_char(p.dat_part,'YYYY-MM-dd') as dat_part, e.marka ||' ф '|| cast(p.diam as varchar(3)) as marka, "+
-            "ep.pack_ed as pack_ed, ep.mass_ed as mass_ed, ep.mass_pallet as mass_pallet, i.nam as src, i.id as id_src, "+
+            "ep.pack_ed as pack_ed, ep.mass_ed as mass_ed, "+quMasPal+" as mass_pallet, "+
+            "i.nam as src, i.id as id_src, "+
             "(select epo.id_main_rab from el_pallet_op epo where epo.dtm=(select max(dtm) from el_pallet_op) limit 1) as id_master "+
             "from parti p "+
             "inner join elrtr e on e.id = p.id_el "+
@@ -68,8 +73,8 @@ module.exports = function (app) {
             "where p.id = $1"
             ,[ Number(req.params["id_part"])])
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -88,12 +93,12 @@ module.exports = function (app) {
             "inner join rab_rab rr2 on rr2.id = epo.id_main_rab "+
             "inner join pallets p2 on p2.id = epo.id_pallet "+
             "inner join istoch i on i.id = epo.id_src "+
-            "where epo.id_cex = $1 and i.cl_op = $2 "+
+            "where epo.id_cex = $1 and i.cl_op = $2 and epo.dtm::date = $3::date "+
             "order by epo.dtm desc"
-            ,[ Number(req.params["id_cex"]), Number(req.params["cl_op"])])
+            ,[ Number(req.params["id_cex"]), Number(req.params["cl_op"]), new Date() ])
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -103,14 +108,39 @@ module.exports = function (app) {
 
     app.post("/pack/e/data", jsonParser, async (req, res) => {
         let date = new Date();
-        let id_op = String(req.body.pallet).length==10 ? 2 : 1;
-        db.any("insert into el_pallet_op (id_pallet, dtm, id_cex, id_op, id_rab, id_main_rab, kvo, pack_kvo, id_parti, id_src)"+
-            " values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id", 
-            [ Number(3), date, Number(req.body.id_cex), Number(id_op), Number(req.body.id_rab), Number(req.body.id_master),
-                Number(req.body.kvo), Number(req.body.pack_kvo), Number(req.body.id_part), Number(req.body.id_src) ]) 
-            .then((data) => {
-                    res.json(data)
-                })
+        let queryPal="";
+        let val;
+        let id_op;
+        if (String(req.body.pallet).length==10){
+            queryPal="select id from pallets where nam = $1";
+            val=String(req.body.pallet);
+        } else {
+            queryPal="insert into pallets (datetime, prefix) values ($1, 'E') returning id";
+            val=date;
+        }
+        if (req.body.id_src==0){
+            id_op=0;
+        } else if (String(req.body.pallet).length==10){
+            id_op=2;
+        } else {
+            id_op=1;
+        }
+        
+        db.one(queryPal,[val])
+            .then((palData) => {
+                db.any("insert into el_pallet_op (id_pallet, dtm, id_cex, id_op, id_rab, id_main_rab, kvo, pack_kvo, id_parti, id_src)"+
+                    " values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id", 
+                    [ palData.id, date, Number(req.body.id_cex), Number(id_op), Number(req.body.id_rab), Number(req.body.id_master),
+                        Number(req.body.kvo), Number(req.body.pack_kvo), Number(req.body.id_part), Number(req.body.id_src) ]) 
+                    .then((data) => {
+                        res.json(data)
+                    })
+                    .catch((error) => {
+                        console.log('ERROR:', error);
+                        res.status(500).type('text/plain');
+                        res.send(error.message);
+                    })
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');

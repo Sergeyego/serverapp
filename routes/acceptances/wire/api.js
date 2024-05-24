@@ -54,7 +54,7 @@ module.exports = function (app) {
     })
     app.get("/acceptances/parti/w/:partId", async (req, res) => {
         db.any("select wpm.n_s as n_s, to_char(wpm.dat,'YYYY-mm-DD') as dat_part, p.nam ||' ф '||d.sdim ||' '||wpk.short as marka, "+
-            "wp2.pack_ed as pack_ed, wp2.pack_group as pack_group, wp2.mas_ed as mass_ed, wp2.mas_group as mass_group, ws.nam as src "+
+            "wp2.pack_ed as pack_ed, wp2.pack_group as pack_group, wp2.mas_ed as mass_ed, wp2.mas_group as mass_group, ws.nam as src, 0 as kvo "+
             "from wire_parti wp "+
             "inner join wire_parti_m wpm on wpm.id = wp.id_m "+
             "inner join provol p on p.id = wpm.id_provol "+

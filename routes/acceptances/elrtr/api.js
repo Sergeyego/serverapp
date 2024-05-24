@@ -10,8 +10,8 @@ module.exports = function (app) {
             "where pnt.en = true and pn.dat between $1::date and $2::date "+
             "order by pn.dat desc, pn.num desc", [ String(req.query.datbeg), String(req.query.datend) ]) 
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -28,8 +28,8 @@ module.exports = function (app) {
             "inner join el_pack ep on ep.id = p2.id_pack "+
             "where p.id_nakl = $1 order by id", [ Number(req.params["accId"]) ])
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -41,8 +41,8 @@ module.exports = function (app) {
             "from prod_nakl_tip pnt where pnt.en = true "+
             "order by pnt.nam", []) 
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -50,16 +50,20 @@ module.exports = function (app) {
             })
     })
     app.get("/acceptances/parti/e/:partId", async (req, res) => {
+        let quKvo="0"
+        if (typeof req.query.pallet!="undefined"){
+            quKvo="coalesce((select sum(kvo) from el_pallet_op where id_src<>0 and id_pallet = (select id from pallets where nam = '"+req.query.pallet+"') limit 1),0)"
+        }
         db.any("select p.n_s as n_s, to_char(p.dat_part,'YYYY-MM-dd') as dat_part, e.marka ||' ф '|| cast(p.diam as varchar(3)) as marka, "+
-            "ep.pack_ed as pack_ed, ep.pack_group as pack_group, ep.mass_ed as mass_ed, ep.mass_group as mass_group, i.nam as src "+
+            "ep.pack_ed as pack_ed, ep.pack_group as pack_group, ep.mass_ed as mass_ed, ep.mass_group as mass_group, i.nam as src, "+quKvo+" as kvo "+
             "from parti p "+
             "inner join elrtr e on e.id = p.id_el "+
             "inner join el_pack ep on ep.id = p.id_pack "+
             "inner join istoch i on i.id = p.id_ist "+
             "where p.id = $1", [ Number(req.params["partId"]) ]) 
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -70,8 +74,8 @@ module.exports = function (app) {
     app.post("/acceptances/e", jsonParser, async (req, res) => {
         db.any("insert into prod_nakl (id_ist, num, dat) values ($1, $2, $3) returning id", [ Number(req.body.id_type), String(req.body.num), String(req.body.dat) ]) 
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -82,8 +86,8 @@ module.exports = function (app) {
     app.delete("/acceptances/e/:accId", async (req, res) => {
         db.any("delete from prod_nakl where id = $1", [ Number(req.params["accId"]) ]) 
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -95,7 +99,7 @@ module.exports = function (app) {
         db.any("update prod_nakl set id_ist = $1, num = $2, dat = $3 where id = $4", [ Number(req.body.id_type), String(req.body.num), String(req.body.dat), Number(req.params["accId"]) ]) 
             .then((data) => {
                     res.json(data)
-                })
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -109,8 +113,8 @@ module.exports = function (app) {
             [ Number(req.body.id_part), Number(req.body.kvo), Number(req.body.shtuk), Number(req.body.numcont), String(req.body.barcodecont), String(req.body.chk),
                 Number(req.body.id_nakl), Number(req.body.id_type), String(req.body.dat), String(req.body.docs) ]) 
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -121,8 +125,8 @@ module.exports = function (app) {
     app.delete("/acceptances/e/data/:dataId", async (req, res) => {
         db.any("delete from prod where id = $1", [ Number(req.params["dataId"]) ]) 
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
@@ -133,8 +137,8 @@ module.exports = function (app) {
     app.patch("/acceptances/e/data/:dataId", jsonParser, async (req, res) => {
         db.any("update prod set kvo = $1, shtuk = $2, numcont = $3 where id = $4", [ Number(req.body.kvo), Number(req.body.shtuk), Number(req.body.numcont), Number(req.params["dataId"]) ]) 
             .then((data) => {
-                    res.json(data)
-                })
+                res.json(data)
+            })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');

@@ -46,6 +46,8 @@ require('./routes/acceptances/wire/api.js')(app);
 
 require('./routes/dosage/api.js')(app);
 
+require('./routes/rab/sync.js')(app);
+
 app.use(express.static(__dirname + '/public'));
 
 app.use((req, res, next) => {
