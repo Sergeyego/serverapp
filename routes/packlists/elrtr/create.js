@@ -29,18 +29,18 @@ module.exports = function (app) {
             "(select sum(epo3.pack_kvo) from el_pallet_op epo3 where epo3.id_pallet = epo.id_pallet and epo3.id_op in (1,2)) as pack_kvo, "+
             "ee.ean_group as ean, "+
             "(select epo4.dtm from el_pallet_op epo4 where epo4.id_pallet = epo.id_pallet and epo4.id_op=1) as dat_sort, "+
-            "(select rr.snam from el_pallet_op epo5 inner join rab_rab rr on rr.id = epo5.id_rab where epo5.id_pallet = epo.id_pallet and epo5.id_op=1) as rab_sort, "+
-            "(select rr2.snam from el_pallet_op epo6 inner join rab_rab rr2 on rr2.id = epo6.id_main_rab where epo6.id_pallet = epo.id_pallet and epo6.id_op=1) as master_sort, "+
+            "(select rr.snam from el_pallet_op epo5 inner join kamin_empl rr on rr.id = epo5.id_rab where epo5.id_pallet = epo.id_pallet and epo5.id_op=1) as rab_sort, "+
+            "(select rr2.snam from el_pallet_op epo6 inner join kamin_empl rr2 on rr2.id = epo6.id_main_rab where epo6.id_pallet = epo.id_pallet and epo6.id_op=1) as master_sort, "+
             "(select epo7.kvo from el_pallet_op epo7 where epo7.id_pallet = epo.id_pallet and epo7.id_op=1) as kvo_sort, "+
             "(select epo8.pack_kvo from el_pallet_op epo8 where epo8.id_pallet = epo.id_pallet and epo8.id_op=1) as pack_kvo_sort, "+
             "(select epo4.dtm from el_pallet_op epo4 where epo4.id_pallet = epo.id_pallet and epo4.id_op=2) as dat_dosort, "+
-            "(select rr.snam from el_pallet_op epo5 inner join rab_rab rr on rr.id = epo5.id_rab where epo5.id_pallet = epo.id_pallet and epo5.id_op=2) as rab_dosort, "+
-            "(select rr2.snam from el_pallet_op epo6 inner join rab_rab rr2 on rr2.id = epo6.id_main_rab where epo6.id_pallet = epo.id_pallet and epo6.id_op=2) as master_dosort, "+
+            "(select rr.snam from el_pallet_op epo5 inner join kamin_empl rr on rr.id = epo5.id_rab where epo5.id_pallet = epo.id_pallet and epo5.id_op=2) as rab_dosort, "+
+            "(select rr2.snam from el_pallet_op epo6 inner join kamin_empl rr2 on rr2.id = epo6.id_main_rab where epo6.id_pallet = epo.id_pallet and epo6.id_op=2) as master_dosort, "+
             "(select epo7.kvo from el_pallet_op epo7 where epo7.id_pallet = epo.id_pallet and epo7.id_op=2) as kvo_dosort, "+
             "(select epo8.pack_kvo from el_pallet_op epo8 where epo8.id_pallet = epo.id_pallet and epo8.id_op=2) as pack_kvo_dosort, "+
             "(select epo4.dtm from el_pallet_op epo4 where epo4.id_pallet = epo.id_pallet and epo4.id_op=0) as dat_tpack, "+
-            "(select rr.snam from el_pallet_op epo5 inner join rab_rab rr on rr.id = epo5.id_rab where epo5.id_pallet = epo.id_pallet and epo5.id_op=0) as rab_tpack, "+
-            "(select rr2.snam from el_pallet_op epo6 inner join rab_rab rr2 on rr2.id = epo6.id_main_rab where epo6.id_pallet = epo.id_pallet and epo6.id_op=0) as master_tpack, "+
+            "(select rr.snam from el_pallet_op epo5 inner join kamin_empl rr on rr.id = epo5.id_rab where epo5.id_pallet = epo.id_pallet and epo5.id_op=0) as rab_tpack, "+
+            "(select rr2.snam from el_pallet_op epo6 inner join kamin_empl rr2 on rr2.id = epo6.id_main_rab where epo6.id_pallet = epo.id_pallet and epo6.id_op=0) as master_tpack, "+
             "(select epo7.kvo from el_pallet_op epo7 where epo7.id_pallet = epo.id_pallet and epo7.id_op=0) as kvo_tpack, "+
             "(select epo8.pack_kvo from el_pallet_op epo8 where epo8.id_pallet = epo.id_pallet and epo8.id_op=0) as pack_kvo_tpack "+
             "from el_pallet_op epo "+

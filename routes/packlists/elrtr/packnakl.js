@@ -34,21 +34,21 @@ let getTable = function(data){
 module.exports = function (app) {
     app.use("/packnakl/elrtr/:dat/:id_src/:id_master/", async (req, res) => {
         db.one("select i.nakl_nam as oper, "+
-            "(select rr.snam from rab_rab rr where rr.id = $1 ) as from, "+
+            "(select rr.snam from kamin_empl rr where rr.id = $1 ) as from, "+
             "(select ne.nam  from nakl_emp ne where ne.id = 1) as to "+
             "from istoch i where i.id = $2"
-            ,[ Number(req.params["id_master"]), Number(req.params["id_src"]) ])
+            ,[ String(req.params["id_master"]), Number(req.params["id_src"]) ])
             .then((dataTitle) => {
                 db.any("select e.marka || ' ф ' || cast(p.diam as varchar(3)) as marka, "+
                     "p.n_s||'-'||date_part('year',p.dat_part) as part, rr.snam as rab, p2.nam as pal, epo.kvo as kvo "+
                     "from el_pallet_op epo "+
                     "inner join parti p on p.id=epo.id_parti "+
                     "inner join elrtr e on e.id=p.id_el "+
-                    "inner join rab_rab rr on rr.id=epo.id_rab "+
+                    "inner join kamin_empl rr on rr.id=epo.id_rab "+
                     "inner join pallets p2 on p2.id = epo.id_pallet "+
                     "where epo.id_main_rab = $1 and epo.dtm ::date = $2 ::date and epo.id_src = $3 "+
                     "order by e.marka, p.diam, date_part('year',p.dat_part), p.n_s, rr.snam, p2.nam"
-                    , [ Number(req.params["id_master"]), String(req.params["dat"]), Number(req.params["id_src"]) ] )
+                    , [ String(req.params["id_master"]), String(req.params["dat"]), Number(req.params["id_src"]) ] )
                     .then((data) => {
                         let date = new Date();
                         date.setTime(Date.parse(req.params["dat"]));

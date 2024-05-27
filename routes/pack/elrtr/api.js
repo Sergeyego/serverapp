@@ -29,7 +29,7 @@ module.exports = function (app) {
     })
 
     app.get("/pack/rab/:id", async (req, res) => {
-        db.any("select id, snam from rab_rab where id = $1"
+        db.any("select id as id, nam as snam from tab_number where tabel = $1 limit 1"
         ,[ Number(req.params["id"])])
             .then((data) => {
                 res.json(data)
@@ -42,11 +42,7 @@ module.exports = function (app) {
     })
 
     app.get("/pack/e/master", async (req, res) => {
-        db.any("select rr.id as id, rr.snam as nam from rab_rab rr "+
-            "where rr.id in (select q.id_rab from rab_qual q "+
-            "inner join rab_prof p on q.id_prof = p.id "+
-            "WHERE q.dat = (select max(dat) from rab_qual where dat <= '2999-04-01' "+
-            "and id_rab=q.id_rab) and p.id=26 ) order by rr.snam ")
+        db.any("select id as id, nam as nam from el_master")
             .then((data) => {
                 res.json(data)
             })
@@ -83,14 +79,14 @@ module.exports = function (app) {
     })
 
     app.get("/pack/e/data/:id_cex/:cl_op", async (req, res) => {
-        db.any("select to_char(epo.dtm,'HH24:MI') as time, e.marka || ' ф '|| p.diam as marka, "+
+        db.any("select to_char(epo.dtm,'HH24:MI') as time, e.marka || ' ф '|| cast(p.diam as varchar(3)) as marka, "+
             "p.n_s ||'-'||date_part('year',p.dat_part) as parti, epo.kvo as kvo, "+
             "p2.nam as pallet, rr.snam as rab, rr2.snam as master, i.nam as src, epo.id_src as id_src "+
             "from el_pallet_op epo "+
             "inner join parti p on p.id = epo.id_parti "+
             "inner join elrtr e on e.id = p.id_el "+
-            "inner join rab_rab rr on rr.id = epo.id_rab "+
-            "inner join rab_rab rr2 on rr2.id = epo.id_main_rab "+
+            "inner join kamin_empl rr on rr.id = epo.id_rab "+
+            "inner join kamin_empl rr2 on rr2.id = epo.id_main_rab "+
             "inner join pallets p2 on p2.id = epo.id_pallet "+
             "inner join istoch i on i.id = epo.id_src "+
             "where epo.id_cex = $1 and i.cl_op = $2 and epo.dtm::date = $3::date "+
@@ -130,7 +126,7 @@ module.exports = function (app) {
             .then((palData) => {
                 db.any("insert into el_pallet_op (id_pallet, dtm, id_cex, id_op, id_rab, id_main_rab, kvo, pack_kvo, id_parti, id_src)"+
                     " values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) returning id", 
-                    [ palData.id, date, Number(req.body.id_cex), Number(id_op), Number(req.body.id_rab), Number(req.body.id_master),
+                    [ palData.id, date, Number(req.body.id_cex), Number(id_op), String(req.body.id_rab), String(req.body.id_master),
                         Number(req.body.kvo), Number(req.body.pack_kvo), Number(req.body.id_part), Number(req.body.id_src) ]) 
                     .then((data) => {
                         res.json(data)
