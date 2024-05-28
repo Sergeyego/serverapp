@@ -119,7 +119,7 @@ module.exports = function (app) {
         data.getHeaderData(id,is_ship)
         .then((headerdata)=>{
             let id_part = headerdata.id;
-            srt.getGeneralData(headerdata.dat)
+            srt.getGeneralData(headerdata.datvid)
             .then((gendata)=>{
                 data.getTuData(id_part)
                 .then((tudata)=>{
