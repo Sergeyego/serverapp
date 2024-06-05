@@ -3,6 +3,7 @@ const locale = require('../../../locale.js');
 
 let getTable = function(data){
     let sum = 0.0;
+    let part_sum = 0.0;
     let tbl='<table class="tablestyle" border="1" cellspacing="0" cellpadding="2">';
         tbl+='<tr class="boldtext">'+
             '<td class="centeralign">№</td>'+
@@ -21,11 +22,26 @@ let getTable = function(data){
             '<td class="leftalign">'+data[i].pal+'</td>'+
             '<td class="rightalign">'+locale.insNumber(data[i].kvo,1)+'</td>'+
         '</tr>';
+
+        part_sum+=data[i].kvo;
         sum+=data[i].kvo;
+
+        let is_end = (i==data.length-1);
+        let print_itogo = is_end;
+        if (!is_end) {
+            print_itogo = (data[i].part!=data[i+1].part);
+        }
+        if (print_itogo){
+            tbl+='<tr>'+
+            '<td class="leftalign" colspan="5"><b>'+data[i].marka+' п. '+data[i].part+' итого</b></td>'+
+            '<td class="rightalign"><b>'+locale.insNumber(part_sum,1)+'</b></td>'+
+            '</tr>';
+            part_sum=0.0;
+        }
     }
     tbl+='<tr>'+
         '<td class="leftalign" colspan="5"><b>Итого</b></td>'+
-        '<td class="rightalign">'+locale.insNumber(sum,1)+'</td>'+
+        '<td class="rightalign"><b>'+locale.insNumber(sum,1)+'</b></td>'+
     '</tr>';
     tbl+='</table>';
     return tbl;
