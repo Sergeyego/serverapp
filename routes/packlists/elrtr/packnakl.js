@@ -66,7 +66,7 @@ module.exports = function (app) {
                     "inner join kamin_empl rr on rr.id=epo.id_rab "+
                     "inner join pallets p2 on p2.id = epo.id_pallet "+
                     "where epo.id_main_rab = $1 and epo.dtm ::date = $2 ::date and epo.id_src = $3 "+
-                    "order by e.marka, p.diam, date_part('year',p.dat_part), p.n_s, rr.snam, p2.nam"
+                    "order by "+sort
                     , [ String(req.params["id_master"]), String(req.params["dat"]), Number(req.params["id_src"]) ] )
                     .then((data) => {
                         let date = new Date();
