@@ -7,11 +7,11 @@ let getTable = function(data, by_rab){
     let tbl='<table class="tablestyle" border="1" cellspacing="0" cellpadding="2">';
         tbl+='<tr class="boldtext">'+
             '<td class="centeralign" width=5% >№</td>'+
-            '<td class="centeralign" width=30% >Наименование товара</td>'+
+            '<td class="centeralign" width=28% >Наименование <br>товара</td>'+
             '<td class="centeralign">Партия</td>'+
             '<td class="centeralign">Упаковщик</td>'+
             '<td class="centeralign">Поддон</td>'+
-            '<td class="centeralign">Колич., кг</td>'+
+            '<td class="centeralign">Колич.,<br>кг</td>'+
         '</tr>';
     for (let i=0; i<data.length; i++){
         tbl+='<tr>'+
