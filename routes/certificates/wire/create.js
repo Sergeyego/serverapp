@@ -117,13 +117,22 @@ module.exports = function (app) {
                                     }
                                 }
 
-                                let footer = srt.insText(lang,"Состояние поверхности проволоки: поверхность проволоки чистая, "+
-                                    "гладкая, без трещин, расслоений, плен, закатов, раковин, забоин "+
-                                    "окалины, ржавчины, масла, технологической смазки и других загрязнений.<br>"+
-                                    "Гарантийный срок хранения сварочной проволоки в упаковке производителя - 12 месяцев с момента изготовления.",
-                                    "The condition of the surface of the wire: the surface of the wire is clean, smooth, without cracks, delaminations, "+
-                                    "slivers, laps, shells, nicks, scale, rust, oil, grease and other contaminants.<br>"+
-                                    "The guaranteed shelf life of the welding wire in the manufacturer's packaging is 12 months from the date of manufacture.",true);
+                                let footer="";
+
+                                if (headerdata.spool.indexOf("L-")==0){
+                                    footer = srt.insText(lang,"Поверхность прутка чистая, без расслоений, раковин, окалины, ржавчины, "+
+                                        "технологических смазок и других загрязнений. "+
+                                        "Допускаются участки до 10 мм без омедненного покрытия, протяженность которых в сумме не должна превышать 60 мм.",
+                                        "The surface of the rod is clean, without delamination, cavities, scale, rust, "+
+                                        "process lubricants and other contaminants. "+
+                                        "Sections up to 10 mm without copper coating are allowed, the length of which in total should not exceed 60 mm.",true);
+                                } else {
+                                    footer = srt.insText(lang,"Состояние поверхности проволоки: поверхность проволоки чистая, "+
+                                        "гладкая, без трещин, расслоений, плен, закатов, раковин, забоин "+
+                                        "окалины, ржавчины, масла, технологической смазки и других загрязнений.",
+                                        "The condition of the surface of the wire: the surface of the wire is clean, smooth, without cracks, delaminations, "+
+                                        "slivers, laps, shells, nicks, scale, rust, oil, grease and other contaminants.",true);
+                                }
 
                                 let chemtitle = srt.insText(lang,enru+" Химический состав проволоки, %",enen+" The chemical composition of the wire, %",true);
                                                                 
