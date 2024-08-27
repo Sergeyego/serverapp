@@ -120,10 +120,10 @@ module.exports = function (app) {
                                 let footer="";
 
                                 if (headerdata.spool.indexOf("L-")==0){
-                                    footer = srt.insText(lang,"Поверхность прутка чистая, без расслоений, раковин, окалины, ржавчины, "+
+                                    footer = srt.insText(lang,"Состояние поверхности проволоки: поверхность прутка чистая, без расслоений, раковин, окалины, ржавчины, "+
                                         "технологических смазок и других загрязнений. "+
                                         "Допускаются участки до 10 мм без омедненного покрытия, протяженность которых в сумме не должна превышать 60 мм.",
-                                        "The surface of the rod is clean, without delamination, cavities, scale, rust, "+
+                                        "The condition of the surface of the wire: the surface of the rod is clean, without delamination, cavities, scale, rust, "+
                                         "process lubricants and other contaminants. "+
                                         "Sections up to 10 mm without copper coating are allowed, the length of which in total should not exceed 60 mm.",true);
                                 } else {
