@@ -6,6 +6,7 @@ let getMainTbl = function(lang, headerdata, id_type) {
     let dat = (id_type!=1) ? headerdata.dat : new Date(1111,10,11);
     let n_s = (id_type!=1) ? headerdata.n_s : "1111";
     let massa = (id_type!=1) ? headerdata.massa : 1111.0;
+    let nplav = (id_type!=1) ? headerdata.nplav : '111111';
     tbl='<table class="tablestyle" border="1" cellspacing="1" cellpadding="3">'+
             '<tr class="boldtext">'+
                 '<td width="130" class="centeralign">'+srt.insText(lang,"Марка проволоки","Wire mark",true)+'</td>'+
@@ -20,7 +21,7 @@ let getMainTbl = function(lang, headerdata, id_type) {
                 '<td class="centeralign">'+headerdata.bprov+'</td>'+
                 '<td class="centeralign">'+srt.insNumber(lang,headerdata.diam,1)+" "+headerdata.prov+'</td>'+
                 '<td class="centeralign">'+srt.insText(lang,headerdata.spool,headerdata.spool_en,true)+'</td>'+
-                '<td class="centeralign">'+headerdata.nplav+'</td>'+
+                '<td class="centeralign">'+nplav+'</td>'+
                 '<td class="centeralign">'+n_s+'</td>'+
                 '<td class="centeralign">'+srt.insDate(lang,dat,true)+'</td>'+
                 '<td class="centeralign">'+srt.insNumber(lang,massa,1)+'</td>'+
