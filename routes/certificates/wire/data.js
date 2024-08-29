@@ -17,7 +17,7 @@ let getHeaderData = async function (id, is_ship=true) {
         "inner join provol as pprov on m.id_provol=pprov.id "+
         "left join provol as bprov on pprov.id_base=bprov.id "+
         "inner join diam as d on m.id_diam=d.id "+
-        "inner join poluch as pol on s.id_pol=pol.id "+
+        "inner join poluch as pol on w.id_pol=pol.id "+
         "inner join wire_pack_kind as k on p.id_pack=k.id "+
         "where w.id= $1 "
         :

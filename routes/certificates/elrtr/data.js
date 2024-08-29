@@ -11,7 +11,7 @@ let getHeaderData = async function (id, is_ship=true) {
         "inner join elrtr as e on e.id=p.id_el "+
         "inner join provol as pe on pe.id=e.id_gost "+
         "left join provol as pp on pp.id=p.id_prfact and pp.id in (select ep.id_prov from el_provol as ep where ep.id_el = p.id_el) "+
-        "inner join poluch as pol on s.id_pol=pol.id "+
+        "inner join poluch as pol on o.id_pol=pol.id "+
         "inner join gost_types as gt on e.id_gost_type=gt.id "+
         "inner join purpose as pu on e.id_purpose=pu.id "+
         "left join el_var as ev on ev.id_el = p.id_el and ev.id_var = p.id_var "+
