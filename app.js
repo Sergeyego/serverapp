@@ -45,6 +45,7 @@ require('./routes/acceptances/elrtr/api.js')(app);
 require('./routes/acceptances/wire/api.js')(app);
 
 require('./routes/dosage/api.js')(app);
+require('./routes/proc/api.js')(app);
 
 require('./routes/rab/sync.js')(app);
 
