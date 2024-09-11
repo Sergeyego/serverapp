@@ -178,4 +178,62 @@ module.exports = function (app) {
             })
     })
 
+    app.post("/proc/endproc/:id",bodyParser.xml(),async (req, res) => {
+        //console.log('BODY:', req.body);
+        date = new Date();
+        db.any("update owens_rab set dt_end = $1, energ = $2  where id = $3 ", 
+            [date , Number(req.body.root.energ), Number(req.params["id"])]) 
+            .then((data) => {
+                    db.any("update owens_data_new set id_ow_rab = $1 "+
+			            "where id_channel in (select id from owens_trm_channel where id_owen = (select id_owen from owens_rab where id = $1 )) "+
+                        "and dat_time between (select dt_beg from owens_rab where id = $1 ) and  (select dt_end from owens_rab where id = $1)",
+                    [ Number(req.params["id"]) ])
+                        .then(() => {
+                            const builder = new XMLBuilder();
+                            let xmlDataStr = builder.build(data);
+                            xmlDataStr = '<?xml version=\"1.0\" encoding=\"UTF-8\" ?>'+'<root>'+xmlDataStr+'</root>';
+                            res.type('text/xml');
+                            res.send(xmlDataStr);
+                            //console.log('DATA:', xmlDataStr);
+                        })
+                        .catch((error) => {
+                            console.log('ERROR:', error);
+                            res.status(500).type('text/plain');
+                            res.send(error.message);
+                        })
+                })
+            .catch((error) => {
+                console.log('ERROR:', error);
+                res.status(500).type('text/plain');
+                res.send(error.message);
+            })
+    })
+
+    app.post("/proc/newdata",bodyParser.xml(),async (req, res) => {
+        //console.log('BODY:', req.body);
+        date = new Date();
+        var query = "insert into owens_data_new (dat_time, id_channel, ust, val, pwr) values ";
+        var vals = req.body.root.item;
+        for (i = 0; i < vals.length; i++) {
+            if (i!=0){
+                query+=", ";
+            }
+            query+="( $1 , "+vals[i].id_channel+", "+vals[i].ust+", "+vals[i].val+", "+vals[i].pwr+" )";
+        }
+        //console.log('Query:', query);
+        db.any(query,[ date ])
+            .then((data) => {
+                const builder = new XMLBuilder();
+                let xmlDataStr = builder.build(data);
+                xmlDataStr = '<?xml version=\"1.0\" encoding=\"UTF-8\" ?>'+'<root>'+xmlDataStr+'</root>';
+                res.type('text/xml');
+                res.send(xmlDataStr);
+            })
+            .catch((error) => {
+                console.log('ERROR:', error);
+                res.status(500).type('text/plain');
+                res.send(error.message);
+            })
+    })
+
 }
