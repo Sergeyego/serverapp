@@ -60,9 +60,9 @@ app.listen(port, () => {
   console.log(`Server app listening on port ${port}`);
 })
 
-const sync = require("./routes/rab/sync.js");
+/*const sync = require("./routes/rab/sync.js");
 const schedule = require('node-schedule');
 
 const job = schedule.scheduleJob('0 11,17 * * *', function () {
   sync.syncAll();
-});
+});*/
