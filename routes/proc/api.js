@@ -93,10 +93,10 @@ module.exports = function (app) {
     })
 
     app.get("/proc/rabs", async (req, res) => {
-        db.any("select r.id as id, r.snam as nam from rab_rab r inner join rab_qual q on q.id_rab=r.id "+
-			"inner join rab_prof p on q.id_prof = p.id "+
-			"WHERE q.dat = (select max(dat) from rab_qual where dat <= '2999-04-01' "+
-			"and id_rab=r.id) and p.id=8 order by r.snam") 
+        db.any("select rr.id as id, rr.snam as nam from tab_number tn "+
+                "inner join rab_rab rr on rr.id_kamin = tn.id "+
+                "where tn.id_job = '06b1dbd8-d34b-11e7-a867-0018e7159e2e' "+
+                "order by rr.snam") 
             .then((data) => {
                     const options = {
                         format: false,
