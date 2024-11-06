@@ -12,15 +12,16 @@ module.exports = function (app) {
             .then((dataTitle) => {
                 //console.log('DATA:', dataTitle);
                 let query = "select e.marka||' '||'ф'||p.diam || "+
-                    "CASE WHEN p.id_var<>1 THEN ' /'||ev.nam ||'/' ELSE '' END as nam, "+
-                    "NULL as npart, sum(psi.kvo) as kvo from prod_self_items psi "+
-                    "inner join prod_self ps on ps.id = psi.id_self "+
-                    "inner join parti as p on p.id=psi.id_part "+
-                    "inner join elrtr as e on e.id=p.id_el "+
-                    "inner join elrtr_vars ev on ev.id = p.id_var "+
-                    "where ps.id_cons = $3 and ps.dat between $1::date and $2::date "+
-                    "group by e.marka, p.diam, ev.nam , p.id_var "+
-                    "order by nam";
+                            "CASE WHEN p.id_var<>1 THEN ' /'||ev.nam ||'/' ELSE '' END ||' ('||ep.pack_ed||')' as nam, "+
+                            "NULL as npart, sum(psi.kvo) as kvo from prod_self_items psi "+
+                            "inner join prod_self ps on ps.id = psi.id_self "+
+                            "inner join parti as p on p.id=psi.id_part "+
+                            "inner join elrtr as e on e.id=p.id_el "+
+                            "inner join el_pack as ep on ep.id=p.id_pack "+
+                            "inner join elrtr_vars ev on ev.id = p.id_var "+
+                            "where ps.id_cons = $3 and ps.dat between $1::date and $2::date "+
+                            "group by e.marka, p.diam, ev.nam , p.id_var, ep.pack_ed "+
+                            "order by nam";
                 db.any(query, [ String(req.params["beg"]), String(req.params["end"]), Number(req.params["type"]) ])
                     .then((dataItems) =>{
                         //console.log('DATA:', dataItems);
