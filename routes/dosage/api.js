@@ -53,9 +53,11 @@ module.exports = function (app) {
         if (typeof dtm != "undefined"){
             date.setTime(Date.parse(dtm));
         }
-        //console.log('Date:', date);
+        let datSrc = date.toLocaleString('ru-RU', { year: 'numeric', month: 'numeric', day: 'numeric'});
+        let datDst = datSrc.split(".").reverse().join("-")+' '+date.toLocaleTimeString();
+        //console.log('Date:', datDst);
         db.any("select num as num, parti as parti, kvo as kvo, tiny as tiny, nbunk as nbunk, id_bunk as id_bunk, nam as nam, id_matr as id_matr from "+
-                "calc_doz_new($1,$2,$3,$4)", [ Number(req.params["mas"]),date, Number(req.params["id"]), Number(req.params["cex"]) ]) 
+                "calc_doz_new($1,$2,$3,$4)", [ Number(req.params["mas"]),datDst, Number(req.params["id"]), Number(req.params["cex"]) ]) 
             .then((data) => {
                     const options = {
                         format: false,
@@ -81,8 +83,10 @@ module.exports = function (app) {
         if (typeof dtm != "undefined"){
             date.setTime(Date.parse(dtm));
         }
+        let datSrc = date.toLocaleString('ru-RU', { year: 'numeric', month: 'numeric', day: 'numeric'});
+        let datDst = datSrc.split(".").reverse().join("-");
         //console.log('Date:', date);
-        db.one("insert into dosage (id_rcp, dat, tm, kvo_tot, id_cex) values ( $1, $2 , $3 , $4, $5) returning id", [ Number(req.params["id"]),date,date.toLocaleTimeString(), Number(req.params["mas"]), Number(req.params["cex"]) ]) 
+        db.one("insert into dosage (id_rcp, dat, tm, kvo_tot, id_cex) values ( $1, $2 , $3 , $4, $5) returning id", [ Number(req.params["id"]),datDst,date.toLocaleTimeString(), Number(req.params["mas"]), Number(req.params["cex"]) ]) 
             .then((data) => {
                     var query = "insert into dosage_spnd (id_dos, id_comp, kvo_comp, id_bunk, parti) values ";
                     var vals = req.body.root.item;
