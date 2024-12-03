@@ -12,14 +12,15 @@ module.exports = function (app) {
             .then((dataTitle) => {
                 //console.log('DATA:', dataTitle);
                 let query = "select e.marka||' '||'ф'||p.diam || "+
-                    "CASE WHEN p.id_var<>1 THEN ' /'||ev.nam ||'/' ELSE '' END as nam, "+
+                    "CASE WHEN p.id_var<>1 THEN ' /'||ev.nam ||'/' ELSE '' END ||' ('||ep.pack_ed||')' as nam, "+
                     "NULL as npart, sum(w.kvo) as kvo from parti_break as w "+
                     "inner join parti_nakl pn on pn.id = w.id_nakl "+
                     "inner join parti as p on p.id=w.id_part "+
+                    "inner join el_pack as ep on ep.id=p.id_pack "+
                     "inner join elrtr as e on e.id=p.id_el "+
                     "inner join elrtr_vars ev on ev.id = p.id_var "+
                     "where pn.dat between $1::date and $2::date "+
-                    "group by e.marka, p.diam, ev.nam , p.id_var "+
+                    "group by e.marka, p.diam, ev.nam , p.id_var, ep.pack_ed "+
                     "order by nam";
                 db.any(query, [ String(req.params["beg"]), String(req.params["end"]) ])
                     .then((dataItems) =>{

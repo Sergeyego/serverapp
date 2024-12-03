@@ -23,10 +23,11 @@ module.exports = function (app) {
                     "where w.id_nakl = $1 order by w.id";
                 } else if (dataTitle.idtype==2){
                     query = "select e.marka||' '||'ф'||p.diam || "+
-                    "CASE WHEN p.id_var<>1 THEN ' /'||ev.nam ||'/' ELSE '' END as nam, "+
+                    "CASE WHEN p.id_var<>1 THEN ' /'||ev.nam ||'/' ELSE '' END ||' ('||ep.pack_ed||')' as nam, "+
                     "p.n_s as npart, w.kvo as kvo from parti_break as w "+
                     "inner join parti as p on p.id=w.id_part "+
                     "inner join elrtr as e on e.id=p.id_el "+
+                    "inner join el_pack as ep on ep.id=p.id_pack "+
                     "inner join elrtr_vars ev on ev.id = p.id_var "+
                     "where w.id_nakl = $1 order by w.id";
                 }
