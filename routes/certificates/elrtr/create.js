@@ -1,18 +1,19 @@
 const srt = require("../srt");
 const qr = require("../../qrcode/qr");
+const translit = require("cyrillic-to-translit-js");
 
 let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
     let symb="";
     if (id_type==5){
         symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
-            headerdata.marka+"-∅"+srt.insNumber(lang,headerdata.diam,0)
+            srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)
         : 
             headerdata.gt+"-"+headerdata.pu;
     } else {
         symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
-            headerdata.marka+"-∅"+srt.insNumber(lang,headerdata.diam,0)
+        srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)
         : 
-            headerdata.gt+"-"+headerdata.marka+"-∅"+srt.insNumber(lang,headerdata.diam,0)+"-"+headerdata.pu;
+            headerdata.gt+"-"+srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)+"-"+headerdata.pu;
     }
     if (headerdata.znam!=null && headerdata.znam!="" && headerdata.znam!="-"){
         symb+="<br>"+headerdata.znam;
@@ -37,24 +38,24 @@ let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
                 '<tr class="boldtext">'+
                     '<td class="centeralign" rowspan="2" width="120">'+srt.insText(lang,"Наименование продукции","Product designation",true)+'</td>'+
                     '<td class="centeralign" colspan="'+String(1+intdata.length)+'">'+srt.insText(lang,"Классификация","Classification",true)+'</td>'+
-                    '<td class="centeralign" rowspan="2">'+srt.insText(lang,"Проволока по ГОСТ&nbsp;2246-70","Wire <br>according to ГОСТ&nbsp;2246-70",true)+'</td>'+
+                    '<td class="centeralign" rowspan="2">'+srt.insText(lang,"Проволока по ГОСТ&nbsp;2246-70","Wire <br>according to GOST&nbsp;2246-70",true)+'</td>'+
                     '<td class="centeralign" rowspan="2">'+srt.insText(lang,"Номер партии","Batch number",true)+'</td>'+
                     '<td class="centeralign" rowspan="2">'+srt.insText(lang,"Дата производства","Date of manufacture",true)+'</td>'+
                     '<td class="centeralign" rowspan="2">'+srt.insText(lang,"Масса электродов нетто, кг","Net weight, kg",true)+'</td>'+
                 '</tr>'+
                 '<tr>'+
-                    '<td class="centeralign" width="150">'+goststr+'</td>';
+                    '<td class="centeralign" width="150">'+srt.insText(lang,goststr,translit().transform(goststr))+'</td>';
                 for (let i=0; i<intdata.length; i++){
                     tbl+='<td class="centeralign" width="100">'+intdata[i].nam+'</td>';
                 }
         tbl+='</tr>'+
                 '<tr>'+
-                    '<td class="centeralign">'+headerdata.marka+"-∅"+srt.insNumber(lang,headerdata.diam,0)+'</td>'+
+                    '<td class="centeralign">'+srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)+'</td>'+
                     '<td class="centeralign">'+symb+'</td>';
                     for (let i=0; i<intdata.length; i++){
                         tbl+='<td class="centeralign">'+intdata[i].val+'</td>';
                     }
-                    tbl+='<td class="centeralign">'+headerdata.provol+'</td>'+
+                    tbl+='<td class="centeralign">'+srt.insText(lang,headerdata.provol,translit().transform(headerdata.provol))+'</td>'+
                     '<td class="centeralign">'+n_s+'</td>'+
                     '<td class="centeralign">'+srt.insDate(lang,dat,true)+'</td>'+
                     '<td class="centeralign">'+srt.insNumber(lang,massa,1)+'</td>'+
@@ -64,14 +65,14 @@ let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
         tbl='<table class="tablestyle" border="1" cellspacing="1" cellpadding="3">'+
                 '<tr class="boldtext">'+
                     '<td width="300" class="centeralign">'+srt.insText(lang,"Условное обозначение электрода","Electrode symbol",true)+'</td>'+
-                    '<td class="centeralign">'+srt.insText(lang,"Проволока по ГОСТ&nbsp;2246-70","Wire <br>according to ГОСТ&nbsp;2246-70",true)+'</td>'+
+                    '<td class="centeralign">'+srt.insText(lang,"Проволока по ГОСТ&nbsp;2246-70","Wire <br>according to GOST&nbsp;2246-70",true)+'</td>'+
                     '<td class="centeralign">'+srt.insText(lang,"Номер партии","Batch number",true)+'</td>'+
                     '<td class="centeralign">'+srt.insText(lang,"Дата производства","Date of manufacture",true)+'</td>'+
                     '<td class="centeralign">'+srt.insText(lang,"Масса электродов нетто, кг","Net weight, kg",true)+'</td>'+
                 '</tr>'+
                 '<tr>'+
                     '<td class="centeralign">'+symb+'</td>'+
-                    '<td class="centeralign">'+headerdata.provol+'</td>'+
+                    '<td class="centeralign">'+srt.insText(lang,headerdata.provol,translit().transform(headerdata.provol))+'</td>'+
                     '<td class="centeralign">'+n_s+'</td>'+
                     '<td class="centeralign">'+srt.insDate(lang,dat,true)+'</td>'+
                     '<td class="centeralign">'+srt.insNumber(lang,massa,1)+'</td>'+
@@ -175,8 +176,9 @@ module.exports = function (app) {
                                         header: head, 
                                         adr: srt.insText(lang,gendata.adr,gendata.adr_en,true), 
                                         tel: gendata.tel,
+                                        fnam: srt.insText(lang,gendata.fnam,gendata.fnam_en,false),
                                         tutitle: srt.insText(lang,"Нормативная документация","Normative documents",false)+": ",
-                                        tustr: tustr,
+                                        tustr: srt.insText(lang,tustr,translit().transform(tustr),false),
                                         maintbl: getMainTbl(lang,headerdata,id_type,tudata,intdata),
                                         chemtbl: srt.getChemTbl(lang,chemtitle,chemdata),
                                         mechtbl: srt.getMechTbl(lang,enru,enen,mechdata),
@@ -188,7 +190,7 @@ module.exports = function (app) {
                                         pol: pol,
                                         note: srt.insText(lang,"При переписке по вопросам качества просьба ссылаться на номер партии","When correspondence on quality issues, please refer to the batch number",true),
                                         constitle: srt.insText(lang,"Заключение","Conclusion",false)+":",
-                                        cons: srt.insText(lang,"соответствует требованиям "+tustr,"meets the requirements of "+tustr,true),
+                                        cons: srt.insText(lang,"соответствует требованиям "+tustr,"meets the requirements of "+translit().transform(tustr),true),
                                         dattitle: srt.insText(lang,"Дата выдачи сертификата","Date of issue of the certificate",false)+": ",
                                         dat: srt.insDate(lang,datvid,false),
                                         qrsrc: getQrCode(headerdata,id_type,is_ship),

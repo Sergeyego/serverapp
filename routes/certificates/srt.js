@@ -1,7 +1,7 @@
 let getGeneralData = async function (dat) {
     const db = require('../../postgres.js');
-    let query = "select dat as dat, adr as adr, telboss||', '||telfax||', '||teldop||' '||site||' '||email as tel, "+
-        "otk as otk, adr_en as adr_en, otk_en as otk_en, otk_title as otk_title, otk_title_en as otk_title_en "+
+    let query = "select dat as dat, adr as adr, telboss||', '||telfax||', '||teldop||'<br>'||site||' '||email as tel, "+
+        "otk as otk, adr_en as adr_en, otk_en as otk_en, otk_title as otk_title, otk_title_en as otk_title_en, fnam as fnam, fnam_en as fnam_en "+
         "from general_data where dat = (select max(mgd.dat) from general_data mgd where mgd.dat <= $1 )";
     const data = await db.one(query, [dat] );
     return data;

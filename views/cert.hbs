@@ -36,6 +36,12 @@
                 margin-left:0px;
                 margin-right:0px;
             }
+            .tableheadstyle{
+                width:100%;
+                vertical-align: middle;
+                line-height: 1;
+                padding: 0px;
+            }
             .signstyle{
                 white-space: pre-wrap;
                 text-align: left;
@@ -53,10 +59,19 @@
         <title>{{header}}</title>
     </head>
     <body class="globalstyle">
-        <div class="logostyle"><img src="/logo2.png" alt="logo" height="70"></div>
-        <div class="addrtext">{{{adr}}}</div>
-        <div class="addrtext">{{tel}}</div>
-        <div>
+        <table class="tableheadstyle">
+            <tr>
+                <td>
+                    <div class="logostyle"><img src="/logo.png" alt="logo" height="140"></div>
+                </td>
+                <td>
+                    <div class="addrtext">{{{fnam}}}</div>
+                    <div class="addrtext">{{{adr}}}</div>
+                    <div class="addrtext">{{{tel}}}</div>
+                </td>
+            </tr>
+        </table>
+        <div class="rightalign">
             {{{sertpic}}}
         </div>
         <div class="headertext">{{header}}</div>
