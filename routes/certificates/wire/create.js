@@ -1,5 +1,6 @@
 const srt = require("../srt");
 const qr = require("../../qrcode/qr");
+const translit = require("cyrillic-to-translit-js");
 
 let getMainTbl = function(lang, headerdata, id_type) {
     let tbl;
@@ -141,8 +142,9 @@ module.exports = function (app) {
                                     header: head, 
                                     adr: srt.insText(lang,gendata.adr,gendata.adr_en,true), 
                                     tel: gendata.tel,
+                                    fnam: srt.insText(lang,gendata.fnam,gendata.fnam_en,false),
                                     tutitle: srt.insText(lang,"Нормативная документация","Normative documents",false)+": ",
-                                    tustr: tustr,
+                                    tustr: srt.insText(lang,tustr,translit().transform(tustr),false),
                                     maintbl: getMainTbl(lang,headerdata,id_type),
                                     chemtbl: srt.getChemTbl(lang,chemtitle,chemdata),
                                     mechtbl: srt.getMechTbl(lang,enru,enen,mechdata,footer),
@@ -154,7 +156,7 @@ module.exports = function (app) {
                                     pol: pol,
                                     note: srt.insText(lang,"При переписке по вопросам качества просьба ссылаться на номер партии","When correspondence on quality issues, please refer to the batch number",true),
                                     constitle: srt.insText(lang,"Заключение","Conclusion",false)+":",
-                                    cons: srt.insText(lang,"соответствует требованиям "+tustr,"meets the requirements of "+tustr,true),
+                                    cons: srt.insText(lang,"соответствует требованиям "+tustr,"meets the requirements of "+translit().transform(tustr),true),
                                     dattitle: srt.insText(lang,"Дата выдачи сертификата","Date of issue of the certificate",false)+": ",
                                     dat: srt.insDate(lang,datvid,false),
                                     qrsrc: getQrCode(headerdata,id_type,is_ship),
