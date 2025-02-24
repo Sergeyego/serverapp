@@ -12,7 +12,7 @@
                 text-indent:0;
                 white-space: normal;
                 vertical-align: middle;
-                line-height: 2;
+                line-height: 1.7;
             }
             .imgstyle{
                 text-align:center;
@@ -40,6 +40,10 @@
             .leftalign{
                 text-align: left;
             }
+            .leftalign3{
+                text-align: left;
+                line-height: 1;
+            }
             .rightalign{
                 text-align: right;
             }
@@ -63,7 +67,9 @@
         <div class="leftalign">Количество мест <b class=boldtext>{{pack_kvo}}</b> Масса нетто кг <b class=boldtext>{{kvo}}</b></div>
         <div class="leftalign">Дата упаковки <b class=boldtext>{{dat_pack}}</b></div>
         <div class="leftalign">Упаковщик ______________ <b class=boldtext>{{packer}}</b></div>
+        <div class="imgstyle"><img src="/qrcode/180.png?data={{qrdata}}" alt="qrcode" height="150"></div>
         <br>
-        <div class="imgstyle"><img src="/qrcode/180.png?data={{qrdata}}" alt="qrcode" height="180"></div>
+        <div class="leftalign3">Электроды следует хранить в сухих, отапливаемых помещениях при температуре не ниже +15 ºС в условиях, предохраняющих их от загрязнения, увлажнения и механических повреждений.</div>
+        <!--<div class="imgstyle"><img src="/pack_symb.png" alt="pack_symb" height="120"></div>-->
     </body>
 </html>

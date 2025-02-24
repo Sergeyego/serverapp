@@ -12,7 +12,7 @@
                 text-indent:0;
                 white-space: normal;
                 vertical-align: middle;
-                line-height: 2;
+                line-height: 1.6;
             }
             .imgstyle{
                 text-align:center;
@@ -40,6 +40,11 @@
             .leftalign{
                 text-align: left;
             }
+            .leftalign3{
+                font-size:12pt;
+                text-align: left;
+                line-height: 1;
+            }
             .rightalign{
                 text-align: right;
             }
@@ -63,8 +68,9 @@
         <div class="leftalign">{{pack_nam}} <b class=boldtext>{{pack_kvo}}</b> Масса нетто <b class=boldtext>{{kvo}}</b> кг</div>
         <div class="leftalign">{{packer_nam}} <b class=boldtext>{{packer}}</b></div>
         <div class="leftalign">Дата упаковки <b class=boldtext>{{dat_pack}}</b></div>
-        <div class="imgstyle"><img src="/qrcode/180.png?data={{qrdata}}" alt="qrcode" height="180"></div>
+        <div class="imgstyle"><img src="/qrcode/180.png?data={{qrdata}}" alt="qrcode" height="140"></div>
         <br>
-        <div class="headertext"><b>НЕ БРОСАТЬ!</b></div>
+        <div class="leftalign3">Проволока должна храниться в сухом закрытом помещении при температуре не ниже +5ºС, защищающем ее от воздействия атмосферных осадков и почвенной влаги, в условиях, предохраняющих проволоку от ржавления, загрязнения и механических повреждений. Для распакованной проволоки температура воздуха в помещении должна быть не ниже 15ºС и относительная влажность не более 50%. Допускается в весенне-летний период увеличение влажности в помещении до 65%.</div>
+        <!--<div class="imgstyle"><img src="/pack_symb.png" alt="pack_symb" height="120"></div>-->
     </body>
 </html>

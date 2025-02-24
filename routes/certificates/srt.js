@@ -136,6 +136,7 @@ let getMechTbl = function(lang, titleru, titleen, mechdata, footer=null){
 }
 
 let getSertTbl = function(lang, sertdata, setSert){
+    const translit = require("cyrillic-to-translit-js");
     let tbl='';
     if (setSert.size){
         tbl+='<table class="tablestyle" border="1" cellspacing="1" cellpadding="3">'+
@@ -150,7 +151,7 @@ let getSertTbl = function(lang, sertdata, setSert){
                 tbl+='<tr>'+
                     '<td class="centeralign">'+insText(lang,sertdata[i].doc_nam,sertdata[i].doc_nam_en,true)+'</td>'+
                     '<td class="centeralign">'+insText(lang,sertdata[i].ved_nam,sertdata[i].ved_nam_en,true)+'</td>'+
-                    '<td class="centeralign">'+sertdata[i].nom_doc+'</td>'+
+                    '<td class="centeralign">'+insText(lang,sertdata[i].nom_doc,translit().transform(sertdata[i].nom_doc))+'</td>'+
                     '<td class="centeralign">'+insDate(lang,sertdata[i].dat_doc,true)+'</td>'+
                 '</tr>';
             }

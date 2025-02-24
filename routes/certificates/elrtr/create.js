@@ -13,10 +13,10 @@ let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
         symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
         srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)
         : 
-            headerdata.gt+"-"+srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)+"-"+headerdata.pu;
+        srt.insText(lang,headerdata.gt,translit().transform(headerdata.gt))+"-"+srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)+"-"+srt.insText(lang,headerdata.pu,translit().transform(headerdata.pu));
     }
     if (headerdata.znam!=null && headerdata.znam!="" && headerdata.znam!="-"){
-        symb+="<br>"+headerdata.znam;
+        symb+="<br>"+srt.insText(lang,headerdata.znam,translit().transform(headerdata.znam));
     }
 
     let goststr="";
