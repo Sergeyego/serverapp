@@ -245,7 +245,7 @@ let getSign = function(lang, id_type, gendata){
         sign+="("+insText(lang,"ФИО","full name",false)+")"+sep;
         sign+='</p>';
         sign+='</p>';
-    } else {
+    } else if (id_type!=6){
         sign+='<p style="text-align: center;">';
         sign+= insText(lang,gendata.otk_title,gendata.otk_title_en,false)+"______________";
         sign+= insText(lang,gendata.otk,gendata.otk_en,false);
