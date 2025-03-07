@@ -4,7 +4,8 @@ let getHeaderData = async function (id, is_ship=true) {
     let query = is_ship ? 
         "select p.id as id, p.n_s as n_s, p.yea as year, p.dat_part as dat, e.marka_sert as marka, p.diam as diam, "+
         "gt.nam as gt, pu.nam as pu, coalesce (p.ibco, ev.znam) as znam, coalesce(pp.nam, pe.nam) as provol, pol.naim as pol, "+
-        "s.nom_s as nomer, coalesce(s.dat_vid, $2 ) as datvid, o.massa as massa, pol.naim_en as pol_en, (o.id::int8+((p.id::int8)<<32)::int8)::varchar as code "+
+        "s.nom_s as nomer, coalesce(s.dat_vid, $2 ) as datvid, o.massa as massa, pol.naim_en as pol_en, (o.id::int8+((p.id::int8)<<32)::int8)::varchar as code, "+
+        "o.id as id_ship, o.hash as hash "+
         "from otpusk as o "+
         "inner join sertifikat as s on o.id_sert=s.id "+
         "inner join parti as p on o.id_part=p.id "+
@@ -19,7 +20,8 @@ let getHeaderData = async function (id, is_ship=true) {
         :
         "select p.id as id, p.n_s as n_s, p.yea as year, p.dat_part as dat, e.marka_sert as marka, p.diam as diam, "+
         "gt.nam as gt, pu.nam as pu, coalesce (p.ibco, ev.znam) as znam, coalesce(pp.nam, pe.nam) as provol, NULL as pol, "+
-        "NULL as nomer, ($2)::date as datvid, j.sum as massa, NULL as pol_en, (0::int8+((p.id::int8)<<32)::int8)::varchar as code "+
+        "NULL as nomer, ($2)::date as datvid, j.sum as massa, NULL as pol_en, (0::int8+((p.id::int8)<<32)::int8)::varchar as code, "+
+        "NULL as id_ship, NULL as hash "+
         "from parti as p "+
         "inner join elrtr as e on e.id=p.id_el "+
         "inner join provol as pe on pe.id=e.id_gost "+

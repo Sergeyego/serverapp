@@ -82,27 +82,32 @@ let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
     return tbl;
 }
 
-let getQrCode = function (headerdata, id_type, is_ship){
-    let n_s = (id_type!=1) ? headerdata.n_s : "1111";
-    let date_pr = (id_type!=1) ? headerdata.dat : new Date(1111,10,11);
-    let date = (id_type!=1) ? headerdata.datvid : new Date(1111,10,11);
-    let massa = (id_type!=1) ? headerdata.massa : 1111.0;
-    let code = (id_type!=1) ? "СЕРТИФИКАТ КАЧЕСТВА №" : "ОБРАЗЕЦ СЕРТИФИКАТА КАЧЕСТВА №";
-    code+=n_s+"-"+headerdata.year;
-    if (is_ship){
-        code+="/"+headerdata.nomer;
+let getQrCode = function (lang, headerdata, id_type, is_ship){
+    let code="";
+    if (id_type!=6 || headerdata.id_ship==null){
+        let n_s = (id_type!=1) ? headerdata.n_s : "1111";
+        let date_pr = (id_type!=1) ? headerdata.dat : new Date(1111,10,11);
+        let date = (id_type!=1) ? headerdata.datvid : new Date(1111,10,11);
+        let massa = (id_type!=1) ? headerdata.massa : 1111.0;
+        code = (id_type!=1) ? "СЕРТИФИКАТ КАЧЕСТВА №" : "ОБРАЗЕЦ СЕРТИФИКАТА КАЧЕСТВА №";
+        code+=n_s+"-"+headerdata.year;
+        if (is_ship){
+            code+="/"+headerdata.nomer;
+        }
+        code+="\n";
+        code+="Марка "+headerdata.marka+"\n";
+        code+="Диаметр, мм "+srt.insNumber("ru",headerdata.diam,0)+"\n";
+        code+="Номер партии "+n_s+"\n";
+        code+="Дата производства "+srt.insDate("ru",date_pr,false)+"\n";
+        code+="Масса нетто, кг "+srt.insNumber("ru",massa,0)+"\n";
+        if (is_ship && id_type!=1){
+            code+="Грузополучатель: "+headerdata.pol+"\n";
+        }
+        code+="Дата "+srt.insDate("ru",date,false)+"\n";
+        code+="Код подлинности "+headerdata.code;
+    } else {
+        code="https://certificates.czcm-weld.ru/"+headerdata.hash+"/"+headerdata.id_ship+"-"+lang+".pdf";
     }
-    code+="\n";
-    code+="Марка "+headerdata.marka+"\n";
-    code+="Диаметр, мм "+srt.insNumber("ru",headerdata.diam,0)+"\n";
-    code+="Номер партии "+n_s+"\n";
-    code+="Дата производства "+srt.insDate("ru",date_pr,false)+"\n";
-    code+="Масса нетто, кг "+srt.insNumber("ru",massa,0)+"\n";
-    if (is_ship && id_type!=1){
-        code+="Грузополучатель: "+headerdata.pol+"\n";
-    }
-    code+="Дата "+srt.insDate("ru",date,false)+"\n";
-    code+="Код подлинности "+headerdata.code;   
     return "/qrcode/300.png?data="+qr.encodeBase64Url(Buffer.from(code));
 }
 
@@ -111,6 +116,9 @@ module.exports = function (app) {
     app.use("/certificates/elrtr/:id_type/:id", async (req, res) => {
         let id = Number(req.params["id"]);
         let lang = req.query.lang;
+        if (typeof lang == "undefined"){
+            lang="ru";
+        }
         let setSert = new Set();
         let is_ship = (typeof req.query.part=="undefined" || req.query.part=="false");
         let id_type = Number(req.params["id_type"]);
@@ -193,10 +201,9 @@ module.exports = function (app) {
                                         cons: srt.insText(lang,"соответствует требованиям "+tustr,"meets the requirements of "+translit().transform(tustr),true),
                                         dattitle: srt.insText(lang,"Дата выдачи сертификата","Date of issue of the certificate",false)+": ",
                                         dat: srt.insDate(lang,datvid,false),
-                                        qrsrc: getQrCode(headerdata,id_type,is_ship),
+                                        qrsrc: getQrCode(lang,headerdata,id_type,is_ship),
                                         sign: srt.getSign(lang,id_type,gendata),
                                         back: srt.getBackground(lang,id_type)
-                                
                                     })
                                 })
                                 .catch((error) => {

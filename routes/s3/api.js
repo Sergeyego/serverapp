@@ -1,10 +1,9 @@
 const {
     S3Client,
     PutObjectCommand,
-    DeleteObjectCommand,
-    //paginateListObjectsV2,
+    //DeleteObjectCommand,
     ListObjectsV2Command,
-    GetObjectCommand,
+    //GetObjectCommand,
   } = require("@aws-sdk/client-s3");
 
 const fs = require("node:fs/promises");
@@ -15,6 +14,48 @@ const bodyParser = require('body-parser');
 const basepath = "/mnt/data/certificates/";
 const bucketName = `643e48d8e338-quality-certificates`;
 
+let syncFile = async function (fname, path) {
+    const s3Client = new S3Client({});
+    let err="";
+    let  ok=false;
+    try {
+        await s3Client.send (
+            new PutObjectCommand({
+            Bucket: bucketName,
+            Key: path,
+            Body: await fs.readFile(fname),
+            })
+        );
+        ok=true;
+    } catch (error) {
+        err=error.message;
+    }
+    return {error: err, ok: ok};
+};
+
+let syncAllFile = async function () {
+    let err="";
+    let  ok=false;
+    try {
+        let data = await db.any("select o.id, o.ds_status, o.hash  from otpusk o where o.ds_status = 1");
+        for (let i=0; i<data.length; i++){
+            var path = basepath+data[i].hash;
+            let files = sfs.readdirSync(path);
+            for (let j=0; j<files.length; j++){
+                let filename=path+'/'+files[j];
+                //console.log(filename);
+                let rez = await syncFile(filename,data[i].hash+'/'+files[j]);
+                if (rez.ok){
+                    await db.any("update otpusk set ds_status=2 where id = $1",[ Number(data[i].id) ]);
+                }
+            }
+        }
+        ok=true;
+    } catch (error) {
+        err=error.message;
+    }
+    return {error: err, ok: ok};
+};
 
 module.exports = function (app) {
 
@@ -61,12 +102,44 @@ module.exports = function (app) {
                         sfs.createReadStream(filename).pipe(res);
                     }).catch((err) => {
                         res.type('text/plain');
-                        res.send('Не найден подписанный сертификат!');
+                        res.send('');
                     });
             })
             .catch((error) => {
                 console.log('ERROR:', error);
                 res.status(500).type('text/plain');
+                res.send(error.message);
+            })
+    })
+
+    app.get("/s3/status/:id/:lang", async (req, res) => {
+        db.one("select o.ds_status, o.hash  from otpusk o where o.id = $1",[ Number(req.params["id"]) ]) 
+            .then((data) => {
+                var filename = basepath+data.hash+"/"+String(req.params["id"])+"-"+String(req.params["lang"])+".pdf";
+                var ok = (data.ds_status>0 && sfs.existsSync(filename));
+                res.type('text/plain');
+                res.send(ok);
+            })
+            .catch((error) => {
+                console.log('ERROR:', error);
+                res.status(500).type('text/plain');
+                res.send(error.message);
+            })
+    })
+
+    app.get("/s3/sync", async (req, res) => {
+        syncAllFile()
+            .then((rez) => {
+                if (rez.ok) {
+                    res.send("Синхронизировано успешно!");
+                } else {
+                    res.status(500).type("text/plain");
+                    res.send(rez.error);
+                }
+            })
+            .catch((error) => {
+                console.log("SYNC ERROR:", error);
+                res.status(500).type("text/plain");
                 res.send(error.message);
             })
     })
@@ -97,7 +170,7 @@ module.exports = function (app) {
         }
     })
 
-    app.get("/s3/upload", async (req, res) => {
+    /*app.get("/s3/upload", async (req, res) => {
         const s3Client = new S3Client({});
         const filePath = "/home/sergey/license_certificate_2025.pdf";
         try {
@@ -151,6 +224,6 @@ module.exports = function (app) {
             res.status(500).type('text/plain');
             res.send(err.message);
         }
-    })
+    })*/
 
 }
