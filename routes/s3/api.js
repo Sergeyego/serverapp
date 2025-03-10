@@ -10,6 +10,7 @@ const fs = require("node:fs/promises");
 const sfs = require("node:fs");
 const db = require('../../postgres.js');
 const bodyParser = require('body-parser');
+const { Poppler } = require("node-poppler");
 
 const basepath = "/mnt/data/certificates/";
 const bucketName = `643e48d8e338-quality-certificates`;
@@ -100,6 +101,48 @@ module.exports = function (app) {
                     .then(() => {
                         res.type('application/pdf');
                         sfs.createReadStream(filename).pipe(res);
+                    }).catch((err) => {
+                        res.type('text/plain');
+                        res.send('');
+                    });
+            })
+            .catch((error) => {
+                console.log('ERROR:', error);
+                res.status(500).type('text/plain');
+                res.send(error.message);
+            })
+    })
+
+    app.get("/s3/img/:id/:lang/:dpi", async (req, res) => {
+        db.one("select o.ds_status, o.hash  from otpusk o where o.id = $1",[ Number(req.params["id"]) ]) 
+            .then((data) => {
+                var filename = basepath+data.hash+"/"+String(req.params["id"])+"-"+String(req.params["lang"])+".pdf";
+                fs.access(filename)
+                    .then(() => {
+                        let dpi = Number(req.params["dpi"]);
+                        if (isNaN(dpi) || dpi<1 || dpi>1200){
+                            dpi=150;
+                        }
+                        const poppler = new Poppler();
+                        const options = {
+                            firstPageToConvert: 1,
+                            lastPageToConvert: 1,
+                            pngFile: true,
+                            singleFile: true,
+                            resolutionXAxis: dpi,
+                            resolutionYAxis: dpi,
+                        };
+                        poppler.pdfToCairo(filename, undefined, options)
+                            .then((cont) => {
+                                const buf = Buffer.from(cont,'binary');
+                                res.type('image/png');
+                                res.send(buf);
+                            })
+                            .catch((err) => {
+                                console.error(err);
+                                res.status(500).type('text/plain');
+                                res.send(err.message);
+                            });
                     }).catch((err) => {
                         res.type('text/plain');
                         res.send('');
