@@ -6,7 +6,7 @@ let getHeaderData = async function (id, is_ship=true) {
         "date_part('year',m.dat) as year, m.dat as dat, "+
         "b.n_plav as nplav, prov.nam as sprov, pprov.nam as prov, d.diam as diam, k.short as spool, "+
         "pol.naim as pol, pprov.is_cored as is_cored, pol.naim_en as pol_en, k.short_en as spool_en, coalesce(bprov.nam, pprov.nam) as bprov, "+
-        "(w.id::int8+((p.id::int8)<<32)::int8)::varchar as code "+
+        "(w.id::int8+((p.id::int8)<<32)::int8)::varchar as code, w.id as id_ship, w.hash as hash "+
         "from wire_shipment_consist as w "+
         "inner join sertifikat as s on w.id_ship=s.id "+
         "inner join wire_parti as p on w.id_wparti=p.id "+
@@ -25,7 +25,7 @@ let getHeaderData = async function (id, is_ship=true) {
         "date_part('year',m.dat) as year, m.dat as dat, "+
         "b.n_plav as nplav, prov.nam as sprov, pprov.nam as prov, d.diam as diam, k.short as spool, "+
         "NULL as pol, pprov.is_cored as is_cored, NULL as pol_en, k.short_en as spool_en, coalesce(bprov.nam, pprov.nam) as bprov, "+
-        "(0::int8+((p.id::int8)<<32)::int8)::varchar as code "+
+        "(0::int8+((p.id::int8)<<32)::int8)::varchar as code, NULL as id_ship, NULL as hash "+
         "from wire_parti as p "+
         "inner join wire_parti_m as m on p.id_m=m.id "+
         "inner join prov_buht as b on m.id_buht=b.id "+

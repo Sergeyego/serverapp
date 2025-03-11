@@ -2,7 +2,7 @@ const {
     S3Client,
     PutObjectCommand,
     //DeleteObjectCommand,
-    ListObjectsV2Command,
+    //ListObjectsV2Command,
     //GetObjectCommand,
   } = require("@aws-sdk/client-s3");
 
@@ -14,6 +14,26 @@ const { Poppler } = require("node-poppler");
 
 const basepath = "/mnt/data/certificates/";
 const bucketName = `643e48d8e338-quality-certificates`;
+
+let getQuSel = function(prefix){
+    let qusel;
+    if (String(prefix)=='elrtr'){
+        qusel="select o.ds_status, o.hash from otpusk o where o.id = $1";
+    } else {
+        qusel="select w.ds_status, w.hash from wire_shipment_consist w where w.id = $1";
+    }
+    return qusel;
+}
+
+let getQuUpd = function(prefix){
+    let quupd;
+    if (String(prefix)=='elrtr'){
+        quupd="update otpusk set ds_status = $2 where id = $1";
+    } else {
+        quupd="update wire_shipment_consist set ds_status = $2 where id = $1";
+    }
+    return quupd;
+}
 
 let syncFile = async function (fname, path) {
     const s3Client = new S3Client({});
@@ -38,7 +58,8 @@ let syncAllFile = async function () {
     let err="";
     let  ok=false;
     try {
-        let data = await db.any("select o.id, o.ds_status, o.hash  from otpusk o where o.ds_status = 1");
+        let data = await db.any("select 'elrtr' as prefix, o.id as id, o.ds_status as ds_status, o.hash as hash  from otpusk o where o.ds_status = 1 "+
+            "union select 'wire', w.id, w.ds_status, w.hash from wire_shipment_consist w where w.ds_status = 1");
         for (let i=0; i<data.length; i++){
             var path = basepath+data[i].hash;
             let files = sfs.readdirSync(path);
@@ -47,7 +68,7 @@ let syncAllFile = async function () {
                 //console.log(filename);
                 let rez = await syncFile(filename,data[i].hash+'/'+files[j]);
                 if (rez.ok){
-                    await db.any("update otpusk set ds_status=2 where id = $1",[ Number(data[i].id) ]);
+                    await db.any(getQuUpd(data[i].prefix),[ Number(data[i].id), 2 ]);
                 }
             }
         }
@@ -60,8 +81,8 @@ let syncAllFile = async function () {
 
 module.exports = function (app) {
 
-    app.post("/s3/local/:id/:lang",bodyParser.raw({ type: 'application/pdf', limit: '10mb'}), async (req, res) => {
-        db.one("select o.ds_status, o.hash  from otpusk o where o.id = $1",[ Number(req.params["id"]) ]) 
+    app.post("/s3/local/:prefix/:id/:lang",bodyParser.raw({ type: 'application/pdf', limit: '10mb'}), async (req, res) => {
+        db.one(getQuSel(req.params["prefix"]),[ Number(req.params["id"]) ]) 
             .then((data) => {
                 let dir = basepath+data.hash;
                 if (!sfs.existsSync(dir)) {
@@ -69,7 +90,7 @@ module.exports = function (app) {
                 }
                 fs.writeFile(dir+"/"+String(req.params["id"])+"-"+String(req.params["lang"])+".pdf", req.body)
                     .then(() => {
-                        db.any("update otpusk set ds_status=1 where id = $1",[ Number(req.params["id"]) ]) 
+                        db.any(getQuUpd(req.params["prefix"]),[ Number(req.params["id"]),1]) 
                             .then((data) => {
                                 res.type('text/plain');
                                 res.send('Успешно!');
@@ -93,8 +114,8 @@ module.exports = function (app) {
             })
     })
 
-    app.get("/s3/local/:id/:lang", async (req, res) => {
-        db.one("select o.ds_status, o.hash  from otpusk o where o.id = $1",[ Number(req.params["id"]) ]) 
+    app.get("/s3/local/:prefix/:id/:lang", async (req, res) => {
+        db.one(getQuSel(req.params["prefix"]),[ Number(req.params["id"]) ]) 
             .then((data) => {
                 var filename = basepath+data.hash+"/"+String(req.params["id"])+"-"+String(req.params["lang"])+".pdf";
                 fs.access(filename)
@@ -113,8 +134,8 @@ module.exports = function (app) {
             })
     })
 
-    app.get("/s3/img/:id/:lang/:dpi", async (req, res) => {
-        db.one("select o.ds_status, o.hash  from otpusk o where o.id = $1",[ Number(req.params["id"]) ]) 
+    app.get("/s3/img/:prefix/:id/:lang/:dpi", async (req, res) => {
+        db.one(getQuSel(req.params["prefix"]),[ Number(req.params["id"]) ]) 
             .then((data) => {
                 var filename = basepath+data.hash+"/"+String(req.params["id"])+"-"+String(req.params["lang"])+".pdf";
                 fs.access(filename)
@@ -155,8 +176,8 @@ module.exports = function (app) {
             })
     })
 
-    app.get("/s3/status/:id/:lang", async (req, res) => {
-        db.one("select o.ds_status, o.hash  from otpusk o where o.id = $1",[ Number(req.params["id"]) ]) 
+    app.get("/s3/status/:prefix/:id/:lang", async (req, res) => {
+        db.one(getQuSel(req.params["prefix"]),[ Number(req.params["id"]) ]) 
             .then((data) => {
                 var filename = basepath+data.hash+"/"+String(req.params["id"])+"-"+String(req.params["lang"])+".pdf";
                 var ok = (data.ds_status>0 && sfs.existsSync(filename));
@@ -187,7 +208,7 @@ module.exports = function (app) {
             })
     })
 
-    app.get("/s3/objects", async (req, res) => {
+    /*app.get("/s3/objects", async (req, res) => {
         const s3Client = new S3Client({});
         const command =
             new ListObjectsV2Command({
@@ -213,7 +234,7 @@ module.exports = function (app) {
         }
     })
 
-    /*app.get("/s3/upload", async (req, res) => {
+    app.get("/s3/upload", async (req, res) => {
         const s3Client = new S3Client({});
         const filePath = "/home/sergey/license_certificate_2025.pdf";
         try {
