@@ -38,17 +38,17 @@ let syncEmpl = async function () {
     const head = await kamin.sendReq(headreq, "GET");
     if (head.ok && head.object.length) {
         await db.any(
-            "insert into kamin_empl (id, surname, first_name, middle_name, dob, sex) " +
+            "insert into kamin_empl (id, surname, first_name, middle_name, dob, sex, inn) " +
             "( " +
             "select \"Сотрудник_Key\", \"Фамилия\", \"Имя\", \"Отчество\", " +
-            "(\"Сотрудник\"->>'ДатаРождения')::date, \"Сотрудник\"->>'Пол' " +
+            "(\"Сотрудник\"->>'ДатаРождения')::date, \"Сотрудник\"->>'Пол', \"Сотрудник\"->>'ИНН' " +
             "from ( " +
             "select * from jsonb_to_recordset(($1)::jsonb) " +
             "as t (\"Сотрудник\" jsonb, \"Сотрудник_Key\" varchar, \"Фамилия\" varchar, \"Имя\" varchar, \"Отчество\" varchar) " +
             ") as g " +
             ") on conflict (id) do update set surname = EXCLUDED.surname, " +
             "first_name=EXCLUDED.first_name, middle_name=EXCLUDED.middle_name, " +
-            "dob=EXCLUDED.dob, sex=EXCLUDED.sex", [JSON.stringify(head.object)])
+            "dob=EXCLUDED.dob, sex=EXCLUDED.sex, inn=EXCLUDED.inn", [JSON.stringify(head.object)])
     }
     return head;
 };
