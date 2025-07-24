@@ -34,7 +34,7 @@ let getMainTbl = function(lang, headerdata, id_type) {
 let getQrCode = function (lang, headerdata, id_type, is_ship){
 
     let code='';
-    if (id_type!=6 || headerdata.id_ship==null){
+    if (id_type<6 || headerdata.id_ship==null){
         let n_s = (id_type!=1) ? headerdata.n_s : "1111";
         let date_pr = (id_type!=1) ? headerdata.dat : new Date(1111,10,11);
         let date = (id_type!=1) ? headerdata.datvid : new Date(1111,10,11);

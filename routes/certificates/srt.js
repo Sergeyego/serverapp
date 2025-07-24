@@ -245,6 +245,20 @@ let getSign = function(lang, id_type, gendata){
         sign+="("+insText(lang,"ФИО","full name",false)+")"+sep;
         sign+='</p>';
         sign+='</p>';
+    } else if (id_type==7){
+        let sep = (lang=="ru" || lang=="en") ? "                  " : "                 ";
+        sign+='<p style="text-align: left;">';
+        sign+= insText(lang,"Представитель ООО \"Транснефть Надзор\"","Representative of Transneft Nadzor LLC",false);
+        sign+="<br><br>";
+        sign+="<u>"+insText(lang,"Ведущий инженер","Lead Lower",false)+"</u>";
+        sign+="   __________________   __________________";
+        sign+='<p style="font-size: 10px; text-align: left;">';
+        sign+=sep;
+        sign+="("+insText(lang,"должность","job title",false)+")"+sep;
+        sign+="("+insText(lang,"подпись","signature",false)+")"+sep;
+        sign+="("+insText(lang,"ФИО","full name",false)+")"+sep;
+        sign+='</p>';
+        sign+='</p>';
     } else if (id_type!=6){
         sign+='<p style="text-align: center;">';
         sign+= insText(lang,gendata.otk_title,gendata.otk_title_en,false)+"______________";
