@@ -12,7 +12,7 @@ const db = require('../../postgres.js');
 const bodyParser = require('body-parser');
 const { Poppler } = require("node-poppler");
 
-const basepath = "/mnt/data/certificates/";
+const basepath = /*"/Volumes/DATA/certificates/";*/"/mnt/data/certificates/";
 const bucketName = `643e48d8e338-quality-certificates`;
 
 let getQuSel = function(prefix){

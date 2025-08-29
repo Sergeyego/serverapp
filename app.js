@@ -51,6 +51,8 @@ require('./routes/rab/sync.js')(app);
 
 require('./routes/s3/api.js')(app);
 
+require('./routes/pasport/elrtr/pasport.js')(app);
+
 app.use(express.static(__dirname + '/public'));
 
 app.use((req, res, next) => {
