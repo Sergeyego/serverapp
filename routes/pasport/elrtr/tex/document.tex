@@ -82,14 +82,19 @@
 \ESKDauthor{ Смирнов С.М. }
 \ESKDchecker{ Чистякова А.В. }
 \ESKDnormContr{ Алексеева А.С. }
+\ESKDapprovedBy{ Виноградова В.А. }
+
+\newcommand\ESKDauthorTitle{Начальник лаборатории}
+\newcommand\ESKDcheckerTitle{Начальник ОТК}
+\newcommand\ESKDapprovedByTitle{Директор по качеству}
 
 %%% Для титульника
-\ESKDtitleApprovedBy{ Директор по качеству }{ В.А. Виноградова }
-\ESKDtitleDesignedBy{ Разработал: \\ Начальник лаборатории }{ С.М. Смирнов }
-\ESKDtitleDesignedBy{ Проверил: \\ Начальник ОТК }{ А.В. Чистякова }
+\ESKDtitleApprovedBy{ \ESKDapprovedByTitle }{ \ESKDtheApprovedBy }
+\ESKDtitleDesignedBy{ Разработал: \\ \ESKDauthorTitle }{ \ESKDtheAuthor }
+\ESKDtitleDesignedBy{ Проверил: \\ \ESKDcheckerTitle }{ \ESKDtheChecker }
 
 \renewcommand{\ESKDtheTitleFieldX}{
-Судиславский район, Костромская область, д. Текотово \\ 2025г.
+Судиславский район, Костромская область, д. Текотово \\ \ESKDtheYear г.
 }
 
 \renewcommand{\textsuperscript}[1]{\raisebox{0.8ex}{\scalebox{0.66}{#1}}}
@@ -97,7 +102,7 @@
 
 %\ESKDdepartment{ Ведомство }
 \ESKDcompany{ ООО "Судиславский завод сварочных материалов" }
-\ESKDclassCode{ ОКП 12 7200 }
+\ESKDclassCode{ <okp> }
 \ESKDsignature{ ПС СЗСМ <npart> }
 \ESKDdate{ 2025/08/27 }
 
@@ -155,88 +160,28 @@
 \hline 
 Коэффициент массы покрытия, \%: & <kfmp> \\
 \hline 
-Расход электродов на 1 кг наплавленного металла, кг: & <rasx> \\
-\hline 
-Коэффициент наплавки, г/Ач: & <plav> \\
-\hline 
+<plav>
 Химический состав наплавленного металла, \%: &  
 \vspace{-2.5mm} 
 <chem>
-%\begin{tabular}{|c|c|c|}
-%\hline 
-%Элемент & Требование НД, \% & Фактическое значение, \% \\
-%\hline 
-%C & не более 0,1000 & 0,048 \\
-%\hline 
-%Mn & 0,900-1,700 & 1,300 \\
-%\hline 
-%Si & 0,150-0,750 & 0,530 \\
-%\hline 
-%Ni & 0,200-0,70 & 0,540 \\
-%\hline 
-%S & не более 0,030 & 0,010 \\
-%\hline 
-%P & не более 0,035 & 0,013 \\
-%\hline 
-%\end{tabular}
 \vspace{2.5mm} 
 \\
 \hline 
-
-Механические свойства металла шва: &  
-\vspace{-2.5mm} 
-\begin{tabular}{|p{5cm}|p{1.8cm}|p{2cm}|}
-\hline 
-\makecell[c]{Параметр} & \makecell[c]{Требование \\НД} & \makecell[c]{Фактическое \\значение} \\
-\hline 
-Временное сопротивление разрыву, МПа & \makecell[c]{не менее\\ 530} & \makecell[c]{606,00} \\
-\hline 
-Предел текучести, МПа & \makecell[c]{не менее\\ 460} & \makecell[c]{522,00} \\
-\hline 
-Относительное удлинение, \% & \makecell[c]{не менее\\ 20} & \makecell[c]{28,80} \\
-\hline 
-Ударная вязкость -20°C, Дж/см\textsuperscript{2} & \makecell[c]{не менее \\49} & \makecell[c]{162,00} \\
-\hline 
-Ударная вязкость -40°C, Дж/см\textsuperscript{2}  & \makecell[c]{не менее\\ 34} & \makecell[c]{104,00} \\
-\hline
-Твердость по Виккерсу, HV\textsubscript{10} & \makecell[c]{не более\\ 270} & \makecell[c]{202,00} \\
-\hline 
-\end{tabular}
-\vspace{2.5mm}  
-\\
-\hline 
-
+<mech>
 \end{longtable}
 
 \section{Срок хранения и гарантии изготовителя}
+
 Изготовитель гарантирует соответствие электродов требованиям НД при условии соблюдения правил хранения и транспортировки. Гарантийный срок от даты продажи электродов — <warr> месяцев. 
 Срок годности (хранения) не ограничен при условии соблюдения правил хранения и транспортировки.
 
 \section{Заметки по эксплуатации и хранению}
+
 Содержание влаги в покрытии электродов перед использованием не должно превышать <vl>\%.
 При необходимости, перед использованием, необходимо прокалить при температуре <proc>. Допускается повторная прокалка электродов не более 3 раз.
 
-\begin{table}[h!]
-\centering
-\caption*{Режимы сварки}
-\begin{tabular}{|c|c|p{3cm}|p{3cm}|p{3cm}|}
-\hline 
-\multirow{2}{*}{Слой шва} & \multirow{2}{*}{Полярность} &\multicolumn{3}{c|}{Сварочный ток (А) в положении при сварке} \\
-\cline{3-5}
- && \makecell[c]{нижнее} & \makecell[c]{вертикальное} & \makecell[c]{потолочное} \\
-\hline
-\makecell[c]{Корневой} & \makecell[c]{обратная} & \makecell[c]{80-120} & \makecell[c]{90-110} & \makecell[c]{80-110} \\
-\hline 
-\makecell[c]{Подварочный} & \makecell[c]{обратная} & \makecell[c]{80-120} & \makecell[c]{90-110} & \makecell[c]{80-110} \\
-\hline 
-\makecell[c]{Первый заполняющий} & \makecell[c]{обратная} & \makecell[c]{90-120} & \makecell[c]{90-110} & \makecell[c]{80-110} \\
-\hline 
-\makecell[c]{Последующие} & \makecell[c]{обратная} & \makecell[c]{90-120} & \makecell[c]{90-110} & \makecell[c]{80-110} \\
-\hline 
-\makecell[c]{Облицовочный} & \makecell[c]{обратная} & \makecell[c]{90-120} & \makecell[c]{90-110} & \makecell[c]{80-110} \\
-\hline 
-\end{tabular}
-\end{table}
+<amp>
+
 Электроды следует хранить в сухих отапливаемых помещениях при температуре не ниже плюс 15 °С в условиях, предохраняющих их от загрязнения, увлажнения и механических повреждений.
 
 \section{Требования безопасности}
@@ -281,16 +226,18 @@
 \begin{tabular}{ccccc}
 МП \hspace{5 mm}
 &
- $ \frac {\text{Начальник ОТК}}{\text{\tiny должноть}} $
+ $ \frac {\text{\ESKDcheckerTitle}}{\text{\tiny должноть}} $
  &
  $ \frac {\text{}}{\text{\tiny \hspace{5 mm} личная подпись \hspace{5 mm}}} $
  & 
-  $\frac {\text{А.В. Чистякова}}{\text{\tiny расшифровка подписи}} $ 
+  $\frac {\text{\ESKDtheChecker}}{\text{\tiny расшифровка подписи}} $ 
   & 
-  $\frac {\text{2025.08.04}}{\text{\tiny год, месяц, число}} $ 
+  $\frac {\text{\ESKDtheYear.\ESKDtheMonth.\ESKDtheDay}}{\text{\tiny год, месяц, число}} $ 
  \end{tabular}
 \end{flushright}
+
 \section{Сведения об утилизации}
+
 Утилизация отходов электродов должна проводиться путем сдачи в специализированные организации, осуществляющие деятельность по сбору и использованию отходов V класса опасности.
 
 \end{document}

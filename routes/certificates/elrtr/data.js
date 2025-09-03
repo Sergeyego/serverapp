@@ -20,7 +20,7 @@ let getHeaderData = async function (id, is_ship=true) {
         :
         "select p.id as id, p.n_s as n_s, p.yea as year, p.dat_part as dat, e.marka_sert as marka, p.diam as diam, "+
         "gt.nam as gt, pu.nam as pu, coalesce (p.ibco, ev.znam) as znam, coalesce(pp.nam, pe.nam) as provol, NULL as pol, "+
-        "NULL as nomer, ($2)::date as datvid, j.sum as massa, NULL as pol_en, (0::int8+((p.id::int8)<<32)::int8)::varchar as code, "+
+        "NULL as nomer, ($2)::date as datvid, get_prod($1) as massa, NULL as pol_en, (0::int8+((p.id::int8)<<32)::int8)::varchar as code, "+
         "NULL as id_ship, NULL as hash "+
         "from parti as p "+
         "inner join elrtr as e on e.id=p.id_el "+
@@ -28,7 +28,6 @@ let getHeaderData = async function (id, is_ship=true) {
         "left join provol as pp on pp.id=p.id_prfact and pp.id in (select ep.id_prov from el_provol as ep where ep.id_el = p.id_el) "+
         "inner join gost_types as gt on e.id_gost_type=gt.id "+
         "inner join purpose as pu on e.id_purpose=pu.id "+
-        "left join (select id_part as id, sum(kvo) as sum from part_prod group by id_part) as j on j.id=p.id "+
         "left join el_var as ev on ev.id_el = p.id_el and ev.id_var = p.id_var "+
         "where p.id = $1";
     const data = await db.one(query, [ Number(id), new Date()] );

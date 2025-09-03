@@ -10,9 +10,7 @@ let getPartData = async function (id) {
     let query = 
         "select p.id as id, p.n_s as n_s, p.dat_part as dat, e.marka_sert as marka, p.diam as diam, p.kfmp as kfmp, ev.proc as proc, e.shelf_life as warr, "+
         "gt.nam as type, pu.nam as pu, coalesce (p.ibco, ev.znam) as znam, coalesce(pp.nam, pe.nam) as provol, el.nam as long, e.vl as vl, eg.typ as grp, "+
-        "(select sum(kvo) from part_prod where part_prod.id=p.id) as massa, coalesce(ev.descrtu, ev.descr) as descr, "+
-        "(select value from el_plav ep where ep.id_el = p.id_el and ep.id_plav=2) as rasx, "+
-        "(select value from el_plav ep where ep.id_el = p.id_el and ep.id_plav=1) as plav "+
+        "get_prod($1) as massa, coalesce(ev.descrtu, ev.descr) as descr, et.okp as okp "+
         "from parti as p "+
         "inner join elrtr as e on e.id=p.id_el "+
         "inner join provol as pe on pe.id=e.id_gost "+
@@ -21,6 +19,7 @@ let getPartData = async function (id) {
         "inner join purpose as pu on e.id_purpose=pu.id "+
         "inner join el_long el on el.id=p.id_long "+
         "inner join el_grp eg on eg.id=e.id_grp "+
+        "inner join el_types et on et.id=e.id_vid "+
         "left join el_var as ev on ev.id_el = p.id_el and ev.id_var = p.id_var "+
         "where p.id = $1";
     const data = await db.one(query, [ Number(id)] );
@@ -52,6 +51,48 @@ let getChemData = async function (id) {
     return data;
 }
 
+let getMechData = async function (id) {
+    let query="select * from ( "+
+        "select mc.nam as cat_nam, m.tex as nam, m.prefix as prefix, s.value as val, mt.min as min, mt.max as max "+
+        "from sert_mech as s "+
+        "inner join mech_tbl as m on s.id_mech=m.id "+
+        "inner join mech_category mc on mc.id=m.id_cat "+
+        "left join mech_tu mt on mt.id_el = (select id_el from parti where id = $1 ) "+
+        "and mt.id_mech = s.id_mech and mt.id_var = (select id_var from parti where id = $1 ) "+
+        "where s.id_part = $1 "+
+        "union "+
+        "select mc2.nam, t.nam, n.nam, null, null, null "+
+        "from sert_mechx as x "+
+        "inner join mechx_tbl as t on x.id_mechx=t.id "+
+        "inner join mechx_nams as n on x.id_value=n.id "+
+        "inner join mech_category mc2 on mc2.id=t.id_cat "+
+        "where x.id_part = $1 "+
+        ") as z order by z.cat_nam, z.nam";
+    const data = await db.any(query, [ Number(id)] );
+    return data;
+}
+
+let getAmpData = async function (id) {
+    let query="select at2.lay as lay, p.nam as pol, at2.bot as bot, at2.vert as vert, at2.\"ceil\" as top "+
+        "from amp_tu at2 "+
+        "inner join polar p on p.id = at2.id_polar "+
+        "where at2.id_el = (select id_el from parti where id = $1) "+
+        "and at2.id_diam = (select id from diam where diam = (select diam from parti where id = $1)) "+
+        "and at2.id_var = (select id_var from parti where id = $1) "+
+        "order by at2.id ";
+    const data = await db.any(query, [ Number(id)] );
+    return data;
+}
+
+let getPlavData = async function (id) {
+    let query="select epn.nam as nam, ep.value as val from el_plav ep "+
+        "inner join el_plav_nams epn on epn.id = ep.id_plav "+
+        "where ep.id_el = (select id_el from parti where id = $1) "+
+        "order by epn.nam";
+    const data = await db.any(query, [ Number(id)] );
+    return data;
+}
+
 let getSertStr = function (sertData) {
     let tex = "";
     for (let i=0; i<sertData.length; i++){
@@ -60,6 +101,15 @@ let getSertStr = function (sertData) {
         if (sertData[i].iss!=null && sertData[i].iss_f!=null){
             tex+=", "+lescape(sertData[i].iss)+" "+lescape(sertData[i].iss_f);
         }
+        tex+=" \\\\ \\hline ";
+    }
+    return tex;
+}
+
+let getPlavStr = function (plavData) {
+    let tex = "";
+    for (let i=0; i<plavData.length; i++){
+        tex+=lescape(plavData[i].nam)+" & "+locale.insNumber(plavData[i].val,1);
         tex+=" \\\\ \\hline ";
     }
     return tex;
@@ -91,8 +141,62 @@ let getChemTbl = function (chemData) {
     return tex;
 }
 
-let getDoc = function(data,partdata,tustr,sertData,chemData) {
+let getMechTbl = function (mechData) {
+    let tex = "";
+    let cat = "";
+    if (mechData.length){
+        for (let i=0; i<mechData.length; i++){
+            if (mechData[i].cat_nam!=cat){
+                if (i>0){
+                    tex+="\\end{tabular} \\vspace{2.5mm}  \\\\ \\hline ";
+                }
+                cat=mechData[i].cat_nam;
+                tex+=lescape(mechData[i].cat_nam)+": & \\vspace{-2.5mm} \\begin{tabular}{|p{5cm}|p{1.8cm}|p{2cm}|} \\hline ";
+                tex+="\\makecell[c]{Параметр} & \\makecell[c]{Требование \\\\НД} & \\makecell[c]{Фактическое \\\\значение} \\\\ \\hline ";
+            }
+            tex+=mechData[i].nam+" & ";
+            let prefix="";
+            if (mechData[i].prefix!=null){
+                prefix=lescape(mechData[i].prefix);
+            }
+            if (mechData[i].min!=null || mechData[i].max!=null){
+                if (mechData[i].min==null || mechData[i].min==0){
+                    tex+="не более ";
+                    tex+=locale.insNumber(mechData[i].max,2);
+                } else if (mechData[i].max==null){
+                    tex+="не менее ";
+                    tex+=locale.insNumber(mechData[i].min,2);
+                } else {
+                    tex+=locale.insNumber(mechData[i].min,2)+" - "+locale.insNumber(mechData[i].max,2);
+                }
+            } else {
+                tex+=prefix;
+            }
+            tex+=" & \\makecell[c]{ "+prefix+" "+locale.insNumber(mechData[i].val,2)+" } \\\\ \\hline ";
+        }
+        tex+="\\end{tabular} \\vspace{2.5mm}  \\\\ \\hline ";
+    }
+    return tex;
+}
+
+let getAmpTbl = function (ampData) {
+    let tex = "";
+    if (ampData.length){
+        tex+= "\\begin{table}[h!] \\centering \\caption*{Режимы сварки} \\begin{tabular}{|c|c|p{3cm}|p{3cm}|p{3cm}|} \\hline ";
+        tex+="\\multirow{2}{*}{Слой шва} & \\multirow{2}{*}{Полярность} &\\multicolumn{3}{c|}{Сварочный ток (А) в положении при сварке} \\\\ \\cline{3-5} ";
+        tex+="&& \\makecell[c]{нижнее} & \\makecell[c]{вертикальное} & \\makecell[c]{потолочное} \\\\ \\hline ";
+        for (let i=0; i<ampData.length; i++){
+            tex+="\\makecell[c]{"+lescape(ampData[i].lay)+"} & \\makecell[c]{"+lescape(ampData[i].pol)+"} "
+            tex+="& \\makecell[c]{"+lescape(ampData[i].bot)+"} & \\makecell[c]{"+lescape(ampData[i].vert)+"} & \\makecell[c]{"+lescape(ampData[i].top)+"} \\\\ \\hline ";
+        }
+        tex+="\\end{tabular} \\end{table} "
+    }
+    return tex;
+}
+
+let getDoc = function(data,partdata,tustr,sertData,chemData,mechData,ampData,plavData) {
     let tex=data.replace(/<npart>/g,lescape(partdata.n_s));
+    tex=tex.replace(/<okp>/g,lescape(partdata.okp));
     tex=tex.replace(/<marka>/g,lescape(partdata.marka));
     tex=tex.replace(/<diam>/g,locale.insNumber(partdata.diam,1));
     tex=tex.replace(/<znam>/g,lescape(partdata.znam));
@@ -106,14 +210,14 @@ let getDoc = function(data,partdata,tustr,sertData,chemData) {
     tex=tex.replace(/<proc>/g,lescape(partdata.proc));
     tex=tex.replace(/<vl>/g,lescape(partdata.vl));
     tex=tex.replace(/<rasx>/g,locale.insNumber(partdata.rasx,1));
-    tex=tex.replace(/<plav>/g,locale.insNumber(partdata.plav));
-    tex=tex.replace(/<warr>/g,locale.insNumber(partdata.warr,0));
     tex=tex.replace(/<grp>/g,lescape(partdata.grp));
     tex=tex.replace(/<descr>/g,lescape(partdata.descr));
 
-
+    tex=tex.replace(/<plav>/g,getPlavStr(plavData));
     tex=tex.replace(/<sert>/g,getSertStr(sertData));
     tex=tex.replace(/<chem>/g,getChemTbl(chemData));
+    tex=tex.replace(/<mech>/g,getMechTbl(mechData));
+    tex=tex.replace(/<amp>/g,getAmpTbl(ampData));
 
     tex=tex.replace(/<tustr>/g,lescape(tustr));
     return tex;
@@ -144,29 +248,50 @@ module.exports = function (app) {
                     .then((sertData)=>{
                         getChemData(id_part)
                         .then((chemData)=>{
-                            let tustr="";
-                            for (let i = 0; i < tudata.length; i++) {
-                                if (tustr!=""){
-                                    tustr+=", ";
-                                }
-                                tustr+=tudata[i].nam;
-                            }
-                            const pdf = latex(getDoc(data,partdata,tustr,sertData,chemData), options);
-                            pdf.pipe(pdfStream);
-                            pdf.on('finish', () =>{ 
-                                res.type('application/pdf');
-                                pdfStream.pipe(res);
-                            })                
-                            pdf.on('error', err => {
-                                console.error(err);
+                            getMechData(id_part)
+                            .then((mechData)=>{
+                                getAmpData(id_part)
+                                .then((ampData)=>{
+                                    getPlavData(id_part)
+                                .then((plavData)=>{
+                                        let tustr="";
+                                        for (let i = 0; i < tudata.length; i++) {
+                                            if (tustr!=""){
+                                                tustr+=", ";
+                                            }
+                                            tustr+=tudata[i].nam;
+                                        }
+                                        const pdf = latex(getDoc(data,partdata,tustr,sertData,chemData,mechData,ampData,plavData), options);
+                                        pdf.pipe(pdfStream);
+                                        pdf.on('finish', () =>{ 
+                                            res.type('application/pdf');
+                                            pdfStream.pipe(res);
+                                        })                
+                                        pdf.on('error', err => {
+                                            console.error(err);
+                                            res.status(500).type('text/plain');
+                                            res.send(err.message);
+                                        })
+                                    }).catch((error) => {
+                                    console.log('ERROR:', error);
+                                    res.status(500).type('text/plain');
+                                    res.send(error.message);
+                                    })
+                                }).catch((error) => {
+                                    console.log('ERROR:', error);
+                                    res.status(500).type('text/plain');
+                                    res.send(error.message);
+                                })
+                            }).catch((error) => {
+                                console.log('ERROR:', error);
                                 res.status(500).type('text/plain');
-                                res.send(err.message);
+                                res.send(error.message);
                             })
                         }).catch((error) => {
-                        console.log('ERROR:', error);
-                        res.status(500).type('text/plain');
-                        res.send(error.message);
-                    })
+                            console.log('ERROR:', error);
+                            res.status(500).type('text/plain');
+                            res.send(error.message);
+                        })
                     }).catch((error) => {
                         console.log('ERROR:', error);
                         res.status(500).type('text/plain');
