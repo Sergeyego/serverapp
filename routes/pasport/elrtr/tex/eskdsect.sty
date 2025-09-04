@@ -118,26 +118,28 @@
 \newcommand{\ESKD@point@style@single}{
   \newcounter{point}
   \renewcommand{\thepoint}{\arabic{point}}
-  \renewcommand{\theHpoint}{\arabic{point}}
+  %\renewcommand{\theHpoint}{\arabic{point}}
   \ESKD@point@style@singletrue}
 
 \newcommand{\ESKD@point@style@section}{
   \newcounter{point}[section]
   \renewcommand{\thepoint}{\thesection.\arabic{point}}
-  \renewcommand{\theHpoint}{\theHsection.\arabic{point}}}
+  %\renewcommand{\theHpoint}{\theHsection.\arabic{point}}
+  }
 
 \newcommand{\ESKD@point@style@subsection}{
   \newcounter{point}[subsection]
   \renewcommand{\thepoint}{\thesubsection.\arabic{point}}
-  \renewcommand{\theHpoint}{\theHsubsection.\arabic{point}}}
+  %\renewcommand{\theHpoint}{\theHsubsection.\arabic{point}}
+  }
 
 \@nameuse{ESKD@point@style@\ESKD@point@style}
 \newcounter{subpoint}[point]
 \newcounter{subsubpoint}[subpoint]
 \renewcommand{\thesubpoint}{\thepoint.\arabic{subpoint}}
-\renewcommand{\theHsubpoint}{\theHpoint.\arabic{subpoint}}
+%\renewcommand{\theHsubpoint}{\theHpoint.\arabic{subpoint}}
 \renewcommand{\thesubsubpoint}{\thesubpoint.\arabic{subsubpoint}}
-\renewcommand{\theHsubsubpoint}{\theHsubpoint.\arabic{subsubpoint}}
+%\renewcommand{\theHsubsubpoint}{\theHsubpoint.\arabic{subsubpoint}}
 
 \newcommand{\point}{%
   \par\refstepcounter{point}\thepoint\quad}
