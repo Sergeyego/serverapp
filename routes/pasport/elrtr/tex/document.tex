@@ -79,14 +79,14 @@
 \ESKDtitle{ Электроды покрытые металлические марки "<marka>" }
 \ESKDdocName{ Паспорт }
 
-\ESKDauthor{ Смирнов С.М. }
-\ESKDchecker{ Чистякова А.В. }
-\ESKDnormContr{ Алексеева А.С. }
-\ESKDapprovedBy{ Виноградова В.А. }
+\ESKDauthor{ <auth> }
+\ESKDchecker{ <check> }
+\ESKDnormContr{ <norm> }
+\ESKDapprovedBy{ <app> }
 
-\newcommand\ESKDauthorTitle{Начальник лаборатории}
-\newcommand\ESKDcheckerTitle{Начальник ОТК}
-\newcommand\ESKDapprovedByTitle{Директор по качеству}
+\newcommand\ESKDauthorTitle{<authTitle>}
+\newcommand\ESKDcheckerTitle{<checkTitle>}
+\newcommand\ESKDapprovedByTitle{<appTitle>}
 
 %%% Для титульника
 \ESKDtitleApprovedBy{ \ESKDapprovedByTitle }{ \ESKDtheApprovedBy }
@@ -104,7 +104,7 @@
 \ESKDcompany{ ООО "Судиславский завод сварочных материалов" }
 \ESKDclassCode{ <okp> }
 \ESKDsignature{ ПС СЗСМ <npart> }
-\ESKDdate{ 2025/08/27 }
+\ESKDdate{ <date> }
 
 \begin{document}
 
@@ -117,7 +117,7 @@
 
 \section{ Основные сведения об изделии }
 
-\begin{tabular}{|p{5cm}|p{10cm}|}
+\begin{longtable}{|p{5cm}|p{10cm}|}
 \hline 
 Изготовитель: & Общество с ограниченной ответственностью "Судиславский завод сварочных материалов" (ООО «СЗСМ»)  \\
 \hline 
@@ -139,7 +139,7 @@
 \hline 
 Тип по ГОСТ 9467: & <type> \\
 \hline 
-Условное обозначение: & \vspace{-2.5mm}  $ \frac {\text{<type>-<marka>-<diam>-<pu>}}{\text{<znam>}} $ \vspace{2.5mm}\\
+Условное обозначение: & \vspace{-2.5mm}  $ <frac> $ \vspace{2.5mm}\\
 \hline 
 Номер партии: & <npart> \\
 \hline 
@@ -148,7 +148,7 @@
 Дата изготовления: & <dat> г. \\
 \hline 
 <sert>
-\end{tabular}
+\end{longtable}
 
 \section{Технические данные}
 
@@ -212,7 +212,7 @@
 \begin{tabular}{ccc}
  $ \frac {\text{Электроды покрытые металлические}}{\text{\tiny наименование изделия}} $
  &
- $\frac {\frac {\text{<type>-<marka>-<diam>-<pu>}}{\text{<znam>}}}{\text{\tiny обозначение}} $ 
+ $\frac {<frac>}{\text{\tiny обозначение}} $ 
  & 
   $\frac {\text{<npart>}}{\text{\tiny заводской номер партии}} $ 
  \end{tabular}

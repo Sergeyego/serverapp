@@ -93,6 +93,27 @@ let getPlavData = async function (id) {
     return data;
 }
 
+let getFrac = function (partData) {
+    let tex = "";
+    let znam=partData.znam;
+    let type=partData.type;
+    let pu=partData.pu;
+    let num="";
+    if (type!=null && type!='-' && type!=''){
+        num+=lescape(type)+'-';
+    }
+    num+=lescape(partData.marka)+'-⌀'+locale.insNumber(partData.diam,0);
+    if (pu!=null && pu!='-' && pu!=''){
+        num+='-'+lescape(pu);
+    }
+    if (znam!=null && znam!='-' && znam!=''){
+        tex+="\\frac {\\text{"+num+"}}{\\text{"+znam+"}}";
+    } else {
+        tex+="\\text{"+num+"}";
+    }
+    return tex;
+}
+
 let getSertStr = function (sertData) {
     let tex = "";
     for (let i=0; i<sertData.length; i++){
@@ -194,25 +215,24 @@ let getAmpTbl = function (ampData) {
     return tex;
 }
 
-let getDoc = function(data,partdata,tustr,sertData,chemData,mechData,ampData,plavData) {
-    let tex=data.replace(/<npart>/g,lescape(partdata.n_s));
-    tex=tex.replace(/<okp>/g,lescape(partdata.okp));
-    tex=tex.replace(/<marka>/g,lescape(partdata.marka));
-    tex=tex.replace(/<diam>/g,locale.insNumber(partdata.diam,1));
-    tex=tex.replace(/<znam>/g,lescape(partdata.znam));
-    tex=tex.replace(/<type>/g,lescape(partdata.type));
-    tex=tex.replace(/<pu>/g,lescape(partdata.pu));
-    tex=tex.replace(/<massa>/g,locale.insNumber(partdata.massa,1));
-    tex=tex.replace(/<provol>/g,lescape(partdata.provol));
-    tex=tex.replace(/<dat>/g,locale.insDate(partdata.dat));
-    tex=tex.replace(/<long>/g,locale.insNumber(partdata.long,0));
-    tex=tex.replace(/<kfmp>/g,locale.insNumber(partdata.kfmp,2));
-    tex=tex.replace(/<proc>/g,lescape(partdata.proc));
-    tex=tex.replace(/<vl>/g,lescape(partdata.vl));
-    tex=tex.replace(/<rasx>/g,locale.insNumber(partdata.rasx,1));
-    tex=tex.replace(/<grp>/g,lescape(partdata.grp));
-    tex=tex.replace(/<descr>/g,lescape(partdata.descr));
+let getDoc = function(data,partData,tustr,sertData,chemData,mechData,ampData,plavData,body) {
+    let tex=data.replace(/<npart>/g,lescape(partData.n_s));
+    tex=tex.replace(/<okp>/g,lescape(partData.okp));
+    tex=tex.replace(/<marka>/g,lescape(partData.marka));
+    tex=tex.replace(/<diam>/g,locale.insNumber(partData.diam,1));
+    tex=tex.replace(/<type>/g,lescape(partData.type));
+    tex=tex.replace(/<massa>/g,locale.insNumber(partData.massa,1));
+    tex=tex.replace(/<provol>/g,lescape(partData.provol));
+    tex=tex.replace(/<dat>/g,locale.insDate(partData.dat));
+    tex=tex.replace(/<long>/g,locale.insNumber(partData.long,0));
+    tex=tex.replace(/<kfmp>/g,locale.insNumber(partData.kfmp,2));
+    tex=tex.replace(/<proc>/g,lescape(partData.proc));
+    tex=tex.replace(/<vl>/g,lescape(partData.vl));
+    tex=tex.replace(/<rasx>/g,locale.insNumber(partData.rasx,1));
+    tex=tex.replace(/<grp>/g,lescape(partData.grp));
+    tex=tex.replace(/<descr>/g,lescape(partData.descr));
 
+    tex=tex.replace(/<frac>/g,getFrac(partData));
     tex=tex.replace(/<plav>/g,getPlavStr(plavData));
     tex=tex.replace(/<sert>/g,getSertStr(sertData));
     tex=tex.replace(/<chem>/g,getChemTbl(chemData));
@@ -220,12 +240,24 @@ let getDoc = function(data,partdata,tustr,sertData,chemData,mechData,ampData,pla
     tex=tex.replace(/<amp>/g,getAmpTbl(ampData));
 
     tex=tex.replace(/<tustr>/g,lescape(tustr));
+
+    tex=tex.replace(/<date>/g,lescape(body.date));
+    tex=tex.replace(/<auth>/g,lescape(body.auth));
+    tex=tex.replace(/<check>/g,lescape(body.check));
+    tex=tex.replace(/<norm>/g,lescape(body.norm));
+    tex=tex.replace(/<app>/g,lescape(body.app));
+    tex=tex.replace(/<authTitle>/g,lescape(body.authTitle));
+    tex=tex.replace(/<checkTitle>/g,lescape(body.checkTitle));
+    tex=tex.replace(/<appTitle>/g,lescape(body.appTitle));
     return tex;
 }
 
 module.exports = function (app) {
-    app.get("/pasport/elrtr/:id", async (req, res) => {
-        let id_part=Number(req.params["id"]);   
+    var bodyParser = require('body-parser');
+    var jsonParser = bodyParser.json();
+    app.post("/pasport/elrtr/:id", jsonParser, async (req, res) => {
+        let id_part=Number(req.params["id"]);
+        console.log('BODY:', req.body);
         fs.readFile(__dirname+'/tex/document.tex', 'utf8', (err, data) => {
             if (err) {
                 console.error(err);
@@ -261,7 +293,7 @@ module.exports = function (app) {
                                             }
                                             tustr+=tudata[i].nam;
                                         }
-                                        const pdf = latex(getDoc(data,partdata,tustr,sertData,chemData,mechData,ampData,plavData), options);
+                                        const pdf = latex(getDoc(data,partdata,tustr,sertData,chemData,mechData,ampData,plavData,req.body), options);
                                         pdf.pipe(pdfStream);
                                         pdf.on('finish', () =>{ 
                                             res.type('application/pdf');

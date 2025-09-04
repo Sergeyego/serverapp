@@ -121,7 +121,7 @@ module.exports = function (app) {
         } else {
             id_op=1;
         }
-        
+
         db.one(queryPal,[val])
             .then((palData) => {
                 db.any("insert into el_pallet_op (id_pallet, dtm, id_cex, id_op, id_rab, id_main_rab, kvo, pack_kvo, id_parti, id_src)"+
