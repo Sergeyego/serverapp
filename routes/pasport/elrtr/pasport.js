@@ -228,7 +228,7 @@ let getDoc = function(data,partData,tustr,sertData,chemData,mechData,ampData,pla
     tex=tex.replace(/<kfmp>/g,locale.insNumber(partData.kfmp,2));
     tex=tex.replace(/<proc>/g,lescape(partData.proc));
     tex=tex.replace(/<vl>/g,lescape(partData.vl));
-    tex=tex.replace(/<rasx>/g,locale.insNumber(partData.rasx,1));
+    tex=tex.replace(/<warr>/g,locale.insNumber(partData.warr,0));
     tex=tex.replace(/<grp>/g,lescape(partData.grp));
     tex=tex.replace(/<descr>/g,lescape(partData.descr));
 
