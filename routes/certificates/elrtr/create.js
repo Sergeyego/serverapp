@@ -1,22 +1,22 @@
 const srt = require("../srt");
 const qr = require("../../qrcode/qr");
-const translit = require("cyrillic-to-translit-js");
+const locale = require('./../../../locale.js');
 
 let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
     let symb="";
     if (id_type==5){
         symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
-            srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)
+            srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)
         : 
             headerdata.gt+"-"+headerdata.pu;
     } else {
         symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
-        srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)
+        srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)
         : 
-        srt.insText(lang,headerdata.gt,translit().transform(headerdata.gt))+"-"+srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)+"-"+srt.insText(lang,headerdata.pu,translit().transform(headerdata.pu));
+        srt.insText(lang,headerdata.gt,locale.insTrans(headerdata.gt,'chem'))+"-"+srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)+"-"+srt.insText(lang,headerdata.pu,locale.insTrans(headerdata.pu));
     }
     if (headerdata.znam!=null && headerdata.znam!="" && headerdata.znam!="-"){
-        symb+="<br>"+srt.insText(lang,headerdata.znam,translit().transform(headerdata.znam));
+        symb+="<br>"+srt.insText(lang,headerdata.znam,locale.insTrans(headerdata.znam));
     }
 
     let goststr="";
@@ -44,18 +44,18 @@ let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
                     '<td class="centeralign" rowspan="2">'+srt.insText(lang,"Масса электродов нетто, кг","Net weight, kg",true)+'</td>'+
                 '</tr>'+
                 '<tr>'+
-                    '<td class="centeralign" width="150">'+srt.insText(lang,goststr,translit().transform(goststr))+'</td>';
+                    '<td class="centeralign" width="150">'+srt.insText(lang,goststr,locale.insTrans(goststr))+'</td>';
                 for (let i=0; i<intdata.length; i++){
                     tbl+='<td class="centeralign" width="100">'+intdata[i].nam+'</td>';
                 }
         tbl+='</tr>'+
                 '<tr>'+
-                    '<td class="centeralign">'+srt.insText(lang,headerdata.marka,translit().transform(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)+'</td>'+
+                    '<td class="centeralign">'+srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)+'</td>'+
                     '<td class="centeralign">'+symb+'</td>';
                     for (let i=0; i<intdata.length; i++){
                         tbl+='<td class="centeralign">'+intdata[i].val+'</td>';
                     }
-                    tbl+='<td class="centeralign">'+srt.insText(lang,headerdata.provol,translit().transform(headerdata.provol))+'</td>'+
+                    tbl+='<td class="centeralign">'+srt.insText(lang,headerdata.provol,locale.insTrans(headerdata.provol))+'</td>'+
                     '<td class="centeralign">'+n_s+'</td>'+
                     '<td class="centeralign">'+srt.insDate(lang,dat,true)+'</td>'+
                     '<td class="centeralign">'+srt.insNumber(lang,massa,1)+'</td>'+
@@ -72,7 +72,7 @@ let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
                 '</tr>'+
                 '<tr>'+
                     '<td class="centeralign">'+symb+'</td>'+
-                    '<td class="centeralign">'+srt.insText(lang,headerdata.provol,translit().transform(headerdata.provol))+'</td>'+
+                    '<td class="centeralign">'+srt.insText(lang,headerdata.provol,locale.insTrans(headerdata.provol,'chem'))+'</td>'+
                     '<td class="centeralign">'+n_s+'</td>'+
                     '<td class="centeralign">'+srt.insDate(lang,dat,true)+'</td>'+
                     '<td class="centeralign">'+srt.insNumber(lang,massa,1)+'</td>'+
@@ -186,7 +186,7 @@ module.exports = function (app) {
                                         tel: gendata.tel,
                                         fnam: srt.insText(lang,gendata.fnam,gendata.fnam_en,false),
                                         tutitle: srt.insText(lang,"Нормативная документация","Normative documents",false)+": ",
-                                        tustr: srt.insText(lang,tustr,translit().transform(tustr),false),
+                                        tustr: srt.insText(lang,tustr,locale.insTrans(tustr),false),
                                         maintbl: getMainTbl(lang,headerdata,id_type,tudata,intdata),
                                         chemtbl: srt.getChemTbl(lang,chemtitle,chemdata),
                                         mechtbl: srt.getMechTbl(lang,enru,enen,mechdata),
@@ -198,7 +198,7 @@ module.exports = function (app) {
                                         pol: pol,
                                         note: srt.insText(lang,"При переписке по вопросам качества просьба ссылаться на номер партии","When correspondence on quality issues, please refer to the batch number",true),
                                         constitle: srt.insText(lang,"Заключение","Conclusion",false)+":",
-                                        cons: srt.insText(lang,"соответствует требованиям "+tustr,"meets the requirements of "+translit().transform(tustr),true),
+                                        cons: srt.insText(lang,"соответствует требованиям "+tustr,"meets the requirements of "+locale.insTrans(tustr),true),
                                         dattitle: srt.insText(lang,"Дата выдачи сертификата","Date of issue of the certificate",false)+": ",
                                         dat: srt.insDate(lang,datvid,false),
                                         qrsrc: getQrCode(lang,headerdata,id_type,is_ship),
