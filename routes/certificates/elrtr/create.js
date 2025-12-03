@@ -6,14 +6,14 @@ let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
     let symb="";
     if (id_type==5){
         symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
-            srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)
+            srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-"+srt.insNumber(lang,headerdata.diam,1)
         : 
             headerdata.gt+"-"+headerdata.pu;
     } else {
         symb=(headerdata.gt=="-" || headerdata.pu=="-") ? 
-        srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)
+        srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-"+srt.insNumber(lang,headerdata.diam,1)
         : 
-        srt.insText(lang,headerdata.gt,locale.insTrans(headerdata.gt,'chem'))+"-"+srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)+"-"+srt.insText(lang,headerdata.pu,locale.insTrans(headerdata.pu));
+        srt.insText(lang,headerdata.gt,locale.insTrans(headerdata.gt,'chem'))+"-"+srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-"+srt.insNumber(lang,headerdata.diam,1)+"-"+srt.insText(lang,headerdata.pu,locale.insTrans(headerdata.pu));
     }
     if (headerdata.znam!=null && headerdata.znam!="" && headerdata.znam!="-"){
         symb+="<br>"+srt.insText(lang,headerdata.znam,locale.insTrans(headerdata.znam));
@@ -50,7 +50,7 @@ let getMainTbl = function(lang, headerdata, id_type, tudata, intdata) {
                 }
         tbl+='</tr>'+
                 '<tr>'+
-                    '<td class="centeralign">'+srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,0)+'</td>'+
+                    '<td class="centeralign">'+srt.insText(lang,headerdata.marka,locale.insTrans(headerdata.marka))+"-∅"+srt.insNumber(lang,headerdata.diam,1)+'</td>'+
                     '<td class="centeralign">'+symb+'</td>';
                     for (let i=0; i<intdata.length; i++){
                         tbl+='<td class="centeralign">'+intdata[i].val+'</td>';

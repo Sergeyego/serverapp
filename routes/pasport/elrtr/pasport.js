@@ -102,7 +102,7 @@ let getFrac = function (partData) {
     if (type!=null && type!='-' && type!=''){
         num+=lescape(type)+'-';
     }
-    num+=lescape(partData.marka)+'-⌀'+locale.insNumber(partData.diam,0);
+    num+=lescape(partData.marka)+'-'+locale.insNumber(partData.diam,1);
     if (pu!=null && pu!='-' && pu!=''){
         num+='-'+lescape(pu);
     }
