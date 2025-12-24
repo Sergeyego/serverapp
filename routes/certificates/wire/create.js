@@ -75,8 +75,8 @@ module.exports = function (app) {
         let is_ship = (typeof req.query.part=="undefined" || req.query.part=="false");
         let id_type = Number(req.params["id_type"]);
         let ennum = (id_type==3 || id_type==4)? "3.2" : "3.1";
-        let enru = "Испытания: согласно EN 10204 - "+ennum+".";
-        let enen = "Tests: according to EN 10204 - "+ennum+".";
+        let enru = "Испытания: согласно "+ennum+" EN 10204.";
+        let enen = "Tests: according to "+ennum+" EN 10204.";
         data.getHeaderData(id,is_ship)
         .then((headerdata)=>{
             let id_part = headerdata.id;
@@ -151,7 +151,7 @@ module.exports = function (app) {
                                     header: head, 
                                     adr: srt.insText(lang,gendata.adr,gendata.adr_en,true), 
                                     tel: gendata.tel,
-                                    fnam: srt.insText(lang,gendata.fnam,gendata.fnam_en,false),
+                                    fnam: srt.insText(lang,"Сертификат качества по форме "+ennum+" EN 10204<br><br>"+gendata.fnam,"Quality certificate according to form "+ennum+" EN 10204<br><br>"+gendata.fnam_en,true),
                                     tutitle: srt.insText(lang,"Нормативная документация","Normative documents",false)+": ",
                                     tustr: srt.insText(lang,tustr,locale.insTrans(tustr),false),
                                     maintbl: getMainTbl(lang,headerdata,id_type),
