@@ -52,6 +52,8 @@ require('./routes/s3/api.js')(app);
 
 require('./routes/pasport/elrtr/pasport.js')(app);
 
+require('./routes/site/api.js')(app);
+
 app.use(express.static(__dirname + '/public'));
 
 app.use((req, res, next) => {
