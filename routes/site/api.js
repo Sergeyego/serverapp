@@ -109,8 +109,7 @@ let getWireData = async function () {
         "t.nam as type, COALESCE(pp.nam, p.nam) as base, p.katalog as active " +
         "from provol as p " +
         "inner join provol_type as t on t.id = p.id_type " +
-        "left join provol as pp on pp.id=p.id_base " +
-        "where p.katalog=true");
+        "left join provol as pp on pp.id=p.id_base");
     return data;
 }
 
@@ -462,7 +461,7 @@ let syncEl = async function (sitedata, data, mapDoc) {
         if (data.has(kis[i].id)) {
             if (!elEqual(kis[i], data.get(kis[i].id), tu, amp, plav, chem, mech, diams, sert, mapDoc)) {
                 //обновить
-                console.log("for update:" + kis[i].marka + " id=" + kis[i].id);
+                //console.log("for update:" + kis[i].marka + " id=" + kis[i].id);
                 let upd = await sendReq(sitedata, "catalog.Element.upd?" + queryString(createElParam(data.get(kis[i].id)['ID'], kis[i], tu, amp, plav, chem, mech, diams, sert, mapDoc)), "POST", '');
                 if (!upd.ok) {
                     err.push("Обновление "+kis[i].marka+": "+upd.error);
@@ -472,7 +471,7 @@ let syncEl = async function (sitedata, data, mapDoc) {
             }
         } else if (kis[i].active){
             //добавить
-            console.log("not exist:" + kis[i].marka + " id=" + kis[i].id);
+            //console.log("not exist:" + kis[i].marka + " id=" + kis[i].id);
             let add = await sendReq(sitedata, "catalog.Element.add?" + queryString(createElParam('', kis[i], tu, amp, plav, chem, mech, diams, sert, mapDoc)), "POST", '');
             if (!add.ok) {
                 err.push("Добавление "+kis[i].marka+": "+add.error);
@@ -561,6 +560,62 @@ function wireEqual(kis, data, tu, chem, diams, sert, mapDoc) {
     return eq && tuEq && chemEq && diamsEq && spoolEq && sertEq;
 }
 
+function createWireParam(id, kis, tu, chem, diams, sert, mapDoc) {
+    let param = {
+        'elementId': id,
+        'CATALOG': 'Каталог проволоки',
+        'NAME': kis.marka,
+        'ACTIVE': (kis.active? 'Y' : 'N'),
+        'fields[XML_ID]': kis.id,
+        'fields[NAZNACHENIE]': '',
+        'fields[TIP_PO_GOST]': '',
+        'fields[SUFFIKS]': '',
+        'fields[ZNAMENATEL]': '',
+        'fields[TIP_PO_ISO]': '',
+        'fields[TIP_PO_AWS]': '',
+        'fields[POLOZHENIE_PRI_SVARKE]': '',
+        'fields[OPISANIE]': kis.descr,
+        'fields[OSOBYE_SVOYSTVA]': '',
+        'fields[TEKHNOLOGICHESKIE_OSOBENNOSTI_SVARKI]': '',
+        'fields[PROKALKA_PERED_SVARKOY]': '',
+        'fields[NAZVANIE]': kis.marka,
+        'fields[TIP_PROVOLOKI]': kis.type,
+        'fields[BAZOVAYA_MARKA]': kis.base,
+        'fields[REKOMENDUEMOE_ZNACHENIE_TOKA]' : '',
+        'fields[KHARAKTERISTIKI_PLAVLENIYA]' : '',
+        'fields[KHIMICHESKIY_SOSTAV_NAPLAVLENNOGO_METALLA]' : '',
+        'fields[MEKHANICHESKIE_SVOYSTVA_METALLA_SHVA_I_NAPLAVLENNO]' : '',
+    };
+
+    for (let i = 0; i < tu.length; i++) {
+        param['fields[NORMATIVNAYA_DOKUMENTATSIYA][' + i + ']'] = tu[i].nam;
+    }
+
+
+    for (let i = 0; i < chem.length; i++) {
+        let min = (chem[i].min == null) ? '' : locale.insNumber(chem[i].min, 3);
+        let max = (chem[i].max == null) ? '' : locale.insNumber(chem[i].max, 3);
+        const str = chem[i].nam + "#" + chem[i].sig + "#" + min + " - " + max + "#";
+        param['fields[KHIMICHESKIY_SOSTAV_PROVOLOKI][' + i + ']'] = str;
+    }
+
+    for (let i = 0; i < diams.length; i++) {
+        param['fields[DIAMETER][' + i + ']'] = locale.insNumber(diams[i].diam, 1);
+
+        param['fields[NOSITELI_PROVOLOKI][' + i + '][VALUE]'] = locale.insNumber(diams[i].diam, 1);
+        param['fields[NOSITELI_PROVOLOKI][' + i + '][DESCRIPTION]'] = diams[i].spool;
+    }
+
+    for (let i = 0; i < sert.length; i++) {
+        const id_sert = mapDoc.get(sert[i].nam)['ID'];
+        let descr = sert[i].diams;
+        param['fields[DOC][' + i + '][VALUE]'] = id_sert;
+        param['fields[DOC][' + i + '][DESCRIPTION]'] = descr;
+    }
+
+    return param;
+}
+
 let syncWire = async function (sitedata, data, mapDoc) {
     let err = [];
     let count=0;
@@ -573,23 +628,23 @@ let syncWire = async function (sitedata, data, mapDoc) {
         if (data.has(kis[i].id)) {
             if (!wireEqual(kis[i], data.get(kis[i].id), tu, chem, diams, sert, mapDoc)) {
                 //обновить
-                console.log("for update:" + kis[i].marka + " id=" + kis[i].id);
-                /*let upd = await sendReq(sitedata, "catalog.Element.upd?" + queryString(createElParam(data.get(kis[i].id)['ID'], kis[i], tu, amp, plav, chem, mech, diams, sert, mapDoc)), "POST", '');
+                //console.log("for update:" + kis[i].marka + " id=" + kis[i].id);
+                let upd = await sendReq(sitedata, "catalog.Element.upd?" + queryString(createWireParam(data.get(kis[i].id)['ID'], kis[i], tu, chem, diams, sert, mapDoc)), "POST", '');
                 if (!upd.ok) {
                     err.push("Обновление "+kis[i].marka+": "+upd.error);
                 } else {
                     count++;
-                }*/
+                }
             }
         } else if (kis[i].active){
             //добавить
-            console.log("not exist:" + kis[i].marka + " id=" + kis[i].id);
-            /*let add = await sendReq(sitedata, "catalog.Element.add?" + queryString(createElParam('', kis[i], tu, amp, plav, chem, mech, diams, sert, mapDoc)), "POST", '');
+            //console.log("not exist:" + kis[i].marka + " id=" + kis[i].id);
+            let add = await sendReq(sitedata, "catalog.Element.add?" + queryString(createWireParam('', kis[i], tu, chem, diams, sert, mapDoc)), "POST", '');
             if (!add.ok) {
                 err.push("Добавление "+kis[i].marka+": "+add.error);
             } else {
                 count++;
-            }*/
+            }
         }
     }
     return {error: err, count: count};
@@ -664,12 +719,12 @@ module.exports = function (app) {
                     catCount+=resWire.count;
                     err=err.concat(resWire.error);
 
-                    console.log(mapEl);
-                    console.log(mapWire);
-                    console.log(err);
+                    //console.log(mapEl);
+                    //console.log(mapWire);
+                    //console.log(err);
 
                     res.type("text/plain");
-                    res.send("Обновлено  документов: "+docCount+"; Элементов каталога: "+catCount+"; Ошибок: "+err.length+" "+err);
+                    res.send("Обновлено  документов: "+docCount+"; Элементов каталога: "+catCount+"; Ошибок: "+err.length);
 
                 } else {
                     res.status(500).type("text/plain");
