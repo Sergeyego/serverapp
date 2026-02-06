@@ -146,12 +146,42 @@ let syncAll = async function () {
     return { error: err, ok: ok };
 }
 
+let delDouble = async function(){
+    const data = await db.any("select ki.typ, ki.dat, ki.id_org, ki.id_empl, ki.id_job, ki.id_sub, ki.id_stat, ki.tabel " +
+        "from kamin_inf ki order by ki.id_empl, ki.dat");
+    let arr = new Array();
+    for (let i = 0; i < data.length; i++) {
+        if (data[i].typ != 'Изменения') {
+            arr.push(data[i]);
+        } else {
+            const last = arr[arr.length - 1];
+            if (data[i].id_org != last.id_org || data[i].id_empl != last.id_empl || data[i].id_job != last.id_job || data[i].id_sub != last.id_sub || data[i].id_stat != last.id_stat || data[i].tabel != last.tabel) {
+                arr.push(data[i]);
+            }
+        }
+    }
+    const rez = await db.any("delete from kamin_inf where (typ, dat, id_org, id_empl, id_job, id_sub, id_stat, tabel) " +
+                    "not in ( " +
+                    "select typ, dat, id_org, id_empl, id_job, id_sub, id_stat, tabel from jsonb_to_recordset(($1)::jsonb) " +
+                    "as t ( \"typ\" varchar, \"dat\" TIMESTAMPTZ, \"id_org\" varchar, \"id_empl\" varchar,\"id_job\" varchar,\"id_sub\" varchar,\"id_stat\" varchar, \"tabel\" integer) " +
+                    ")", [JSON.stringify(arr)]);
+    return rez;
+}
+
 module.exports = function (app) {
     app.get("/rab/sync/", async (req, res) => {
         syncAll()
             .then((rez) => {
                 if (rez.ok) {
-                    res.send("Синхронизировано успешно!");
+                    delDouble()
+                        .then(() => {
+                            res.type("text/plain");
+                            res.send("Синхронизировано успешно!");
+                        })
+                        .catch((error) => {
+                            res.status(500).type("text/plain");
+                            res.send(error.message);
+                        })
                 } else {
                     res.status(500).type("text/plain");
                     res.send(rez.error);
@@ -163,7 +193,6 @@ module.exports = function (app) {
                 res.send(error.message);
             })
     });
-
 }
 
 module.exports.syncAll = syncAll;
