@@ -1,6 +1,6 @@
 const latex = require('node-latex');
-const fs = require('fs');
-const through = require('through2');
+const fs = require('node:fs');
+const sfs = require("node:fs/promises");
 const db = require('../../../postgres.js');
 const srtdata = require("../../certificates/elrtr/data.js");
 const locale = require('../../../locale.js');
@@ -215,6 +215,97 @@ let getAmpTbl = function (ampData) {
     return tex;
 }
 
+let getSTitle = function (dx1, dx2, pic) {
+    let tex =
+        "\\AddToShipoutPictureBG*{" +
+        "   \\AtPageLowerLeft{" +
+        "       \\hspace*{132mm}{" +
+        "           \\raisebox{"+dx1+"mm}{" +
+        "			    \\includegraphics[width=20mm,height=11.25mm]{"+pic+"}" +
+        "			     \\hspace*{-23mm}{" +
+        "				     \\raisebox{"+dx2+"mm}{ \\ESKDtheDay \\hspace{11mm} \\ESKDtheMonth \\hspace{12mm} \\ESKDtheYear}" +
+        "			     }" +
+        "			 }" +
+        "		 }" +
+        "	 }" +
+        "}\n";
+    return tex;
+}
+
+let getSigTitle = function (isSign) {
+    let tex = "";
+    if (isSign) {
+        tex +=
+            "\\AddToShipoutPictureBG*{" +
+            "   \\AtPageLowerLeft{" +
+            "	    \\hspace*{90mm}{" +
+            "		    \\raisebox{225mm}{" +
+            "			    \\includegraphics[width=42mm,height=42mm]{docstamp.png}" +
+            "		    }" +
+            "	    }" +
+            "   }" +
+            "}\n";
+        tex += getSTitle(237, -3, 'app.png');
+        tex += getSTitle(96, -2, 'auth.png');
+        tex += getSTitle(70, -2, 'check.png');
+    }
+    return tex;
+}
+
+let getSOne = function (x, pic) {
+    let tex =
+        "\\AddToShipoutPictureBG*{" +
+        "   \\AtPageLowerLeft{" +
+        "	    \\hspace*{56mm}{" +
+        "		    \\raisebox{"+x+"mm}{" +
+        "			    \\includegraphics[width=17mm,height=9.5625mm]{"+pic+"}" +
+        "			    \\hspace*{-3mm}{" +
+        "				    \\raisebox{3mm}{\\footnotesize \\ESKDtheDay.\\ESKDtheMonth}" +
+        "			    }" +
+        "		    }" +
+        "	    }" +
+        "   }" +
+        "}";
+    return tex;
+}
+
+let getSigOne = function (isSign){
+    let tex = "";
+    if (isSign) {
+        tex+=getSOne(23,'auth.png');
+        tex+=getSOne(18,'check.png');
+        tex+=getSOne(8,'norm.png');
+        tex+=getSOne(3,'app.png');
+    }
+    return tex;
+}
+
+let getSigMain = function (isSign){
+    let tex = "";
+    if (isSign) {
+        tex = 
+            "\\tikz {" +
+            "   \\raisebox{-3mm}{" +
+            "	    \\hspace{-11 mm} \\includegraphics[width=23mm,height=13mm]{check.png}" +
+            "   }" +
+            "}";
+    }
+    return tex;
+}
+
+let getStampOtk = function (isSign){
+    let tex = "";
+    if (isSign) {
+        tex = 
+            "\\tikz {" +
+            "   \\raisebox{-22mm}{" +
+            "	    \\hspace{-18mm} \\includegraphics[width=42mm,height=42mm]{otkstamp.png}" +
+            "   }" +
+            "}";
+    }
+    return tex;
+}
+
 let getDoc = function(data,partData,tustr,sertData,chemData,mechData,ampData,plavData,body) {
     let tex=data.replace(/<npart>/g,lescape(partData.n_s));
     tex=tex.replace(/<okp>/g,lescape(partData.okp));
@@ -249,98 +340,114 @@ let getDoc = function(data,partData,tustr,sertData,chemData,mechData,ampData,pla
     tex=tex.replace(/<authTitle>/g,lescape(body.authTitle));
     tex=tex.replace(/<checkTitle>/g,lescape(body.checkTitle));
     tex=tex.replace(/<appTitle>/g,lescape(body.appTitle));
+    tex=tex.replace(/<sigtitle>/g,getSigTitle(body.isSign));
+    tex=tex.replace(/<sigone>/g,getSigOne(body.isSign));
+    tex=tex.replace(/<sigmain>/g,getSigMain(body.isSign));
+    tex=tex.replace(/<stampotk>/g,getStampOtk(body.isSign));
     return tex;
 }
 
 module.exports = function (app) {
     var bodyParser = require('body-parser');
-    var jsonParser = bodyParser.json();
+    var jsonParser = bodyParser.json({ limit: '10mb' });
     app.post("/pasport/elrtr/:id", jsonParser, async (req, res) => {
-        let id_part=Number(req.params["id"]);
-        console.log('BODY:', req.body);
-        fs.readFile(__dirname+'/tex/document.tex', 'utf8', (err, data) => {
+        let id_part = Number(req.params["id"]);
+        //console.log('BODY:', req.body);
+        try {
+            if (req.body.authSig.length) {
+                await sfs.writeFile(__dirname + '/tex/auth.png', Buffer.from(req.body.authSig, 'base64'));
+            }
+            if (req.body.checkSig.length) {
+                await sfs.writeFile(__dirname + '/tex/check.png', Buffer.from(req.body.checkSig, 'base64'));
+            }
+            if (req.body.appSig.length) {
+                await sfs.writeFile(__dirname + '/tex/app.png', Buffer.from(req.body.appSig, 'base64'));
+            }
+            if (req.body.normSig.length) {
+                await sfs.writeFile(__dirname + '/tex/norm.png', Buffer.from(req.body.normSig, 'base64'));
+            }
+        } catch (error) {
+            console.log(error.message);
+        }
+        fs.readFile(__dirname + '/tex/document.tex', 'utf8', (err, data) => {
             if (err) {
                 console.error(err);
                 res.status(500).type('text/plain');
                 res.send(err.message);
                 return;
             }
-            const pdfStream = through();
             const options = {
-                inputs: __dirname+'/tex',
-                fonts: __dirname+'/tex/font',
+                inputs: __dirname + '/tex',
+                fonts: __dirname + '/tex/font',
                 cmd: 'xelatex',
                 passes: 2
             }
             getPartData(id_part)
-            .then((partdata)=>{
-                srtdata.getTuData(id_part)
-                .then((tudata)=>{
-                    getSertData(id_part)
-                    .then((sertData)=>{
-                        getChemData(id_part)
-                        .then((chemData)=>{
-                            getMechData(id_part)
-                            .then((mechData)=>{
-                                getAmpData(id_part)
-                                .then((ampData)=>{
-                                    getPlavData(id_part)
-                                .then((plavData)=>{
-                                        let tustr="";
-                                        for (let i = 0; i < tudata.length; i++) {
-                                            if (tustr!=""){
-                                                tustr+=", ";
-                                            }
-                                            tustr+=tudata[i].nam;
-                                        }
-                                        const pdf = latex(getDoc(data,partdata,tustr,sertData,chemData,mechData,ampData,plavData,req.body), options);
-                                        pdf.pipe(pdfStream);
-                                        pdf.on('finish', () =>{ 
-                                            res.type('application/pdf');
-                                            pdfStream.pipe(res);
-                                        })                
-                                        pdf.on('error', err => {
-                                            console.error(err);
+                .then((partdata) => {
+                    srtdata.getTuData(id_part)
+                        .then((tudata) => {
+                            getSertData(id_part)
+                                .then((sertData) => {
+                                    getChemData(id_part)
+                                        .then((chemData) => {
+                                            getMechData(id_part)
+                                                .then((mechData) => {
+                                                    getAmpData(id_part)
+                                                        .then((ampData) => {
+                                                            getPlavData(id_part)
+                                                                .then((plavData) => {
+                                                                    let tustr = "";
+                                                                    for (let i = 0; i < tudata.length; i++) {
+                                                                        if (tustr != "") {
+                                                                            tustr += ", ";
+                                                                        }
+                                                                        tustr += tudata[i].nam;
+                                                                    }
+                                                                    const pdf = latex(getDoc(data, partdata, tustr, sertData, chemData, mechData, ampData, plavData, req.body), options);
+                                                                    res.type('application/pdf');
+                                                                    pdf.pipe(res);
+                                                                    pdf.on('error', err => {
+                                                                        console.error(err);
+                                                                        res.status(500).type('text/plain');
+                                                                        res.send(err.message);
+                                                                    });
+                                                                }).catch((error) => {
+                                                                    console.log('ERROR:', error);
+                                                                    res.status(500).type('text/plain');
+                                                                    res.send(error.message);
+                                                                })
+                                                        }).catch((error) => {
+                                                            console.log('ERROR:', error);
+                                                            res.status(500).type('text/plain');
+                                                            res.send(error.message);
+                                                        })
+                                                }).catch((error) => {
+                                                    console.log('ERROR:', error);
+                                                    res.status(500).type('text/plain');
+                                                    res.send(error.message);
+                                                })
+                                        }).catch((error) => {
+                                            console.log('ERROR:', error);
                                             res.status(500).type('text/plain');
-                                            res.send(err.message);
+                                            res.send(error.message);
                                         })
-                                    }).catch((error) => {
-                                    console.log('ERROR:', error);
-                                    res.status(500).type('text/plain');
-                                    res.send(error.message);
-                                    })
                                 }).catch((error) => {
                                     console.log('ERROR:', error);
                                     res.status(500).type('text/plain');
                                     res.send(error.message);
                                 })
-                            }).catch((error) => {
-                                console.log('ERROR:', error);
-                                res.status(500).type('text/plain');
-                                res.send(error.message);
-                            })
-                        }).catch((error) => {
+                                .catch((error) => {
+                                    console.log('ERROR:', error);
+                                    res.status(500).type('text/plain');
+                                    res.send(error.message);
+                                })
+                        })
+                        .catch((error) => {
                             console.log('ERROR:', error);
                             res.status(500).type('text/plain');
                             res.send(error.message);
-                        })
-                    }).catch((error) => {
-                        console.log('ERROR:', error);
-                        res.status(500).type('text/plain');
-                        res.send(error.message);
-                    })
-                .catch((error) => {
-                    console.log('ERROR:', error);
-                    res.status(500).type('text/plain');
-                    res.send(error.message);
-                })
-            })
-            .catch((error) => {
-                console.log('ERROR:', error);
-                res.status(500).type('text/plain');
-                res.send(error.message);
-            });
-            });
+                        });
+                });
         });
     });
 }

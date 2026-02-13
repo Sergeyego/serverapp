@@ -12,7 +12,7 @@
 
 %%% Для работы шрифтов
 \usepackage{xunicode,xltxtra}
-
+\usepackage{tikz}
 
 \DeclareMathSizes{12}   {12}   {12}    {12}
 
@@ -37,6 +37,7 @@
 
 \usepackage{ragged2e}
 \usepackage{blindtext}
+\usepackage{eso-pic}
 
 %%% Для переноса составных слов
 %\XeTeXinterchartokenstate=1
@@ -107,10 +108,10 @@
 \ESKDdate{ <date> }
 
 \begin{document}
-
+<sigtitle>
 %%% Делаем титульник
 \maketitle
-
+<sigone>
 %%% Делаем содержание
 \tableofcontents
 \pagebreak[4]
@@ -224,11 +225,12 @@
 
 \begin {flushright}
 \begin{tabular}{ccccc}
+<stampotk>
 МП \hspace{5 mm}
 &
  $ \frac {\text{\ESKDcheckerTitle}}{\text{\tiny должноть}} $
  &
- $ \frac {\text{}}{\text{\tiny \hspace{5 mm} личная подпись \hspace{5 mm}}} $
+ $ \frac {\text{<sigmain>}}{\text{\tiny \hspace{5 mm} личная подпись \hspace{5 mm}}} $
  & 
   $\frac {\text{\ESKDtheChecker}}{\text{\tiny расшифровка подписи}} $ 
   & 
