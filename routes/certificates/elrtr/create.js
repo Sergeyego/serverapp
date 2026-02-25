@@ -101,7 +101,12 @@ let getQrCode = function (lang, headerdata, id_type, is_ship){
         code+="Дата производства "+srt.insDate("ru",date_pr,false)+"\n";
         code+="Масса нетто, кг "+srt.insNumber("ru",massa,0)+"\n";
         if (is_ship && id_type!=1){
-            code+="Грузополучатель: "+headerdata.pol+"\n";
+            code+="Грузополучатель: ";
+            if (headerdata.pol!=headerdata.pol2){
+                code+=headerdata.pol2+" (для "+headerdata.pol+")\n";
+            } else {
+                code+=headerdata.pol+"\n";
+            }
         }
         code+="Дата "+srt.insDate("ru",date,false)+"\n";
         code+="Код подлинности "+headerdata.code;
