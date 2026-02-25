@@ -174,7 +174,11 @@ module.exports = function (app) {
                                         head+="/"+headerdata.nomer;
                                         poltitle=srt.insText(lang,"Грузополучатель","Consignee",false)+":";
                                         if (id_type!=1){
-                                            pol=srt.insText(lang,headerdata.pol,headerdata.pol_en);
+                                            if (headerdata.pol!=headerdata.pol2){
+                                                pol=srt.insText(lang,headerdata.pol2,headerdata.pol2_en)+srt.insText(lang," (для "," (for ")+srt.insText(lang,headerdata.pol,headerdata.pol_en)+")";
+                                            } else {
+                                                pol=srt.insText(lang,headerdata.pol,headerdata.pol_en);
+                                            }
                                         }
                                     }
 

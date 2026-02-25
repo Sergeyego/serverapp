@@ -3,7 +3,7 @@ const db = require('../../../postgres.js');
 let getHeaderData = async function (id, is_ship=true) {
     let query = is_ship ? 
         "select p.id as id, p.n_s as n_s, p.yea as year, p.dat_part as dat, e.marka_sert as marka, p.diam as diam, "+
-        "gt.nam as gt, pu.nam as pu, coalesce (p.ibco, ev.znam) as znam, coalesce(pp.nam, pe.nam) as provol, pol.naim as pol, "+
+        "gt.nam as gt, pu.nam as pu, coalesce (p.ibco, ev.znam) as znam, coalesce(pp.nam, pe.nam) as provol, pol.naim as pol, pol1.naim as pol2, pol1.naim_en as pol2_en, "+
         "s.nom_s as nomer, coalesce(s.dat_vid, $2 ) as datvid, o.massa as massa, pol.naim_en as pol_en, (o.id::int8+((p.id::int8)<<32)::int8)::varchar as code, "+
         "o.id as id_ship, o.hash as hash "+
         "from otpusk as o "+
@@ -12,6 +12,7 @@ let getHeaderData = async function (id, is_ship=true) {
         "inner join elrtr as e on e.id=p.id_el "+
         "inner join provol as pe on pe.id=e.id_gost "+
         "left join provol as pp on pp.id=p.id_prfact and pp.id in (select ep.id_prov from el_provol as ep where ep.id_el = p.id_el) "+
+        "inner join poluch as pol1 on s.id_pol=pol1.id "+
         "inner join poluch as pol on o.id_pol=pol.id "+
         "inner join gost_types as gt on e.id_gost_type=gt.id "+
         "inner join purpose as pu on e.id_purpose=pu.id "+
@@ -19,7 +20,7 @@ let getHeaderData = async function (id, is_ship=true) {
         "where o.id = $1" 
         :
         "select p.id as id, p.n_s as n_s, p.yea as year, p.dat_part as dat, e.marka_sert as marka, p.diam as diam, "+
-        "gt.nam as gt, pu.nam as pu, coalesce (p.ibco, ev.znam) as znam, coalesce(pp.nam, pe.nam) as provol, NULL as pol, "+
+        "gt.nam as gt, pu.nam as pu, coalesce (p.ibco, ev.znam) as znam, coalesce(pp.nam, pe.nam) as provol, NULL as pol, NULL as pol2, NULL as pol2_en, "+
         "NULL as nomer, ($2)::date as datvid, get_prod($1) as massa, NULL as pol_en, (0::int8+((p.id::int8)<<32)::int8)::varchar as code, "+
         "NULL as id_ship, NULL as hash "+
         "from parti as p "+
