@@ -5,7 +5,7 @@ const bodyParser = require('body-parser');
 const encode = require('html-entities');
 
 let getSiteData = async function () {
-    const data = await db.one("select s.url, s.code from site s where s.id=1");
+    const data = await db.one("select s.url as url, s.code as code from site s where s.id=1");
     return data;
 }
 
@@ -226,8 +226,12 @@ let updDoc = async function (sitedata, id, data, clearFile, body) {
     return await sendReq(sitedata, "docs.Element.upd?" + queryString(param), "POST", body);
 }
 
-function queryString(params) {
-    return Object.keys(params).map((key) => `${key}=${encodeURIComponent(params[key])}`).join('&');
+function queryString(obj) {
+    const params = new URLSearchParams();
+    for (key in obj) {
+        params.append(key,obj[key]);
+    }
+    return params.toString();
 }
 
 function dateString(dat) {
@@ -374,51 +378,63 @@ function elEqual(kis, data, tu, amp, plav, chem, mech, diams, sert, mapDoc) {
     return eq && tuEq && ampEq && plavEq && chemEq && mechEq && diamsEq && sertEq;
 }
 
-function createElParam(id, kis, tu, amp, plav, chem, mech, diams, sert, mapDoc) {
-    let param = {
+function createElObj(id, kis, tu, amp, plav, chem, mech, diams, sert, mapDoc) {
+    let obj = {
         'elementId': id,
         'CATALOG': 'Каталог электродов',
         'NAME': kis.marka,
         'ACTIVE': (kis.active? 'Y' : 'N'),
-        'fields[XML_ID]': kis.id,
-        'fields[NAZNACHENIE]': kis.vid,
-        'fields[TIP_PO_GOST]': getPar(kis.type),
-        'fields[SUFFIKS]': getPar(kis.suf),
-        'fields[ZNAMENATEL]': getPar(kis.znam),
-        'fields[TIP_PO_ISO]': getPar(kis.iso),
-        'fields[TIP_PO_AWS]': getPar(kis.aws),
-        'fields[POLOZHENIE_PRI_SVARKE]': kis.id_pol,
-        'fields[OPISANIE]': kis.descr,
-        'fields[OSOBYE_SVOYSTVA]': kis.descr_spec,
-        'fields[TEKHNOLOGICHESKIE_OSOBENNOSTI_SVARKI]': kis.descr_feature,
-        'fields[PROKALKA_PERED_SVARKOY]': getElProc(kis.proc),
-        'fields[NAZVANIE]': kis.marka,
-        'fields[KHIMICHESKIY_SOSTAV_PROVOLOKI]' : '', 
-        'fields[TIP_PROVOLOKI]': '',
-        'fields[BAZOVAYA_MARKA]': '',
     };
 
-    for (let i = 0; i < tu.length; i++) {
-        param['fields[NORMATIVNAYA_DOKUMENTATSIYA][' + i + ']'] = tu[i].nam;
-    }
+    let fields = {
+        'XML_ID': kis.id,
+        'NAZNACHENIE': kis.vid,
+        'TIP_PO_GOST': getPar(kis.type),
+        'SUFFIKS': getPar(kis.suf),
+        'ZNAMENATEL': getPar(kis.znam),
+        'TIP_PO_ISO': getPar(kis.iso),
+        'TIP_PO_AWS': getPar(kis.aws),
+        'POLOZHENIE_PRI_SVARKE': kis.id_pol,
+        'OPISANIE': kis.descr,
+        'OSOBYE_SVOYSTVA': kis.descr_spec,
+        'TEKHNOLOGICHESKIE_OSOBENNOSTI_SVARKI': kis.descr_feature,
+        'PROKALKA_PERED_SVARKOY': getElProc(kis.proc),
+        'NAZVANIE': kis.marka,
+        'KHIMICHESKIY_SOSTAV_PROVOLOKI' : '', 
+        'TIP_PROVOLOKI': '',
+        'BAZOVAYA_MARKA': '',
+    };
 
+    let tuobj = {};
+    for (let i = 0; i < tu.length; i++) {
+        tuobj[i]=tu[i].nam;
+    }
+    fields['NORMATIVNAYA_DOKUMENTATSIYA']=tuobj;
+
+    let ampobj = {};
     for (let i = 0; i < amp.length; i++) {
         const str = locale.insNumber(amp[i].diam, 1) + "#" + amp[i].bot + "#" + amp[i].vert + "#" + amp[i].ceil + "#";
-        param['fields[REKOMENDUEMOE_ZNACHENIE_TOKA][' + i + ']'] = str;
+        ampobj[i]=str;
     }
+    fields['REKOMENDUEMOE_ZNACHENIE_TOKA']=ampobj;
 
+    let plavobj = {};
     for (let i = 0; i < plav.length; i++) {
         const str = plav[i].nam + "#" + locale.insNumber(plav[i].value, 2) + "#";
-        param['fields[KHARAKTERISTIKI_PLAVLENIYA][' + i + ']'] = str;
+        plavobj[i]=str;
     }
+    fields['KHARAKTERISTIKI_PLAVLENIYA']=plavobj;
 
+    let chemobj = {};
     for (let i = 0; i < chem.length; i++) {
         let min = (chem[i].min == null) ? '' : locale.insNumber(chem[i].min, 3);
         let max = (chem[i].max == null) ? '' : locale.insNumber(chem[i].max, 3);
         const str = chem[i].nam + "#" + chem[i].sig + "#" + min + " - " + max + "#";
-        param['fields[KHIMICHESKIY_SOSTAV_NAPLAVLENNOGO_METALLA][' + i + ']'] = str;
+        chemobj[i]=str;
     }
+    fields['KHIMICHESKIY_SOSTAV_NAPLAVLENNOGO_METALLA']=chemobj;
 
+    let mechobj = {};
     for (let i = 0; i < mech.length; i++) {
         let val = '';
         if (mech[i].min == null && mech[i].max != null) {
@@ -429,21 +445,29 @@ function createElParam(id, kis, tu, amp, plav, chem, mech, diams, sert, mapDoc) 
             val = locale.insNumber(mech[i].min, 3) + " - " + locale.insNumber(mech[i].max, 3);
         }
         const str = encode.decode(mech[i].nam_html + "#" + mech[i].sig_html + "#" + val + "#");
-        param['fields[MEKHANICHESKIE_SVOYSTVA_METALLA_SHVA_I_NAPLAVLENNO][' + i + ']'] = str;
+        mechobj[i]=str;
     }
+    fields['MEKHANICHESKIE_SVOYSTVA_METALLA_SHVA_I_NAPLAVLENNO']=mechobj;
 
+    let diamsobj = {};
     for (let i = 0; i < diams.length; i++) {
-        param['fields[DIAMETER][' + i + ']'] = locale.insNumber(diams[i].diam, 1);
+        diamsobj[i]=locale.insNumber(diams[i].diam, 1);
     }
+    fields['DIAMETER']=diamsobj;
 
+    let sertobj = {};
     for (let i = 0; i < sert.length; i++) {
         const id_sert = mapDoc.get(sert[i].nam)['ID'];
         let descr = sert[i].diams;
-        param['fields[DOC][' + i + '][VALUE]'] = id_sert;
-        param['fields[DOC][' + i + '][DESCRIPTION]'] = descr;
+        sertobj[i] = {
+            'VALUE' : id_sert,
+            'DESCRIPTION' : descr,
+        };
     }
+    fields['DOC']=sertobj;
 
-    return param;
+    obj['fields']=fields;
+    return JSON.stringify(obj);
 }
 
 let syncEl = async function (sitedata, data, mapDoc) {
@@ -462,7 +486,7 @@ let syncEl = async function (sitedata, data, mapDoc) {
             if (!elEqual(kis[i], data.get(kis[i].id), tu, amp, plav, chem, mech, diams, sert, mapDoc)) {
                 //обновить
                 //console.log("for update:" + kis[i].marka + " id=" + kis[i].id);
-                let upd = await sendReq(sitedata, "catalog.Element.upd?" + queryString(createElParam(data.get(kis[i].id)['ID'], kis[i], tu, amp, plav, chem, mech, diams, sert, mapDoc)), "POST", '');
+                let upd = await sendReq(sitedata, "catalog.Element.upd","POST",createElObj(data.get(kis[i].id)['ID'], kis[i], tu, amp, plav, chem, mech, diams, sert, mapDoc));
                 if (!upd.ok) {
                     err.push("Обновление "+kis[i].marka+": "+upd.error);
                 } else {
@@ -472,7 +496,7 @@ let syncEl = async function (sitedata, data, mapDoc) {
         } else if (kis[i].active){
             //добавить
             //console.log("not exist:" + kis[i].marka + " id=" + kis[i].id);
-            let add = await sendReq(sitedata, "catalog.Element.add?" + queryString(createElParam('', kis[i], tu, amp, plav, chem, mech, diams, sert, mapDoc)), "POST", '');
+            let add = await sendReq(sitedata, "catalog.Element.add","POST",createElObj('', kis[i], tu, amp, plav, chem, mech, diams, sert, mapDoc));
             if (!add.ok) {
                 err.push("Добавление "+kis[i].marka+": "+add.error);
             } else {
@@ -560,60 +584,76 @@ function wireEqual(kis, data, tu, chem, diams, sert, mapDoc) {
     return eq && tuEq && chemEq && diamsEq && spoolEq && sertEq;
 }
 
-function createWireParam(id, kis, tu, chem, diams, sert, mapDoc) {
-    let param = {
+function createWireObj(id, kis, tu, chem, diams, sert, mapDoc) {
+    let obj = {
         'elementId': id,
         'CATALOG': 'Каталог проволоки',
         'NAME': kis.marka,
         'ACTIVE': (kis.active? 'Y' : 'N'),
-        'fields[XML_ID]': kis.id,
-        'fields[NAZNACHENIE]': '',
-        'fields[TIP_PO_GOST]': '',
-        'fields[SUFFIKS]': '',
-        'fields[ZNAMENATEL]': '',
-        'fields[TIP_PO_ISO]': '',
-        'fields[TIP_PO_AWS]': '',
-        'fields[POLOZHENIE_PRI_SVARKE]': '',
-        'fields[OPISANIE]': kis.descr,
-        'fields[OSOBYE_SVOYSTVA]': '',
-        'fields[TEKHNOLOGICHESKIE_OSOBENNOSTI_SVARKI]': '',
-        'fields[PROKALKA_PERED_SVARKOY]': '',
-        'fields[NAZVANIE]': kis.marka,
-        'fields[TIP_PROVOLOKI]': kis.type,
-        'fields[BAZOVAYA_MARKA]': kis.base,
-        'fields[REKOMENDUEMOE_ZNACHENIE_TOKA]' : '',
-        'fields[KHARAKTERISTIKI_PLAVLENIYA]' : '',
-        'fields[KHIMICHESKIY_SOSTAV_NAPLAVLENNOGO_METALLA]' : '',
-        'fields[MEKHANICHESKIE_SVOYSTVA_METALLA_SHVA_I_NAPLAVLENNO]' : '',
     };
 
+    let fields = {
+        'XML_ID': kis.id,
+        'NAZNACHENIE': '',
+        'TIP_PO_GOST': '',
+        'SUFFIKS': '',
+        'ZNAMENATEL': '',
+        'TIP_PO_ISO': '',
+        'TIP_PO_AWS': '',
+        'POLOZHENIE_PRI_SVARKE': '',
+        'OPISANIE': kis.descr,
+        'OSOBYE_SVOYSTVA': '',
+        'TEKHNOLOGICHESKIE_OSOBENNOSTI_SVARKI': '',
+        'PROKALKA_PERED_SVARKOY': '',
+        'NAZVANIE': kis.marka,
+        'TIP_PROVOLOKI': kis.type,
+        'BAZOVAYA_MARKA': kis.base,
+        'REKOMENDUEMOE_ZNACHENIE_TOKA' : '',
+        'KHARAKTERISTIKI_PLAVLENIYA' : '',
+        'KHIMICHESKIY_SOSTAV_NAPLAVLENNOGO_METALLA' : '',
+        'MEKHANICHESKIE_SVOYSTVA_METALLA_SHVA_I_NAPLAVLENNO' : '',
+    };
+
+    let tuobj = {};
     for (let i = 0; i < tu.length; i++) {
-        param['fields[NORMATIVNAYA_DOKUMENTATSIYA][' + i + ']'] = tu[i].nam;
+        tuobj[i]=tu[i].nam;
     }
+    fields['NORMATIVNAYA_DOKUMENTATSIYA']=tuobj;
 
-
+    let chemobj = {};
     for (let i = 0; i < chem.length; i++) {
         let min = (chem[i].min == null) ? '' : locale.insNumber(chem[i].min, 3);
         let max = (chem[i].max == null) ? '' : locale.insNumber(chem[i].max, 3);
         const str = chem[i].nam + "#" + chem[i].sig + "#" + min + " - " + max + "#";
-        param['fields[KHIMICHESKIY_SOSTAV_PROVOLOKI][' + i + ']'] = str;
+        chemobj[i]=str;
     }
+    fields['KHIMICHESKIY_SOSTAV_PROVOLOKI']=chemobj;
 
+    let diamsobj = {};
+    let spoolobj = {};
     for (let i = 0; i < diams.length; i++) {
-        param['fields[DIAMETER][' + i + ']'] = locale.insNumber(diams[i].diam, 1);
-
-        param['fields[NOSITELI_PROVOLOKI][' + i + '][VALUE]'] = locale.insNumber(diams[i].diam, 1);
-        param['fields[NOSITELI_PROVOLOKI][' + i + '][DESCRIPTION]'] = diams[i].spool;
+        diamsobj[i]= locale.insNumber(diams[i].diam, 1);
+        spoolobj[i] = {
+            'VALUE' : locale.insNumber(diams[i].diam, 1),
+            'DESCRIPTION' : diams[i].spool,
+        };
     }
+    fields['DIAMETER']=diamsobj;
+    fields['NOSITELI_PROVOLOKI']=spoolobj;
 
+    let sertobj = {};
     for (let i = 0; i < sert.length; i++) {
         const id_sert = mapDoc.get(sert[i].nam)['ID'];
         let descr = sert[i].diams;
-        param['fields[DOC][' + i + '][VALUE]'] = id_sert;
-        param['fields[DOC][' + i + '][DESCRIPTION]'] = descr;
+        sertobj[i] = {
+            'VALUE' : id_sert,
+            'DESCRIPTION' : descr,
+        };
     }
+    fields['DOC']=sertobj;
 
-    return param;
+    obj['fields']=fields;
+    return JSON.stringify(obj);
 }
 
 let syncWire = async function (sitedata, data, mapDoc) {
@@ -629,7 +669,7 @@ let syncWire = async function (sitedata, data, mapDoc) {
             if (!wireEqual(kis[i], data.get(kis[i].id), tu, chem, diams, sert, mapDoc)) {
                 //обновить
                 //console.log("for update:" + kis[i].marka + " id=" + kis[i].id);
-                let upd = await sendReq(sitedata, "catalog.Element.upd?" + queryString(createWireParam(data.get(kis[i].id)['ID'], kis[i], tu, chem, diams, sert, mapDoc)), "POST", '');
+                let upd = await sendReq(sitedata, "catalog.Element.upd", "POST", createWireObj(data.get(kis[i].id)['ID'], kis[i], tu, chem, diams, sert, mapDoc));
                 if (!upd.ok) {
                     err.push("Обновление "+kis[i].marka+": "+upd.error);
                 } else {
@@ -639,7 +679,7 @@ let syncWire = async function (sitedata, data, mapDoc) {
         } else if (kis[i].active){
             //добавить
             //console.log("not exist:" + kis[i].marka + " id=" + kis[i].id);
-            let add = await sendReq(sitedata, "catalog.Element.add?" + queryString(createWireParam('', kis[i], tu, chem, diams, sert, mapDoc)), "POST", '');
+            let add = await sendReq(sitedata, "catalog.Element.add", "POST", createWireObj('', kis[i], tu, chem, diams, sert, mapDoc));
             if (!add.ok) {
                 err.push("Добавление "+kis[i].marka+": "+add.error);
             } else {
