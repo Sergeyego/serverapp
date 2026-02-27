@@ -77,7 +77,7 @@ let getElMech = async function (id_el) {
 }
 
 let getElDiams = async function (id_el) {
-    const data = await db.any("select * from( " +
+    /*const data = await db.any("select * from( " +
         "(select d.diam as diam from amp as a " +
         "inner join diam as d on a.id_diam=d.id " +
         "where a.id_el = $1) " +
@@ -85,7 +85,16 @@ let getElDiams = async function (id_el) {
         "(select d.diam as diam from cena as c " +
         "inner join diam as d on c.id_diam=d.id " +
         "where c.dat=(select max(dat) from cena) and c.id_el = $1 ) " +
-        ") as de order by de.diam", [Number(id_el)]);
+        ") as de order by de.diam", [Number(id_el)]);*/
+    const data = await db.any("select p.diam as diam, STRING_AGG(distinct ep.snam,'#' ORDER BY ep.snam) as spool " +
+        "from otpusk o " +
+        "inner join sertifikat s on s.id = o.id_sert " +
+        "inner join parti p on p.id = o.id_part " +
+        "inner join el_pack ep on ep.id = p.id_pack " +
+        "where s.dat_vid >=(CURRENT_DATE - 1825) and ep.catalog = true and p.id_el = $1 " +
+        "group by p.diam " +
+        "order by p.diam", [Number(id_el)]);
+
     return data;
 }
 
@@ -128,7 +137,7 @@ let getWireChem = async function (id_wire) {
 }
 
 let getWireDiams = async function (id_wire) {
-    const data = await db.any("select dg.diam, k.spool " +
+    /*const data = await db.any("select dg.diam, k.spool " +
         "from( " +
         "select dm.diam as diam, wd.id_diam from wire_diams as wd " +
         "inner join diam as dm on wd.id_diam=dm.id " +
@@ -145,7 +154,17 @@ let getWireDiams = async function (id_wire) {
         "where c.dat=(select max(dat) from wire_cena) " +
         "group by c.id_diam " +
         ") as k on k.id_diam = dg.id_diam " +
-        "order by dg.diam", [Number(id_wire)]);
+        "order by dg.diam", [Number(id_wire)]);*/  
+    const data = await db.any("select d.diam as diam, STRING_AGG(distinct wpk.short,'#' order by wpk.short) as spool " +
+        "from wire_shipment_consist wsc " +
+        "inner join sertifikat s on s.id  = wsc.id_ship " +
+        "inner join wire_parti wp on wp.id = wsc.id_wparti " +
+        "inner join wire_parti_m wpm on wpm.id = wp.id_m " +
+        "inner join diam d on d.id = wpm.id_diam " +
+        "inner join wire_pack_kind wpk on wpk.id = wp.id_pack " +
+        "where s.dat_vid >=(CURRENT_DATE - 1825) and wpk.katalog = true and wpm.id_provol = $1 " +
+        "group by d.diam " +
+        "order by d.diam", [Number(id_wire)]);
     return data;
 }
 
@@ -361,6 +380,15 @@ function elEqual(kis, data, tu, amp, plav, chem, mech, diams, sert, mapDoc) {
         }
     }
 
+    let spoolEq = eq && lenEq(diams, data['NOSITELI_PROVOLOKI']['VALUE']);
+    if (spoolEq) {
+        for (let i = 0; i < diams.length; i++) {
+            spoolEq = spoolEq && (locale.insNumber(diams[i].diam, 1) == encode.decode(data['NOSITELI_PROVOLOKI']['VALUE'][i]))
+                && (diams[i].spool == encode.decode(data['NOSITELI_PROVOLOKI']['DESCRIPTION'][i]));
+            //console.log(data['NOSITELI_PROVOLOKI']['DESCRIPTION'][i],diams[i].spool);
+        }
+    }
+
     let sertEq = eq && lenEq(sert, data['DOC']['VALUE']);
     if (sertEq && data['DOC']['VALUE']) {
         let map = new Map();
@@ -375,7 +403,7 @@ function elEqual(kis, data, tu, amp, plav, chem, mech, diams, sert, mapDoc) {
         }
     }
 
-    return eq && tuEq && ampEq && plavEq && chemEq && mechEq && diamsEq && sertEq;
+    return eq && tuEq && ampEq && plavEq && chemEq && mechEq && diamsEq && spoolEq && sertEq;
 }
 
 function createElObj(id, kis, tu, amp, plav, chem, mech, diams, sert, mapDoc) {
@@ -450,10 +478,16 @@ function createElObj(id, kis, tu, amp, plav, chem, mech, diams, sert, mapDoc) {
     fields['MEKHANICHESKIE_SVOYSTVA_METALLA_SHVA_I_NAPLAVLENNO']=mechobj;
 
     let diamsobj = {};
+    let spoolobj = {};
     for (let i = 0; i < diams.length; i++) {
-        diamsobj[i]=locale.insNumber(diams[i].diam, 1);
+        diamsobj[i]= locale.insNumber(diams[i].diam, 1);
+        spoolobj[i] = {
+            'VALUE' : locale.insNumber(diams[i].diam, 1),
+            'DESCRIPTION' : diams[i].spool,
+        };
     }
     fields['DIAMETER']=diamsobj;
+    fields['NOSITELI_PROVOLOKI']=spoolobj;
 
     let sertobj = {};
     for (let i = 0; i < sert.length; i++) {
@@ -508,11 +542,12 @@ let syncEl = async function (sitedata, data, mapDoc) {
 }
 
 function wireEqual(kis, data, tu, chem, diams, sert, mapDoc) {
+    const wtype = kis.marka.endsWith("-О") ? "Омедненная проволока" : "Полированная проволока";
     let eq = (kis.marka == encode.decode(data['NAME']) &&
         ((kis.active && (data['ACTIVE'] == 'Y')) || (!kis.active && (data['ACTIVE'] == 'N'))) &&
         data['NAZNACHENIE']=='' &&
         kis.type == encode.decode(data['TIP_PROVOLOKI']) &&
-        data['TIP_PO_GOST']=='' &&
+        data['TIP_PO_GOST']==wtype &&
         data['SUFFIKS']=='' &&
         data['ZNAMENATEL']=='' &&
         data['TIP_PO_ISO']=='' &&
@@ -595,7 +630,7 @@ function createWireObj(id, kis, tu, chem, diams, sert, mapDoc) {
     let fields = {
         'XML_ID': kis.id,
         'NAZNACHENIE': '',
-        'TIP_PO_GOST': '',
+        'TIP_PO_GOST': kis.marka.endsWith("-О") ? "Омедненная проволока" : "Полированная проволока",
         'SUFFIKS': '',
         'ZNAMENATEL': '',
         'TIP_PO_ISO': '',

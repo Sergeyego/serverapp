@@ -102,7 +102,7 @@ let getQrCode = function (lang, headerdata, id_type, is_ship){
         code+="Масса нетто, кг "+srt.insNumber("ru",massa,0)+"\n";
         if (is_ship && id_type!=1){
             code+="Грузополучатель: ";
-            if (headerdata.pol!=headerdata.pol2){
+            if ((headerdata.pol!=headerdata.pol2) && headerdata.doublepol){
                 code+=headerdata.pol2+" (для "+headerdata.pol+")\n";
             } else {
                 code+=headerdata.pol+"\n";
@@ -179,7 +179,7 @@ module.exports = function (app) {
                                         head+="/"+headerdata.nomer;
                                         poltitle=srt.insText(lang,"Грузополучатель","Consignee",false)+":";
                                         if (id_type!=1){
-                                            if (headerdata.pol!=headerdata.pol2){
+                                            if ((headerdata.pol!=headerdata.pol2) && headerdata.doublepol){
                                                 pol=srt.insText(lang,headerdata.pol2,headerdata.pol2_en)+srt.insText(lang," (для "," (for ")+srt.insText(lang,headerdata.pol,headerdata.pol_en)+")";
                                             } else {
                                                 pol=srt.insText(lang,headerdata.pol,headerdata.pol_en);
