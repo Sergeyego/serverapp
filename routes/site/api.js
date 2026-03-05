@@ -514,7 +514,7 @@ let syncEl = async function (sitedata, data, mapDoc) {
 }
 
 function wireEqual(kis, data, tu, chem, diams, sert, mapDoc) {
-    const wtype = kis.marka.endsWith("-О") ? "Омедненная проволока" : "Неомеднённая проволока";
+    const wtype = kis.marka.endsWith("-О") ? "Омедненная проволока" : "Неомедненная проволока";
     let eq = (kis.marka == encode.decode(data['NAME']) &&
         ((kis.active && (data['ACTIVE'] == 'Y')) || (!kis.active && (data['ACTIVE'] == 'N'))) &&
         data['NAZNACHENIE']=='' &&
@@ -602,7 +602,7 @@ function createWireObj(id, kis, tu, chem, diams, sert, mapDoc) {
     let fields = {
         'XML_ID': kis.id,
         'NAZNACHENIE': '',
-        'TIP_PO_GOST': kis.marka.endsWith("-О") ? "Омедненная проволока" : "Неомеднённая проволока",
+        'TIP_PO_GOST': kis.marka.endsWith("-О") ? "Омедненная проволока" : "Неомедненная проволока",
         'SUFFIKS': '',
         'ZNAMENATEL': '',
         'TIP_PO_ISO': '',
