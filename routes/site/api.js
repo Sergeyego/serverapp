@@ -77,24 +77,17 @@ let getElMech = async function (id_el) {
 }
 
 let getElDiams = async function (id_el) {
-    /*const data = await db.any("select * from( " +
-        "(select d.diam as diam from amp as a " +
-        "inner join diam as d on a.id_diam=d.id " +
-        "where a.id_el = $1) " +
-        "union " +
-        "(select d.diam as diam from cena as c " +
-        "inner join diam as d on c.id_diam=d.id " +
-        "where c.dat=(select max(dat) from cena) and c.id_el = $1 ) " +
-        ") as de order by de.diam", [Number(id_el)]);*/
-    const data = await db.any("select p.diam as diam, STRING_AGG(distinct ep.snam,'#' ORDER BY ep.snam) as spool " +
+    const data = await db.any("select z.diam as diam, " +
+        "(SELECT pp.key FROM jsonb_each(z.pack) as pp where pp.value::double precision = (select max(value::double precision) from jsonb_each(z.pack))) as spool " +
+        "from ( " +
+        "select p.diam as diam, jsonb_object_agg(ep.snam, ep.mass_ed) as pack " +
         "from otpusk o " +
         "inner join sertifikat s on s.id = o.id_sert " +
         "inner join parti p on p.id = o.id_part " +
         "inner join el_pack ep on ep.id = p.id_pack " +
-        "where s.dat_vid >=(CURRENT_DATE - 1825) and ep.catalog = true and p.id_el = $1 " +
+        "where s.dat_vid >=(CURRENT_DATE - 1460) and ep.catalog = true and p.id_el = $1 " +
         "group by p.diam " +
-        "order by p.diam", [Number(id_el)]);
-
+        ") as z order by z.diam", [Number(id_el)]);
     return data;
 }
 
@@ -136,35 +129,14 @@ let getWireChem = async function (id_wire) {
     return data;
 }
 
-let getWireDiams = async function (id_wire) {
-    /*const data = await db.any("select dg.diam, k.spool " +
-        "from( " +
-        "select dm.diam as diam, wd.id_diam from wire_diams as wd " +
-        "inner join diam as dm on wd.id_diam=dm.id " +
-        "where wd.id_wire = $1 " +
-        "union " +
-        "select distinct d.diam as diam, c.id_diam from wire_cena as c " +
-        "inner join diam as d on c.id_diam=d.id " +
-        "where c.dat=(select max(dat) from wire_cena) and c.id_provol = $1 " +
-        ") as dg " +
-        "inner join ( " +
-        "select c.id_diam as id_diam, STRING_AGG(distinct k.short,'#' order by k.short) as spool " +
-        "from wire_cena as c " +
-        "inner join wire_pack_kind as k on c.id_pack=k.id " +
-        "where c.dat=(select max(dat) from wire_cena) " +
-        "group by c.id_diam " +
-        ") as k on k.id_diam = dg.id_diam " +
-        "order by dg.diam", [Number(id_wire)]);*/  
-    const data = await db.any("select d.diam as diam, STRING_AGG(distinct wpk.short,'#' order by wpk.short) as spool " +
-        "from wire_shipment_consist wsc " +
-        "inner join sertifikat s on s.id  = wsc.id_ship " +
-        "inner join wire_parti wp on wp.id = wsc.id_wparti " +
-        "inner join wire_parti_m wpm on wpm.id = wp.id_m " +
-        "inner join diam d on d.id = wpm.id_diam " +
-        "inner join wire_pack_kind wpk on wpk.id = wp.id_pack " +
-        "where s.dat_vid >=(CURRENT_DATE - 1825) and wpk.katalog = true and wpm.id_provol = $1 " +
-        "group by d.diam " +
-        "order by d.diam", [Number(id_wire)]);
+let getWireDiams = async function (id_wire) { 
+    const data = await db.any("select d.diam as diam, STRING_AGG(wpk.short,'#' ORDER BY wpk.sort_order, wpk.short) as spool " +
+        "from wire_diams wd " +
+        "inner join diam d on d.id = wd.id_diam " +
+        "inner join wire_pack_kind wpk on wpk.id = wd.id_spool " +
+        "where wd.id_wire = $1 and wpk.katalog = true " +
+        "group by d.diam order by d.diam", [Number(id_wire)]);
+
     return data;
 }
 
@@ -542,7 +514,7 @@ let syncEl = async function (sitedata, data, mapDoc) {
 }
 
 function wireEqual(kis, data, tu, chem, diams, sert, mapDoc) {
-    const wtype = kis.marka.endsWith("-О") ? "Омедненная проволока" : "Полированная проволока";
+    const wtype = kis.marka.endsWith("-О") ? "Омедненная проволока" : "Неомеднённая проволока";
     let eq = (kis.marka == encode.decode(data['NAME']) &&
         ((kis.active && (data['ACTIVE'] == 'Y')) || (!kis.active && (data['ACTIVE'] == 'N'))) &&
         data['NAZNACHENIE']=='' &&
@@ -630,7 +602,7 @@ function createWireObj(id, kis, tu, chem, diams, sert, mapDoc) {
     let fields = {
         'XML_ID': kis.id,
         'NAZNACHENIE': '',
-        'TIP_PO_GOST': kis.marka.endsWith("-О") ? "Омедненная проволока" : "Полированная проволока",
+        'TIP_PO_GOST': kis.marka.endsWith("-О") ? "Омедненная проволока" : "Неомеднённая проволока",
         'SUFFIKS': '',
         'ZNAMENATEL': '',
         'TIP_PO_ISO': '',
