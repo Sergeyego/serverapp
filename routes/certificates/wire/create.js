@@ -131,15 +131,16 @@ module.exports = function (app) {
                                 let footer="";
 
                                 if (headerdata.spool.indexOf("L-")==0){
-                                    footer = srt.insText(lang,"Состояние поверхности: на поверхности допускаются риски, царапины, небольшие вмятины, но их глубина "+
-                                        "не должна превышать предельного отклонения диаметра проволоки. Допускаются участки без медного покрытия до 10 мм, "+
-                                        "а их длина в целом не должна превышать 60 мм.",
-                                        "Surface condition: marks, scratches, small dents are allowed on the surface, but their depth should not exceed "+
-                                        "the maximum deviation of the wire diameter. Sections without copper coating up to 10 mm are allowed, "+
-                                        "and their length as a whole should not exceed 60 mm.",true);
+                                    footer = srt.insText(lang,"Состояние поверхности проволоки: поверхность проволоки чистая, "+
+                                        "гладкая, без трещин, расслоений, плен, закатов, раковин, забоин. "+
+                                        "На поверхности допускаются мелкие волочильные риски, царапины, отдельные вмятины, но их глубина "+
+                                        "не должна превышать 1/4 предельного отклонения по диаметру.",
+                                        "Wire surface condition: The wire surface is clean and smooth, free of cracks, delamination, "+
+                                        "film, overlaps, voids, and nicks. Minor drawing marks, scratches, and individual dents are "+
+                                        "permitted on the surface, but their depth should not exceed 1/4 of the maximum diameter deviation.",true);
                                 } else {
                                     footer = srt.insText(lang,"Состояние поверхности проволоки: поверхность проволоки чистая, "+
-                                        "гладкая, без трещин, расслоений, плен, закатов, раковин, забоин "+
+                                        "гладкая, без трещин, расслоений, плен, закатов, раковин, забоин, "+
                                         "окалины, ржавчины, масла, технологической смазки и других загрязнений.",
                                         "The condition of the surface of the wire: the surface of the wire is clean, smooth, without cracks, delaminations, "+
                                         "slivers, laps, shells, nicks, scale, rust, oil, grease and other contaminants.",true);
