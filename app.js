@@ -54,6 +54,9 @@ require('./routes/pasport/elrtr/pasport.js')(app);
 
 require('./routes/site/api.js')(app);
 
+require('./routes/wms/balance.js')(app);
+require('./routes/wms/cells.js')(app);
+
 app.use(express.static(__dirname + '/public'));
 
 app.use((req, res, next) => {
