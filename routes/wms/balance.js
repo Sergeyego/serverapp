@@ -16,8 +16,8 @@ let getKeys = async function (obj, key, val) {
 let joinDb = async function (dat,s_only) {
     const flt = s_only? "where t.zone in (select nam from warehouse_zone where id in (select distinct id_zone from warehouse_zone_ot)) " : "";
     const rez = await db.any("select t.prefix, t.id_kis, t.name, t.part, " +
-        "coalesce((CASE WHEN p.id_var<>1 THEN '/'||ev.nam ||'/ ' ELSE '' END || p.prim_prod), " +
-        "(CASE WHEN wp.id_var<>1 THEN '/'||ev2.nam ||'/ ' ELSE '' END || wp.prim_prod),'') as prim, " +
+        "coalesce((CASE WHEN p.id_var<>1 THEN '/'||ev.nam ||'/ ' ELSE '' END || coalesce(p.prim_prod,'')), " +
+        "(CASE WHEN wp.id_var<>1 THEN '/'||ev2.nam ||'/ ' ELSE '' END || coalesce(wp.prim_prod,'')),'') as prim, " +
         "coalesce(ep.pack_ed,wp2.pack_ed) as pack, " +
         "t.ist, t.zone, t.rcpplav, t.id_part, t.cell, t.cont, t.kvo, t.prich, t.rasch " +
         "from jsonb_to_recordset(($1)::jsonb) " +
