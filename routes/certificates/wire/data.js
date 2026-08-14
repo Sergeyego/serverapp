@@ -4,7 +4,7 @@ let getHeaderData = async function (id, is_ship=true) {
     let query = is_ship ? 
         "select w.id_wparti as id, w.m_netto as massa, s.nom_s as nomer, coalesce(s.dat_vid,($2)::date) as datvid, m.n_s as n_s, "+
         "date_part('year',m.dat) as year, m.dat as dat, "+
-        "b.n_plav as nplav, prov.nam as sprov, pprov.nam as prov, d.diam as diam, k.short as spool, "+
+        "b.n_plav as nplav, prov.nam as sprov, pprov.nam as prov, d.diam as diam, k.nam as spool, "+
         "pol.naim as pol, pprov.is_cored as is_cored, pol.naim_en as pol_en, k.short_en as spool_en, coalesce(bprov.nam, pprov.nam) as bprov, "+
         "(w.id::int8+((p.id::int8)<<32)::int8)::varchar as code, w.id as id_ship, w.hash as hash "+
         "from wire_shipment_consist as w "+
@@ -23,7 +23,7 @@ let getHeaderData = async function (id, is_ship=true) {
         :
         "select p.id as id, m.kvo as massa, NULL as nomer, ($2)::date as datvid, m.n_s as n_s, "+
         "date_part('year',m.dat) as year, m.dat as dat, "+
-        "b.n_plav as nplav, prov.nam as sprov, pprov.nam as prov, d.diam as diam, k.short as spool, "+
+        "b.n_plav as nplav, prov.nam as sprov, pprov.nam as prov, d.diam as diam, k.nam as spool, "+
         "NULL as pol, pprov.is_cored as is_cored, NULL as pol_en, k.short_en as spool_en, coalesce(bprov.nam, pprov.nam) as bprov, "+
         "(0::int8+((p.id::int8)<<32)::int8)::varchar as code, NULL as id_ship, NULL as hash "+
         "from wire_parti as p "+
